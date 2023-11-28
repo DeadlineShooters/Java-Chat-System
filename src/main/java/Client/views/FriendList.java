@@ -3,8 +3,8 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
-public class GroupMemberList extends JPanel {
-    public GroupMemberList() {
+public class FriendList extends JPanel {
+    public FriendList() {
         setLayout(new BorderLayout());
         setBackground(Color.white);
 
@@ -54,10 +54,7 @@ public class GroupMemberList extends JPanel {
         panel3.add(comboBox, BorderLayout.CENTER);
 
         // search button
-        JButton[] searchButtons = new JButton[3];
-        searchButtons[0] = new JButton("Tìm kiếm");
-        searchButtons[1] = new JButton("Danh sách thành viên");
-        searchButtons[2] = new JButton("Danh sách admin");
+        JButton searchButton = new JButton("Tìm kiếm");
 
         searchBar.setLayout(new FlowLayout(FlowLayout.LEFT));
         searchBar.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
@@ -68,10 +65,8 @@ public class GroupMemberList extends JPanel {
         searchBar.add(Box.createRigidArea(new Dimension(5, 0)));
         searchBar.add(panel3);
         searchBar.add(Box.createRigidArea(new Dimension(5, 0)));
-        for (int i = 0; i < 3; i++) {
-            searchBar.add(Box.createRigidArea(new Dimension(10, 0)));
-            searchBar.add(searchButtons[i]);
-        }
+        searchBar.add(Box.createRigidArea(new Dimension(10, 0)));
+        searchBar.add(searchButton);
 
         add(searchBar, BorderLayout.NORTH);
 
@@ -88,7 +83,7 @@ public class GroupMemberList extends JPanel {
         userListPanel.add(orderListPanel, BorderLayout.NORTH);
 
         // Add a user list to the user list part
-        String[] columns = { "Tên đăng Nhập", "Họ tên", "Địa chỉ", "Ngày sinh", "Giới tính", "Email"};
+        String[] columns = { "Tên đăng Nhập", "Họ tên", "Địa chỉ", "Ngày sinh", "Giới tính", "Email" };
 
         // Define the table data
         Object[][] data = {

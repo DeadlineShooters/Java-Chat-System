@@ -1,8 +1,11 @@
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.*;
 
 public class Sidebar extends Box {
+    List<JButton> buttons = new ArrayList<>();
     public Sidebar() {
         super(BoxLayout.Y_AXIS);
         setPreferredSize(new Dimension(256, 0));
@@ -20,11 +23,16 @@ public class Sidebar extends Box {
             button.setCursor(new Cursor(Cursor.HAND_CURSOR)); // Change cursor to hand cursor when hovering over the
                                                               // button
             add(button);
+            buttons.add(button);
 
             // Add space between buttons
             if (i < 4) {
                 add(Box.createRigidArea(new Dimension(0, 20)));
             }
         }
+    }
+
+    public JButton getButton(int index) {
+        return buttons.get(index);
     }
 }
