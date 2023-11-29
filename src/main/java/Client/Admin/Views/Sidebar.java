@@ -16,7 +16,10 @@ public class Sidebar extends Box {
         String[] menuItems = { "Danh sách người dùng", "Danh sách đăng nhập", "Danh sách nhóm chat",
                 "Danh sách báo cáo" };
         for (int i = 0; i < 4; i++) {
+            JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            panel.setOpaque(false); // panel transparent
             JButton button = new JButton(menuItems[i]);
+            button.setForeground(Color.white);
             button.setMaximumSize(new Dimension(Integer.MAX_VALUE, button.getMinimumSize().height));
             button.setFont(new Font("Nunito", Font.BOLD, 20));
             button.setBorderPainted(false);
@@ -24,7 +27,9 @@ public class Sidebar extends Box {
             button.setContentAreaFilled(false);
             button.setCursor(new Cursor(Cursor.HAND_CURSOR)); // Change cursor to hand cursor when hovering over the
                                                               // button
-            add(button);
+            panel.add(button); // Add button to the panel
+            panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, button.getPreferredSize().height)); // Set panel's maximum size to fit button
+            add(panel); // Add panel to the vertical Box
             buttons.add(button);
 
             // Add space between buttons
@@ -32,6 +37,9 @@ public class Sidebar extends Box {
                 add(Box.createRigidArea(new Dimension(0, 20)));
             }
         }
+
+        setBackground(new Color(0x36598E));
+        setOpaque(true);
     }
 
     public JButton getButton(int index) {
