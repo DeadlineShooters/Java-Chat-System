@@ -1,3 +1,5 @@
+package Client.Admin.Views;
+
 import javax.swing.*;
 import javax.swing.table.*;
 
@@ -39,15 +41,15 @@ public class Home extends JFrame {
         LoginHistory loginHistory = new LoginHistory();
 
         getContentPane().add(sidebar, BorderLayout.WEST);
-        bodyPanel.add(userList, "UserList");
-        bodyPanel.add(loginList, "LoginList");
-        bodyPanel.add(groupChatList, "GroupChatList");
-        bodyPanel.add(reportList, "ReportList");
+        bodyPanel.add(userList, "Client.Admin.Views.UserList");
+        bodyPanel.add(loginList, "Client.Admin.Views.LoginList");
+        bodyPanel.add(groupChatList, "Client.Admin.Views.GroupChatList");
+        bodyPanel.add(reportList, "Client.Admin.Views.ReportList");
         getContentPane().add(bodyPanel, BorderLayout.CENTER);
 
         // switch body panel
-        cardLayout.show(bodyPanel, "UserList");
-        String[] menuItems = { "UserList", "LoginList", "GroupChatList", "ReportList" };
+        cardLayout.show(bodyPanel, "Client.Admin.Views.UserList");
+        String[] menuItems = { "Client.Admin.Views.UserList", "Client.Admin.Views.LoginList", "Client.Admin.Views.GroupChatList", "Client.Admin.Views.ReportList" };
         for (int i = 0; i < 4; i++) {
             final int index = i;
             sidebar.getButton(i).addActionListener(new ActionListener() {
@@ -60,9 +62,5 @@ public class Home extends JFrame {
         setVisible(true);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new Home();
-        });
-    }
+
 }
