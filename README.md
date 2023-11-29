@@ -7,8 +7,8 @@
 
 ### Adding dependencies
 
-1. Search for dependency: https://central.sonatype.com/ and we get this `Apache Maven` snippet.
-   ![Alt text](image-1.png)
+1. Search for dependency: https://central.sonatype.com/ and we get this `Maven POM File` snippet.
+  ![img.png](img.png)
 2. Copy `<dependency>` block and paste into the <dependencies> section of pom.xml.
 
 ### Adding resources (i.g: .png, .jpg, etc)

@@ -61,15 +61,26 @@
                             <mainClass>Server.ServerApp</mainClass>
                         </configuration>
                     </execution>
-                <!-- run this with: mvn exec:java@client-execution -->
+                <!-- run this with: mvn exec:java@client-admin -->
                     <execution>
-                        <id>client-execution</id>
+                        <id>client-admin</id>
                         <phase>package</phase>
                         <goals>
                             <goal>java</goal>
                         </goals>
                         <configuration>
                             <mainClass>Client.Admin.AdminApp</mainClass>
+                        </configuration>
+                    </execution>
+                    <!-- run this with: mvn exec:java@client-user -->
+                    <execution>
+                        <id>client-admin</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>Client.User.UserApp</mainClass>
                         </configuration>
                     </execution>
                 </executions>
