@@ -45,6 +45,9 @@ public class Home extends JFrame {
         bodyPanel.add(loginList, "Client.Admin.Views.LoginList");
         bodyPanel.add(groupChatList, "Client.Admin.Views.GroupChatList");
         bodyPanel.add(reportList, "Client.Admin.Views.ReportList");
+        bodyPanel.add(groupMemberList, "Client.Admin.Views.GroupMemberList");
+        bodyPanel.add(friendList, "Client.Admin.Views.FriendList");
+        bodyPanel.add(loginHistory, "Client.Admin.Views.LoginHistory");
         getContentPane().add(bodyPanel, BorderLayout.CENTER);
 
         // switch body panel
@@ -59,6 +62,47 @@ public class Home extends JFrame {
                 }
             });
         }
+        userList.searchButtons[1].addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(bodyPanel, "Client.Admin.Views.LoginHistory");
+            }
+        });
+
+        userList.searchButtons[2].addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(bodyPanel, "Client.Admin.Views.FriendList");
+            }
+        });
+
+        loginHistory.returnButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(bodyPanel, "Client.Admin.Views.UserList");
+            }
+        });
+
+        friendList.returnButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(bodyPanel, "Client.Admin.Views.UserList");
+            }
+        });
+
+        groupChatList.searchButtons[1].addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(bodyPanel, "Client.Admin.Views.GroupMemberList");
+            }
+        });
+
+        groupChatList.searchButtons[2].addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(bodyPanel, "Client.Admin.Views.GroupMemberList");
+            }
+        });
+
+        groupMemberList.returnButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(bodyPanel, "Client.Admin.Views.GroupChatList");
+            }
+        });
         setVisible(true);
     }
 

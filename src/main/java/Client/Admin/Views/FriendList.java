@@ -6,11 +6,12 @@ import javax.swing.*;
 import javax.swing.table.*;
 
 public class FriendList extends JPanel {
+    JButton returnButton = new JButton("Return");
+
     public FriendList() {
         setLayout(new BorderLayout());
         setBackground(Color.white);
 
-        JButton returnButton = new JButton("Return");
         returnButton.addActionListener(e -> {
             // Add your return logic here
         });
@@ -18,7 +19,6 @@ public class FriendList extends JPanel {
         // Add the return button to the top left corner
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(returnButton, BorderLayout.WEST);
-        add(topPanel, BorderLayout.NORTH);
 
         // Add a search bar to the body part
         JPanel searchBar = new JPanel();
@@ -30,7 +30,7 @@ public class FriendList extends JPanel {
 
         // Label and text field 1
         JPanel panel1 = new JPanel(new BorderLayout());
-        JLabel label1 = new JLabel("Tên người dùng");
+        JLabel label1 = new JLabel("Name");
         label1.setBackground(Color.white);
         label1.setOpaque(true);
         JTextField textField1 = new JTextField(16);
@@ -39,7 +39,7 @@ public class FriendList extends JPanel {
 
         // Label and text field 2
         JPanel panel2 = new JPanel(new BorderLayout());
-        JLabel label2 = new JLabel("Tên đăng nhập");
+        JLabel label2 = new JLabel("Username");
         label2.setBackground(Color.white);
         label2.setOpaque(true);
         JTextField textField2 = new JTextField(16);
@@ -48,15 +48,15 @@ public class FriendList extends JPanel {
 
         // Label and combo box
         JPanel panel3 = new JPanel(new BorderLayout());
-        JLabel label3 = new JLabel("Trạng thái");
+        JLabel label3 = new JLabel("Status");
         label3.setBackground(Color.white);
         label3.setOpaque(true);
-        JComboBox<String> comboBox = new JComboBox<>(new String[] { "Hoạt động", "Tạm vắng", "Ngoại tuyến" });
+        JComboBox<String> comboBox = new JComboBox<>(new String[] { "Online", "Absent", "Offline" });
         panel3.add(label3, BorderLayout.NORTH);
         panel3.add(comboBox, BorderLayout.CENTER);
 
         // search button
-        JButton searchButton = new JButton("Tìm kiếm");
+        JButton searchButton = new JButton("Search");
 
         searchBar.setLayout(new FlowLayout(FlowLayout.LEFT));
         searchBar.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
@@ -70,13 +70,17 @@ public class FriendList extends JPanel {
         searchBar.add(Box.createRigidArea(new Dimension(10, 0)));
         searchBar.add(searchButton);
 
-        add(searchBar, BorderLayout.NORTH);
+        JPanel northPanel = new JPanel();
+        northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
+        northPanel.add(topPanel);
+        northPanel.add(searchBar);
+        add(northPanel, BorderLayout.NORTH);
 
         // Add an order list to the top right of the user list part
         JPanel userListPanel = new JPanel(new BorderLayout());
         JPanel orderListPanel = new JPanel();
         orderListPanel.setLayout(new BoxLayout(orderListPanel, BoxLayout.X_AXIS));
-        JComboBox<String> orderList = new JComboBox<>(new String[] { "Sắp xếp theo tên", "Sắp xếp theo ngày tạo" });
+        JComboBox<String> orderList = new JComboBox<>(new String[] { "Sort by name", "Sort by created time" });
         orderList.setMaximumSize(orderList.getPreferredSize()); // This will make the JComboBox not stretch
         orderListPanel.add(Box.createHorizontalGlue()); // This will push the JComboBox to the right
         orderListPanel.add(orderList);
@@ -85,7 +89,7 @@ public class FriendList extends JPanel {
         userListPanel.add(orderListPanel, BorderLayout.NORTH);
 
         // Add a user list to the user list part
-        String[] columns = { "Tên đăng Nhập", "Họ tên", "Địa chỉ", "Ngày sinh", "Giới tính", "Email" };
+        String[] columns = { "Username", "Name", "Address", "Day of birth", "Gender", "Email" };
 
         // Define the table data
         Object[][] data = {
@@ -123,3 +127,4 @@ public class FriendList extends JPanel {
         add(userListPanel, BorderLayout.CENTER);
     }
 }
+

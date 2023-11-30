@@ -3,7 +3,6 @@ package Client.Admin.Views;
 import java.awt.*;
 
 import javax.swing.*;
-import javax.swing.event.*;
 import javax.swing.table.*;
 
 public class ReportList extends JPanel {
@@ -21,7 +20,7 @@ public class ReportList extends JPanel {
 
         // Label and text field 1
         JPanel panel1 = new JPanel(new BorderLayout());
-        JLabel label1 = new JLabel("Tên người gửi");
+        JLabel label1 = new JLabel("Reporter");
         label1.setBackground(Color.white);
         label1.setOpaque(true);
         JTextField textField1 = new JTextField(16);
@@ -30,7 +29,7 @@ public class ReportList extends JPanel {
 
         // Label and text field 2
         JPanel panel2 = new JPanel(new BorderLayout());
-        JLabel label2 = new JLabel("Tên người bị báo cáo");
+        JLabel label2 = new JLabel("Reported user");
         label2.setBackground(Color.white);
         label2.setOpaque(true);
         JTextField textField2 = new JTextField(16);
@@ -38,10 +37,7 @@ public class ReportList extends JPanel {
         panel2.add(textField2, BorderLayout.CENTER);
 
         // search button
-        JButton[] searchButtons = new JButton[3];
-        searchButtons[0] = new JButton("Tìm kiếm");
-        searchButtons[1] = new JButton("Danh sách thành viên");
-        searchButtons[2] = new JButton("Danh sách admin");
+        JButton searchButton = new JButton("Search");
 
         searchBar.setLayout(new FlowLayout(FlowLayout.LEFT));
         searchBar.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
@@ -50,13 +46,8 @@ public class ReportList extends JPanel {
         searchBar.add(Box.createRigidArea(new Dimension(5, 0)));
         searchBar.add(panel2);
         searchBar.add(Box.createRigidArea(new Dimension(5, 0)));
-        for (int i = 0; i < 3; i++) {
-            searchBar.add(Box.createRigidArea(new Dimension(10, 0)));
-            searchBar.add(searchButtons[i]);
-            if (i > 0) {
-                searchButtons[i].setVisible(false);
-            }
-        }
+        searchBar.add(Box.createRigidArea(new Dimension(10, 0)));
+        searchBar.add(searchButton);
 
         add(searchBar, BorderLayout.NORTH);
 
@@ -64,7 +55,7 @@ public class ReportList extends JPanel {
         JPanel userListPanel = new JPanel(new BorderLayout());
         JPanel orderListPanel = new JPanel();
         orderListPanel.setLayout(new BoxLayout(orderListPanel, BoxLayout.X_AXIS));
-        JComboBox<String> orderList = new JComboBox<>(new String[] { "Sắp xếp theo tên", "Sắp xếp theo ngày tạo" });
+        JComboBox<String> orderList = new JComboBox<>(new String[] { "Sort by name", "Sort by created time" });
         orderList.setMaximumSize(orderList.getPreferredSize()); // This will make the JComboBox not stretch
         orderListPanel.add(Box.createHorizontalGlue()); // This will push the JComboBox to the right
         orderListPanel.add(orderList);
@@ -73,13 +64,13 @@ public class ReportList extends JPanel {
         userListPanel.add(orderListPanel, BorderLayout.NORTH);
 
         // Add a user list to the user list part
-        String[] columns = { "Tên người gửi", "Tên người bị báo cáo", "Thời gian tạo", "Actions" };
+        String[] columns = { "Reporter", "Reported user", "Created at", "Actions" };
 
         // Define the table data
         Object[][] data = {
-                { "Nguyễn Văn A", "Nguyễn Văn D", "2001-01-01 01:01:01", "Khóa tài khoản" },
-                { "Nguyễn Văn B", "Nguyễn Văn E", "2001-01-01 01:01:01", "Khóa tài khoản"  },
-                { "Nguyễn Văn C", "Nguyễn Văn F", "2001-01-01 01:01:01", "Khóa tài khoản"  },
+                { "Nguyễn Văn A", "Nguyễn Văn D", "2001-01-01 01:01:01", "Lock account" },
+                { "Nguyễn Văn B", "Nguyễn Văn E", "2001-01-01 01:01:01", "Lock account" },
+                { "Nguyễn Văn C", "Nguyễn Văn F", "2001-01-01 01:01:01", "Lock account" },
         };
 
         // Create a new DefaultTableModel instance
@@ -92,7 +83,7 @@ public class ReportList extends JPanel {
 
         // Create a new JTable instance
         JTable table = new JTable(model);
-        
+
         // Set a custom renderer and editor for the last column
         table.getColumnModel().getColumn(3).setCellRenderer(new MultiButtonRenderer());
 
@@ -107,21 +98,6 @@ public class ReportList extends JPanel {
 
         // Add the user list part to the body part
         add(userListPanel, BorderLayout.CENTER);
-
-        // Add a list selection listener to the table
-        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent event) {
-                if (!event.getValueIsAdjusting() && table.getSelectedRow() != -1) {
-                    for (int i = 1; i < 3; i++) {
-                        searchButtons[i].setVisible(true);
-                    }
-                } else {
-                    // No row is selected, hide the button
-                    for (int i = 1; i < 3; i++) {
-                        searchButtons[i].setVisible(false);
-                    }
-                }
-            }
-        });
     }
 }
+
