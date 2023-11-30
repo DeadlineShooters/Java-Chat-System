@@ -1,2 +1,5 @@
+Client\Admin\Views\UserList$2.class
+Client\Admin\Views\UserList$1.class
+Client\Admin\Views\MultiButtonRenderer.class
 Server\ServerApp.class
-Client\ClientApp.class
+Client\Admin\Views\UserList.class
