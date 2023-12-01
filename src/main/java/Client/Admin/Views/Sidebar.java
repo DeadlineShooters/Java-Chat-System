@@ -14,23 +14,28 @@ public class Sidebar extends Box {
 //        setPreferredSize(new Dimension(200, 0));
 //        setBackground(Color.gray);
         add(Box.createRigidArea(new Dimension(0, 10)));
-        String[] menuItems = {"Danh sách người dùng", "Danh sách đăng nhập", "Danh sách nhóm chat",
-                "Danh sách báo cáo", "Manage Active Users"};
+        String[] menuItems = { "User list", "Login list", "Group chat list",
+                "Report list" };
+        String[] icons = {"user.png", "login.png", "groupchat.png", "report.png"};
         for (int i = 0; i < 4; i++) {
             JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             panel.setOpaque(false); // panel transparent
             JButton button = new JButton(menuItems[i]);
             button.setForeground(Color.white);
             button.setMaximumSize(new Dimension(Integer.MAX_VALUE, button.getMinimumSize().height));
-            button.setFont(new Font("Nunito", Font.BOLD, 18));
+            button.setFont(new Font("Segoe UI Variable Text", Font.BOLD, 20));
             button.setBorderPainted(false);
             button.setFocusPainted(false);
             button.setContentAreaFilled(false);
             button.setCursor(new Cursor(Cursor.HAND_CURSOR)); // Change cursor to hand cursor when hovering over the
-            // button
-            panel.add(button); // Add button to the panel
-            panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, button.getPreferredSize().height)); // Set panel's maximum size to fit button
-            add(panel); // Add panel to the vertical Box
+                                                              // button
+            button.setHorizontalAlignment(SwingConstants.LEFT); // Align text to the left
+            ImageIcon icon = new ImageIcon("/resources/image/" + icons[i]);
+            Image img = icon.getImage().getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH);
+            icon = new ImageIcon(img);
+            button.setIcon(icon);
+            button.setIconTextGap(16);
+            add(button);
             buttons.add(button);
 
             // Add space between buttons
@@ -47,3 +52,4 @@ public class Sidebar extends Box {
         return buttons.get(index);
     }
 }
+

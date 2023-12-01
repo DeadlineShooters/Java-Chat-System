@@ -12,6 +12,11 @@ public class UserList extends JPanel{
     public UserList(){
 
 
+public class UserList extends JPanel {
+    // search button
+    public JButton[] searchButtons = new JButton[4];
+    
+    public UserList() {
         setLayout(new BorderLayout());
         // Add a search bar to the body part
         JPanel searchBar = new JPanel();
@@ -23,7 +28,7 @@ public class UserList extends JPanel{
 
         // Label and text field 1
         JPanel panel1 = new JPanel(new BorderLayout());
-        JLabel label1 = new JLabel("Tên người dùng");
+        JLabel label1 = new JLabel("Name");
         label1.setBackground(Color.white);
         label1.setOpaque(true);
         JTextField textField1 = new JTextField(16);
@@ -32,7 +37,7 @@ public class UserList extends JPanel{
 
         // Label and text field 2
         JPanel panel2 = new JPanel(new BorderLayout());
-        JLabel label2 = new JLabel("Tên đăng nhập");
+        JLabel label2 = new JLabel("Username");
         label2.setBackground(Color.white);
         label2.setOpaque(true);
         JTextField textField2 = new JTextField(16);
@@ -41,19 +46,17 @@ public class UserList extends JPanel{
 
         // Label and combo box
         JPanel panel3 = new JPanel(new BorderLayout());
-        JLabel label3 = new JLabel("Trạng thái");
+        JLabel label3 = new JLabel("Status");
         label3.setBackground(Color.white);
         label3.setOpaque(true);
-        JComboBox<String> comboBox = new JComboBox<>(new String[] { "Hoạt động", "Tạm vắng", "Ngoại tuyến" });
+        JComboBox<String> comboBox = new JComboBox<>(new String[] { "Online", "Absent", "Offline" });
         panel3.add(label3, BorderLayout.NORTH);
         panel3.add(comboBox, BorderLayout.CENTER);
 
-        // search button
-        JButton[] searchButtons = new JButton[4];
-        searchButtons[0] = new JButton("Tìm kiếm");
-        searchButtons[1] = new JButton("Lịch sử đăng nhập");
-        searchButtons[2] = new JButton("Danh sách bạn bè");
-        searchButtons[3] = new JButton("Khóa tài khoản");
+        searchButtons[0] = new JButton("Search");
+        searchButtons[1] = new JButton("Login history");
+        searchButtons[2] = new JButton("Friend list");
+        searchButtons[3] = new JButton("Lock account");
 
         searchBar.setLayout(new FlowLayout(FlowLayout.LEFT));
         searchBar.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
@@ -76,9 +79,8 @@ public class UserList extends JPanel{
         // Add an order list to the top right of the user list part
         JPanel userListPanel = new JPanel(new BorderLayout());
         JPanel orderListPanel = new JPanel();
-        orderListPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-
-        JComboBox<String> orderList = new JComboBox<>(new String[] { "Sắp xếp theo tên", "Sắp xếp theo ngày tạo" });
+        orderListPanel.setLayout(new BoxLayout(orderListPanel, BoxLayout.X_AXIS));
+        JComboBox<String> orderList = new JComboBox<>(new String[] { "Sort by name", "Sort by created time" });
         orderList.setMaximumSize(orderList.getPreferredSize()); // This will make the JComboBox not stretch
 
 //        orderListPanel.add(Box.createHorizontalGlue()); // This will push the JComboBox to the right
@@ -111,7 +113,7 @@ public class UserList extends JPanel{
         userListPanel.add(orderListPanel, BorderLayout.NORTH);
 
         // Add a user list to the user list part
-        String[] columns = { "Tên đăng Nhập", "Họ tên", "Địa chỉ", "Ngày sinh", "Giới tính", "Email", "Actions" };
+        String[] columns = { "Username", "Name", "Address", "Day of birth", "Gender", "Email", "Actions" };
 
         // Define the table data
 
@@ -175,5 +177,23 @@ public class UserList extends JPanel{
         tableScrollPane.setOpaque(true);
         userListPanel.add(tableScrollPane, BorderLayout.CENTER);
         add(userListPanel, BorderLayout.CENTER);
+
+        // Add a list selection listener to the table
+        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent event) {
+                if (!event.getValueIsAdjusting() && table.getSelectedRow() != -1) {
+                    for (int i = 1; i < 4; i++) {
+                        searchButtons[i].setVisible(true);
+                    }
+                // } else {
+                //     // No row is selected, hide the button
+                //     for (int i = 1; i < 4; i++) {
+                //         searchButtons[i].setVisible(false);
+                //     }
+                }
+            }
+        });
     }
+
 }
+

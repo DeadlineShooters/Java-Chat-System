@@ -7,6 +7,10 @@ import javax.swing.event.*;
 import javax.swing.table.*;
 
 public class GroupChatList extends JPanel {
+
+    // search button
+    public JButton[] searchButtons = new JButton[3];
+
     public GroupChatList() {
         setLayout(new BorderLayout());
         setBackground(Color.white);
@@ -21,7 +25,7 @@ public class GroupChatList extends JPanel {
 
         // Label and text field 1
         JPanel panel1 = new JPanel(new BorderLayout());
-        JLabel label1 = new JLabel("Tên nhóm chat");
+        JLabel label1 = new JLabel("Group chat name");
         label1.setBackground(Color.white);
         label1.setOpaque(true);
         JTextField textField1 = new JTextField(16);
@@ -29,10 +33,9 @@ public class GroupChatList extends JPanel {
         panel1.add(textField1, BorderLayout.CENTER);
 
         // search button
-        JButton[] searchButtons = new JButton[3];
-        searchButtons[0] = new JButton("Tìm kiếm");
-        searchButtons[1] = new JButton("Danh sách thành viên");
-        searchButtons[2] = new JButton("Danh sách admin");
+        searchButtons[0] = new JButton("Search");
+        searchButtons[1] = new JButton("Member list");
+        searchButtons[2] = new JButton("Admin list");
 
         searchBar.setLayout(new FlowLayout(FlowLayout.LEFT));
         searchBar.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
@@ -53,7 +56,7 @@ public class GroupChatList extends JPanel {
         JPanel userListPanel = new JPanel(new BorderLayout());
         JPanel orderListPanel = new JPanel();
         orderListPanel.setLayout(new BoxLayout(orderListPanel, BoxLayout.X_AXIS));
-        JComboBox<String> orderList = new JComboBox<>(new String[] { "Sắp xếp theo tên", "Sắp xếp theo ngày tạo" });
+        JComboBox<String> orderList = new JComboBox<>(new String[] { "Sort by name", "Sort by created time" });
         orderList.setMaximumSize(orderList.getPreferredSize()); // This will make the JComboBox not stretch
         orderListPanel.add(Box.createHorizontalGlue()); // This will push the JComboBox to the right
         orderListPanel.add(orderList);
@@ -62,7 +65,7 @@ public class GroupChatList extends JPanel {
         userListPanel.add(orderListPanel, BorderLayout.NORTH);
 
         // Add a user list to the user list part
-        String[] columns = { "Tên nhóm", "Thời gian tạo" };
+        String[] columns = { "Group chat name", "Created at" };
 
         // Define the table data
         Object[][] data = {
@@ -99,13 +102,14 @@ public class GroupChatList extends JPanel {
                     for (int i = 1; i < 3; i++) {
                         searchButtons[i].setVisible(true);
                     }
-                } else {
-                    // No row is selected, hide the button
-                    for (int i = 1; i < 3; i++) {
-                        searchButtons[i].setVisible(false);
-                    }
+                // } else {
+                //     // No row is selected, hide the button
+                //     for (int i = 1; i < 3; i++) {
+                //         searchButtons[i].setVisible(false);
+                //     }
                 }
             }
         });
     }
 }
+
