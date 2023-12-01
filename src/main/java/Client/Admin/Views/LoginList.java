@@ -14,7 +14,7 @@ public class LoginList extends JPanel {
         JPanel userListPanel = new JPanel(new BorderLayout());
 
         // Add a user list to the user list part
-        String[] columns = { "Thời gian", "Tên đăng nhập", "Họ tên" };
+        String[] columns = { "Login time", "Username", "Name" };
 
         // Define the table data
         Object[][] data = {
@@ -46,3 +46,4 @@ public class LoginList extends JPanel {
         add(userListPanel, BorderLayout.CENTER);
     }
 }
+

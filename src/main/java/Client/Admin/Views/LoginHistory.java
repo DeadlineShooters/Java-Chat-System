@@ -5,11 +5,11 @@ import javax.swing.*;
 import javax.swing.table.*;
 
 public class LoginHistory extends JPanel {
+    public JButton returnButton = new JButton("Return");
     public LoginHistory() {
         setLayout(new BorderLayout());
         setBackground(Color.white);
 
-        JButton returnButton = new JButton("Return");
         returnButton.addActionListener(e -> {
             // Add your return logic here
         });
@@ -23,7 +23,7 @@ public class LoginHistory extends JPanel {
         JPanel userListPanel = new JPanel(new BorderLayout());
 
         // Add a user list to the user list part
-        String[] columns = { "Thời gian đăng nhập", "Thời gian đăng xuất", "Thiết bị" };
+        String[] columns = { "Login time", "Logout time", "Device" };
 
         // Define the table data
         Object[][] data = {
@@ -55,3 +55,4 @@ public class LoginHistory extends JPanel {
         add(userListPanel, BorderLayout.CENTER);
     }
 }
+
