@@ -19,13 +19,15 @@ import org.jdesktop.swingx.JXDatePicker;
 
 
 public class UserManagement extends JPanel {
+    LineChart lineChart = new LineChart();
+    UserList userList = new UserList();
     public UserManagement() {
         setBackground(new Color(0xECEDEF));
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
         // -------- Add chart ---------
-        LineChart lineChart = new LineChart();
+
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 1;
@@ -35,11 +37,15 @@ public class UserManagement extends JPanel {
 
         JPanel listPanel = new JPanel(new BorderLayout());
         listPanel.setBackground(Color.white);
-        UserList userList = new UserList();
+
         listPanel.add(userList, BorderLayout.CENTER);
 
         gbc.gridy = 1;
         gbc.weighty = 0.3; // listPanel takes less height
         add(listPanel, gbc);
+    }
+
+    public UserList getUserList() {
+        return userList;
     }
 }

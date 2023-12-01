@@ -3,13 +3,12 @@ package Client.Admin.Views.Components;
 import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-
-public class UserList extends JPanel{
-    public UserList(){
 
 
 public class UserList extends JPanel {
