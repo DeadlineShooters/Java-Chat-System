@@ -50,13 +50,13 @@ public class Home extends JFrame {
                 }
             });
         }
-        userList.searchButtons[1].addActionListener(new ActionListener() {
+        userManagement.getUserList().searchButtons[1].addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 cardLayout.show(bodyPanel, "Client.Admin.Views.LoginHistory");
             }
         });
 
-        userList.searchButtons[2].addActionListener(new ActionListener() {
+        userManagement.getUserList().searchButtons[2].addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 cardLayout.show(bodyPanel, "Client.Admin.Views.FriendList");
             }
