@@ -18,9 +18,17 @@ public class LoginList extends JPanel {
 
         // Define the table data
         Object[][] data = {
-                { "2001-01-01 01:01:01", "HTVinh", "Huynh Tan Vinh" },
-                { "2001-01-01 01:01:01", "TAKhoi", "Tran Anh Khoi" },
-                { "2001-01-01 01:01:01", "TAKhoi", "Tran Anh Khoi" }
+                { "2013-01-01 01:01:01", "TuanTu", "Pham Tran Tuan Tu" },
+                { "2013-01-01 01:01:01", "TuanTu", "Pham Tran Tuan Tu" },
+                { "2013-01-01 01:01:01", "TuanTu", "Pham Tran Tuan Tu" },
+                { "2013-01-01 01:01:01", "TuanTu", "Pham Tran Tuan Tu" },
+                { "2013-01-01 01:01:01", "TuanTu", "Pham Tran Tuan Tu" },
+                { "2013-01-01 01:01:01", "TuanTu", "Pham Tran Tuan Tu" },
+                { "2013-01-01 01:01:01", "TuanTu", "Pham Tran Tuan Tu" },
+                { "2013-01-01 01:01:01", "TuanTu", "Pham Tran Tuan Tu" },
+                { "2013-01-01 01:01:01", "TuanTu", "Pham Tran Tuan Tu" },
+                { "2013-01-01 01:01:01", "TuanTu", "Pham Tran Tuan Tu" },
+                { "2013-01-01 01:01:01", "TuanTu", "Pham Tran Tuan Tu" },
         };
 
         // Create a new DefaultTableModel instance

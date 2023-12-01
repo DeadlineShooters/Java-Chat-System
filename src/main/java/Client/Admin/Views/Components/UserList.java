@@ -1,16 +1,18 @@
-package Client.Admin.Views;
+package Client.Admin.Views.Components;
 
-import java.awt.*;
+import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
-public class UserList extends JPanel {
-    public UserList() {
+public class UserList extends JPanel{
+    public UserList(){
+
+
         setLayout(new BorderLayout());
-        setBackground(Color.white);
-
         // Add a search bar to the body part
         JPanel searchBar = new JPanel();
         searchBar.setBackground(Color.white); // Change to the color you want
@@ -74,11 +76,36 @@ public class UserList extends JPanel {
         // Add an order list to the top right of the user list part
         JPanel userListPanel = new JPanel(new BorderLayout());
         JPanel orderListPanel = new JPanel();
-        orderListPanel.setLayout(new BoxLayout(orderListPanel, BoxLayout.X_AXIS));
+        orderListPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+
         JComboBox<String> orderList = new JComboBox<>(new String[] { "Sắp xếp theo tên", "Sắp xếp theo ngày tạo" });
         orderList.setMaximumSize(orderList.getPreferredSize()); // This will make the JComboBox not stretch
-        orderListPanel.add(Box.createHorizontalGlue()); // This will push the JComboBox to the right
+
+//        orderListPanel.add(Box.createHorizontalGlue()); // This will push the JComboBox to the right
+
+        // date picker for new registration find
+        for (int i = 0; i < 2; ++i){
+            JPanel datePanel = new JPanel();
+
+            JXDatePicker picker = new JXDatePicker();
+            picker.setDate(Calendar.getInstance().getTime());
+            picker.setFormats(new SimpleDateFormat("dd.MM.yyyy"));
+
+            datePanel.add(picker);
+
+            orderListPanel.add(datePanel);
+
+            if (i == 0){
+                JLabel toText = new JLabel("to");
+                orderListPanel.add(toText);
+            }
+            datePanel.setBackground(Color.white);
+            datePanel.setOpaque(true);
+
+        }
+
         orderListPanel.add(orderList);
+        orderListPanel.setBackground(Color.white);
 
         // Add the order list panel to the user list part
         userListPanel.add(orderListPanel, BorderLayout.NORTH);
@@ -87,13 +114,32 @@ public class UserList extends JPanel {
         String[] columns = { "Tên đăng Nhập", "Họ tên", "Địa chỉ", "Ngày sinh", "Giới tính", "Email", "Actions" };
 
         // Define the table data
+
         Object[][] data = {
-                { "HTVinh", "Huynh Tan Vinh", "135 Tran Hung Dao, Q1, TP Ho Chi Minh", "01/01/1111", "Nam",
-                        "htvinh201@gmail.com", "Update, Delete" },
-                { "TAKhoi", "Tran Anh Khoi", "135 Tran Hung Dao, Q1, TP Ho Chi Minh", "01/01/1111", "Nam",
-                        "takhoi@gmail.com", "Update, Delete" },
-                { "TAKhoi", "Tran Anh Khoi", "135 Tran Hung Dao, Q1, TP Ho Chi Minh", "01/01/1111", "Nam",
-                        "takhoi@gmail.com", "Update, Delete" }
+                { "TuanTu", "Pham Tran Tuan Tu", "34 Nguyen Dinh Chieu, Q1, TP Ho Chi Minh", "05/01/2003", "Nam",
+                        "pttuantu@gmail.com", "Update, Delete" },
+                { "TuanTu", "Pham Tran Tuan Tu", "34 Nguyen Dinh Chieu, Q1, TP Ho Chi Minh", "05/01/2003", "Nam",
+                        "pttuantu@gmail.com", "Update, Delete" },
+                { "TuanTu", "Pham Tran Tuan Tu", "34 Nguyen Dinh Chieu, Q1, TP Ho Chi Minh", "05/01/2003", "Nam",
+                "pttuantu@gmail.com", "Update, Delete" },
+                { "TuanTu", "Pham Tran Tuan Tu", "34 Nguyen Dinh Chieu, Q1, TP Ho Chi Minh", "05/01/2003", "Nam",
+                        "pttuantu@gmail.com", "Update, Delete" },
+                { "TuanTu", "Pham Tran Tuan Tu", "34 Nguyen Dinh Chieu, Q1, TP Ho Chi Minh", "05/01/2003", "Nam",
+                        "pttuantu@gmail.com", "Update, Delete" },
+                { "TuanTu", "Pham Tran Tuan Tu", "34 Nguyen Dinh Chieu, Q1, TP Ho Chi Minh", "05/01/2003", "Nam",
+                        "pttuantu@gmail.com", "Update, Delete" },
+                { "TuanTu", "Pham Tran Tuan Tu", "34 Nguyen Dinh Chieu, Q1, TP Ho Chi Minh", "05/01/2003", "Nam",
+                        "pttuantu@gmail.com", "Update, Delete" },
+                { "TuanTu", "Pham Tran Tuan Tu", "34 Nguyen Dinh Chieu, Q1, TP Ho Chi Minh", "05/01/2003", "Nam",
+                        "pttuantu@gmail.com", "Update, Delete" },
+                { "TuanTu", "Pham Tran Tuan Tu", "34 Nguyen Dinh Chieu, Q1, TP Ho Chi Minh", "05/01/2003", "Nam",
+                        "pttuantu@gmail.com", "Update, Delete" },
+                { "TuanTu", "Pham Tran Tuan Tu", "34 Nguyen Dinh Chieu, Q1, TP Ho Chi Minh", "05/01/2003", "Nam",
+                        "pttuantu@gmail.com", "Update, Delete" },
+                { "TuanTu", "Pham Tran Tuan Tu", "34 Nguyen Dinh Chieu, Q1, TP Ho Chi Minh", "05/01/2003", "Nam",
+                        "pttuantu@gmail.com", "Update, Delete" },
+                { "TuanTu", "Pham Tran Tuan Tu", "34 Nguyen Dinh Chieu, Q1, TP Ho Chi Minh", "05/01/2003", "Nam",
+                        "pttuantu@gmail.com", "Update, Delete" },
         };
 
         // Create a new DefaultTableModel instance
@@ -106,6 +152,7 @@ public class UserList extends JPanel {
 
         // Create a new JTable instance
         JTable table = new JTable(model);
+        userListPanel.setBackground(Color.white);
 
         // Set a custom renderer and editor for the last column
         table.getColumnModel().getColumn(6).setCellRenderer(new MultiButtonRenderer());
@@ -120,25 +167,13 @@ public class UserList extends JPanel {
         table.getColumnModel().getColumn(6).setPreferredWidth(140); // "Actions"
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
-        userListPanel.add(new JScrollPane(table), BorderLayout.CENTER);
+        table.setBackground(Color.white);
+        table.setOpaque(true);
+        JScrollPane tableScrollPane = new JScrollPane(table);
 
-        // Add the user list part to the body part
+        tableScrollPane.setBackground(Color.white);
+        tableScrollPane.setOpaque(true);
+        userListPanel.add(tableScrollPane, BorderLayout.CENTER);
         add(userListPanel, BorderLayout.CENTER);
-
-        // Add a list selection listener to the table
-        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent event) {
-                if (!event.getValueIsAdjusting() && table.getSelectedRow() != -1) {
-                    for (int i = 1; i < 4; i++) {
-                        searchButtons[i].setVisible(true);
-                    }
-                } else {
-                    // No row is selected, hide the button
-                    for (int i = 1; i < 4; i++) {
-                        searchButtons[i].setVisible(false);
-                    }
-                }
-            }
-        });
     }
 }

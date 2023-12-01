@@ -28,8 +28,11 @@ In **powershell**:
 
 - Run Server:
   `.\mvnw exec:java`
-- Run Client:
-  `.\mvnw exec:java@client-execution`
+- Run Admin:
+  `.\mvnw exec:java@client-admin`
+- Run User:
+  `.\mvnw exec:java@client-user`
+- Run All: `.\mvnw package`
 
 ### Output
 
