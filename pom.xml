@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.springframework</groupId>
@@ -13,10 +13,10 @@
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
 
- <dependencies>
+    <dependencies>
         <!-- Other dependencies ... -->
 
-       
+
         <!-- MongoDB driver -->
         <dependency>
             <groupId>org.mongodb</groupId>
@@ -30,7 +30,23 @@
             <version>2.0.9</version>
         </dependency>
 
-      
+        <!-- Date picker -->
+        <dependency>
+            <groupId>no.tornado.databinding</groupId>
+            <artifactId>databinding</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.swinglabs</groupId>
+            <artifactId>swingx</artifactId>
+            <version>1.6</version>
+        </dependency>
+        <!--        chart -->
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>1.5.3</version>
+        </dependency>
     </dependencies>
 
 
@@ -44,13 +60,13 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
-             <!-- plugin for execution -->
-             <plugin>
+            <!-- plugin for execution -->
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.4.0</version>
                 <executions>
-                <!-- this one is run by default when calling mvn exec:java -->
+                    <!-- this one is run by default when calling mvn exec:java -->
                     <execution>
                         <id>default-cli</id>
                         <phase>package</phase>
@@ -84,7 +100,7 @@
                         </configuration>
                     </execution>
                 </executions>
-                
+
             </plugin>
         </plugins>
         <resources>
@@ -92,7 +108,7 @@
                 <directory>src/main/Resources</directory>
                 <filtering>true</filtering>
             </resource>
-        <!-- Other resource configurations -->
+            <!-- Other resource configurations -->
         </resources>
     </build>
 </project>

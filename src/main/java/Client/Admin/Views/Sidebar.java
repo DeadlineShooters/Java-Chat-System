@@ -23,7 +23,7 @@ public class Sidebar extends Box {
             JButton button = new JButton(menuItems[i]);
             button.setForeground(Color.white);
             button.setMaximumSize(new Dimension(Integer.MAX_VALUE, button.getMinimumSize().height));
-            button.setFont(new Font("Segoe UI Variable Text", Font.BOLD, 20));
+            button.setFont(new Font("Segoe UI Variable Text", Font.BOLD, 18));
             button.setBorderPainted(false);
             button.setFocusPainted(false);
             button.setContentAreaFilled(false);

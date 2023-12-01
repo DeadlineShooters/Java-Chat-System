@@ -1,5 +1,7 @@
 package Client.Admin.Views;
 
+import Client.Admin.Views.Components.UserList;
+
 import javax.swing.*;
 import javax.swing.table.*;
 
@@ -7,32 +9,18 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-class MultiButtonRenderer extends DefaultTableCellRenderer {
-    @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-            int row, int column) {
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(1, 0)); // Set the layout to GridLayout
-        String[] buttons = ((String) value).split(", ");
-        for (String buttonText : buttons) {
-            JButton button = new JButton(buttonText);
-            panel.add(button);
-        }
-        return panel;
-    }
-}
-
 public class Home extends JFrame {
     CardLayout cardLayout = new CardLayout();
     JPanel bodyPanel = new JPanel(cardLayout);
 
     public Home() {
+        getContentPane().setBackground(Color.gray);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1280, 720);
         setLocationRelativeTo(null);
 
         Sidebar sidebar = new Sidebar();
-        UserList userList = new UserList();
+        UserManagement userManagement = new UserManagement();
         LoginList loginList = new LoginList();
         GroupChatList groupChatList = new GroupChatList();
         GroupMemberList groupMemberList = new GroupMemberList();
@@ -41,7 +29,7 @@ public class Home extends JFrame {
         LoginHistory loginHistory = new LoginHistory();
 
         getContentPane().add(sidebar, BorderLayout.WEST);
-        bodyPanel.add(userList, "Client.Admin.Views.UserList");
+        bodyPanel.add(userManagement, "Client.Admin.Views.UserList");
         bodyPanel.add(loginList, "Client.Admin.Views.LoginList");
         bodyPanel.add(groupChatList, "Client.Admin.Views.GroupChatList");
         bodyPanel.add(reportList, "Client.Admin.Views.ReportList");
@@ -108,5 +96,3 @@ public class Home extends JFrame {
 
 
 }
-
-
