@@ -4,6 +4,7 @@ import java.awt.*;
 
 import javax.swing.*;
 
+import Client.Admin.Views.Components.ActiveUserList;
 import Client.Admin.Views.Components.LineChart;
 
 public class ActiveUserScreen extends JPanel {

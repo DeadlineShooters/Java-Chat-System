@@ -6,12 +6,13 @@ Client\Admin\Views\LoginHistory.class
 Client\Admin\Views\Home$4.class
 Client\Admin\Views\Components\LineChart.class
 Client\Admin\Views\LoginList$1.class
+Client\Admin\Views\Components\ActiveUserList.class
 Client\Admin\Views\ReportList.class
 Client\Admin\Views\LoginList.class
 Client\Admin\Views\Sidebar.class
+Client\Admin\Views\Components\ActiveUserList$1.class
 Client\Admin\Views\Components\UserList$1.class
 Client\Admin\Views\FriendList.class
-Client\Admin\Views\ActiveUserList.class
 Client\Admin\Views\Home$1.class
 Client\Admin\Views\Home.class
 Client\Admin\Views\Home$6.class
@@ -30,4 +31,5 @@ Client\Admin\Views\Home$7.class
 Client\Admin\Views\FriendList$1.class
 Client\Admin\Views\Components\MultiButtonRenderer.class
 Client\Admin\Views\Home$2.class
+Client\Admin\Views\Components\ActiveUserList$2.class
 Client\Admin\Views\GroupChatList.class
