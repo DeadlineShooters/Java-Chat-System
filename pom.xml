@@ -74,7 +74,7 @@
                     </execution>
                     <!-- run this with: mvn exec:java@client-user -->
                     <execution>
-                        <id>client-admin</id>
+                        <id>client-user</id>
                         <phase>package</phase>
                         <goals>
                             <goal>java</goal>

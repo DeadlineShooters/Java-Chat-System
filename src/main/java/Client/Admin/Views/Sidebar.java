@@ -27,7 +27,7 @@ public class Sidebar extends Box {
             button.setCursor(new Cursor(Cursor.HAND_CURSOR)); // Change cursor to hand cursor when hovering over the
                                                               // button
             button.setHorizontalAlignment(SwingConstants.LEFT); // Align text to the left
-            ImageIcon icon = new ImageIcon("/resources/image/" + icons[i]);
+            ImageIcon icon = new ImageIcon(getClass().getResource("/Image/" + icons[i]));
             Image img = icon.getImage().getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH);
             icon = new ImageIcon(img);
             button.setIcon(icon);
