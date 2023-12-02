@@ -91,6 +91,8 @@ public class UserList extends JPanel {
         // date picker for new registration find
         JPanel datePickerContainer = new JPanel();
 
+        datePickerContainer.add(new JLabel("Creation date:"));
+
         for (int i = 0; i < 2; ++i){
             JPanel datePanel = new JPanel();
 

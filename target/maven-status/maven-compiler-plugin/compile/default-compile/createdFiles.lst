@@ -21,6 +21,7 @@ Client\Admin\Views\GroupMemberList$1.class
 Client\Admin\Views\Home$3.class
 Client\Admin\Views\Components\UserList.class
 Client\Admin\Views\ReportList$1.class
+Client\Admin\Views\ActiveUserScreen.class
 Client\Admin\Views\Home$8.class
 Client\Admin\AdminApp.class
 Client\Admin\Views\Components\UserList$2.class
