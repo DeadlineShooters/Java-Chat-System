@@ -1,4 +1,6 @@
 package Client.Admin.Views;
 
-public class ActiveUserList {
+import Client.Admin.Views.Components.UserList;
+
+public class ActiveUserList extends UserList {
 }

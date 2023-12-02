@@ -14,15 +14,14 @@ public class Sidebar extends Box {
         setPreferredSize(new Dimension(200, 0));
 //        setBackground(Color.gray);
         add(Box.createRigidArea(new Dimension(0, 10)));
-        String[] menuItems = { "User list", "Login list", "Group chat list",
-                "Report list" };
-        String[] icons = {"user.png", "login.png", "groupchat.png", "report.png"};
-        for (int i = 0; i < 4; i++) {
-            JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        String[] menuItems = { "User List", "Login List", "Group Chat List",
+                "Report List", "Manage Active Users" };
+        String[] icons = {"/image/user.png", "/image/login.png", "/image/groupchat.png", "/image/report.png", "/image/active-user.png"};
+        for (int i = 0; i < icons.length; i++) {
+            JPanel panel = new JPanel(new GridBagLayout()); // Use GridBagLayout for the panel
             panel.setOpaque(false); // panel transparent
-            JButton button = new JButton(menuItems[i]);
+            JButton button = new JButton("<html><p style='width: 140px'>" + menuItems[i] + "</p></html>");
             button.setForeground(Color.white);
-            button.setMaximumSize(new Dimension(Integer.MAX_VALUE, button.getMinimumSize().height));
             button.setFont(new Font("Segoe UI Variable Text", Font.BOLD, 18));
             button.setBorderPainted(false);
             button.setFocusPainted(false);
@@ -30,7 +29,7 @@ public class Sidebar extends Box {
             button.setCursor(new Cursor(Cursor.HAND_CURSOR)); // Change cursor to hand cursor when hovering over the
                                                               // button
             button.setHorizontalAlignment(SwingConstants.LEFT); // Align text to the left
-            ImageIcon icon = new ImageIcon("/resources/image/" + icons[i]);
+            ImageIcon icon = new ImageIcon( Sidebar.class.getResource(icons[i]));
             Image img = icon.getImage().getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH);
             icon = new ImageIcon(img);
             button.setIcon(icon);
