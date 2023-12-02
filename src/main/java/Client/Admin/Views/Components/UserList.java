@@ -7,6 +7,10 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
+import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -108,6 +112,36 @@ public class UserList extends JPanel {
 
         }
         datePickerContainer.setBackground(Color.white);
+
+        JPanel appOpensSearch = new JPanel();
+        JComboBox<String> filter = new JComboBox<>(new String[] { "=", "<", ">" });
+        JTextField appOpenInput = new JTextField(5);
+
+        // Apply a document filter to accept only numeric input
+        ((PlainDocument) appOpenInput.getDocument()).setDocumentFilter(new DocumentFilter() {
+            @Override
+            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr)
+                    throws BadLocationException {
+                if (string.matches("[0-9]+")) { // Only allow numeric characters
+                    super.insertString(fb, offset, string, attr);
+                }
+            }
+
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
+                    throws BadLocationException {
+                if (text.matches("[0-9]+")) { // Only allow numeric characters
+                    super.replace(fb, offset, length, text, attrs);
+                }
+            }
+        });
+
+        appOpensSearch.add(new JLabel("Number of direct friends:"));
+        appOpensSearch.add(filter);
+        appOpensSearch.add(appOpenInput);
+        appOpensSearch.setBackground(Color.white);
+
+        orderListPanel.add(appOpensSearch);
 
         orderListPanel.add(datePickerContainer);
         orderListPanel.add(orderList);
