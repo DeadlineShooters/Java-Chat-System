@@ -5,6 +5,7 @@ import org.jdesktop.swingx.JXDatePicker;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.text.SimpleDateFormat;
@@ -116,35 +117,15 @@ public class UserList extends JPanel {
         userListPanel.add(orderListPanel, BorderLayout.NORTH);
 
         // Add a user list to the user list part
-        String[] columns = { "Username", "Name", "Address", "Day of birth", "Gender", "Email", "Actions" };
+        String[] columns = { "Username", "Name", "Address", "Day of birth", "Gender", "Email", "Number of direct friends", "Number of friends of friends", "Actions" };
 
         // Define the table data
 
         Object[][] data = {
                 { "TuanTu", "Pham Tran Tuan Tu", "34 Nguyen Dinh Chieu, Q1, TP Ho Chi Minh", "05/01/2003", "Nam",
-                        "pttuantu@gmail.com", "Update, Delete" },
-                { "TuanTu", "Pham Tran Tuan Tu", "34 Nguyen Dinh Chieu, Q1, TP Ho Chi Minh", "05/01/2003", "Nam",
-                        "pttuantu@gmail.com", "Update, Delete" },
-                { "TuanTu", "Pham Tran Tuan Tu", "34 Nguyen Dinh Chieu, Q1, TP Ho Chi Minh", "05/01/2003", "Nam",
-                "pttuantu@gmail.com", "Update, Delete" },
-                { "TuanTu", "Pham Tran Tuan Tu", "34 Nguyen Dinh Chieu, Q1, TP Ho Chi Minh", "05/01/2003", "Nam",
-                        "pttuantu@gmail.com", "Update, Delete" },
-                { "TuanTu", "Pham Tran Tuan Tu", "34 Nguyen Dinh Chieu, Q1, TP Ho Chi Minh", "05/01/2003", "Nam",
-                        "pttuantu@gmail.com", "Update, Delete" },
-                { "TuanTu", "Pham Tran Tuan Tu", "34 Nguyen Dinh Chieu, Q1, TP Ho Chi Minh", "05/01/2003", "Nam",
-                        "pttuantu@gmail.com", "Update, Delete" },
-                { "TuanTu", "Pham Tran Tuan Tu", "34 Nguyen Dinh Chieu, Q1, TP Ho Chi Minh", "05/01/2003", "Nam",
-                        "pttuantu@gmail.com", "Update, Delete" },
-                { "TuanTu", "Pham Tran Tuan Tu", "34 Nguyen Dinh Chieu, Q1, TP Ho Chi Minh", "05/01/2003", "Nam",
-                        "pttuantu@gmail.com", "Update, Delete" },
-                { "TuanTu", "Pham Tran Tuan Tu", "34 Nguyen Dinh Chieu, Q1, TP Ho Chi Minh", "05/01/2003", "Nam",
-                        "pttuantu@gmail.com", "Update, Delete" },
-                { "TuanTu", "Pham Tran Tuan Tu", "34 Nguyen Dinh Chieu, Q1, TP Ho Chi Minh", "05/01/2003", "Nam",
-                        "pttuantu@gmail.com", "Update, Delete" },
-                { "TuanTu", "Pham Tran Tuan Tu", "34 Nguyen Dinh Chieu, Q1, TP Ho Chi Minh", "05/01/2003", "Nam",
-                        "pttuantu@gmail.com", "Update, Delete" },
-                { "TuanTu", "Pham Tran Tuan Tu", "34 Nguyen Dinh Chieu, Q1, TP Ho Chi Minh", "05/01/2003", "Nam",
-                        "pttuantu@gmail.com", "Update, Delete" },
+                        "pttuantu@gmail.com","5", "5", "Update, Delete" },
+
+
         };
 
         // Create a new DefaultTableModel instance
@@ -160,7 +141,12 @@ public class UserList extends JPanel {
         userListPanel.setBackground(Color.white);
 
         // Set a custom renderer and editor for the last column
-        table.getColumnModel().getColumn(6).setCellRenderer(new MultiButtonRenderer());
+        table.getColumnModel().getColumn(8).setCellRenderer(new MultiButtonRenderer());
+        // center element inside the number column's cell
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        table.getColumnModel().getColumn(6).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(7).setCellRenderer(centerRenderer);
 
         // Set the preferred width of each column
         table.getColumnModel().getColumn(0).setPreferredWidth(100); // "Tên Đăng Nhập"
@@ -169,12 +155,22 @@ public class UserList extends JPanel {
         table.getColumnModel().getColumn(3).setPreferredWidth(80); // "Ngày Sinh"
         table.getColumnModel().getColumn(4).setPreferredWidth(60); // "Giới Tính"
         table.getColumnModel().getColumn(5).setPreferredWidth(150); // "Email"
-        table.getColumnModel().getColumn(6).setPreferredWidth(140); // "Actions"
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        table.getColumnModel().getColumn(6).setPreferredWidth(138); // "Number of friends"
+        table.getColumnModel().getColumn(7).setPreferredWidth(155); // "Number of friends of friend"
+        table.getColumnModel().getColumn(8).setPreferredWidth(160); // "Actions"
+//        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
         table.setBackground(Color.white);
         table.setOpaque(true);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF); // This line makes the table horizontally scrollable
+        table.getTableHeader().setResizingAllowed(false); // disable column resizing
+        table.getTableHeader().setReorderingAllowed(false); // disable column reordering
+
         JScrollPane tableScrollPane = new JScrollPane(table);
+
+        tableScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        tableScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
 
         tableScrollPane.setBackground(Color.white);
         tableScrollPane.setOpaque(true);
