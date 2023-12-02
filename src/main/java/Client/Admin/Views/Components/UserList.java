@@ -78,14 +78,15 @@ public class UserList extends JPanel {
         // Add an order list to the top right of the user list part
         JPanel userListPanel = new JPanel(new BorderLayout());
         JPanel orderListPanel = new JPanel();
-
-        orderListPanel.setLayout(new BoxLayout(orderListPanel, BoxLayout.X_AXIS));
+        orderListPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         JComboBox<String> orderList = new JComboBox<>(new String[] { "Sort by name", "Sort by created time" });
         orderList.setMaximumSize(orderList.getPreferredSize()); // This will make the JComboBox not stretch
 
 //        orderListPanel.add(Box.createHorizontalGlue()); // This will push the JComboBox to the right
 
         // date picker for new registration find
+        JPanel datePickerContainer = new JPanel();
+
         for (int i = 0; i < 2; ++i){
             JPanel datePanel = new JPanel();
 
@@ -95,17 +96,19 @@ public class UserList extends JPanel {
 
             datePanel.add(picker);
 
-            orderListPanel.add(datePanel);
+            datePickerContainer.add(datePanel);
 
             if (i == 0){
                 JLabel toText = new JLabel("to");
-                orderListPanel.add(toText);
+                datePickerContainer.add(toText);
             }
             datePanel.setBackground(Color.white);
             datePanel.setOpaque(true);
 
         }
+        datePickerContainer.setBackground(Color.white);
 
+        orderListPanel.add(datePickerContainer);
         orderListPanel.add(orderList);
         orderListPanel.setBackground(Color.white);
 
