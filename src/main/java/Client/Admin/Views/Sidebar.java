@@ -1,6 +1,7 @@
 package Client.Admin.Views;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,13 +17,13 @@ public class Sidebar extends Box {
         add(Box.createRigidArea(new Dimension(0, 10)));
         String[] menuItems = { "User List", "Login List", "Group Chat List",
                 "Report List", "Manage Active Users" };
-                String[] icons = {"user.png", "login.png", "groupchat.png", "report.png", "active-user.png"};
+        String[] icons = { "user.png", "login.png", "groupchat.png", "report.png", "active-user.png" };
         for (int i = 0; i < icons.length; i++) {
             JPanel panel = new JPanel(new GridBagLayout()); // Use GridBagLayout for the panel
             panel.setOpaque(false); // panel transparent
-            JButton button = new JButton("<html><p style='width: 140px'>" + menuItems[i] + "</p></html>");
+            JButton button = new JButton(menuItems[i]);
             button.setForeground(Color.white);
-            button.setFont(new Font("Segoe UI Variable Text", Font.BOLD, 18));
+            button.setFont(new Font("Segoe UI Variable Text", Font.PLAIN, 16));
             button.setBorderPainted(false);
             button.setFocusPainted(false);
             button.setContentAreaFilled(false);
@@ -36,7 +37,8 @@ public class Sidebar extends Box {
             button.setIconTextGap(16);
             add(button);
 
-            setMaximumSize(new Dimension(Integer.MAX_VALUE, button.getPreferredSize().height)); // Set panel's maximum size to fit button
+            setMaximumSize(new Dimension(Integer.MAX_VALUE, button.getPreferredSize().height)); // Set panel's maximum
+                                                                                                // size to fit button
 
             buttons.add(button);
 
@@ -54,4 +56,3 @@ public class Sidebar extends Box {
         return buttons.get(index);
     }
 }
-

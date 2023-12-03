@@ -15,18 +15,16 @@ import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-
 public class UserList extends JPanel {
     protected JPanel searchBar = new JPanel();
     protected JPanel userListPanel = new JPanel(new BorderLayout());
     protected JPanel orderListPanel = new JPanel();
     protected JPanel appOpensSearch = new JPanel();
 
-
     protected JTable table;
     // search button
     public JButton[] searchButtons = new JButton[4];
-    
+
     public UserList() {
         setLayout(new BorderLayout());
         // Add a search bar to the body part
@@ -87,17 +85,35 @@ public class UserList extends JPanel {
 
         add(searchBar, BorderLayout.NORTH);
 
+        orderListPanel.setLayout(new BoxLayout(orderListPanel, BoxLayout.X_AXIS));
+        orderListPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+
+        // Create Update and Delete buttons
+        JButton updateButton = new JButton("Update");
+        JButton deleteButton = new JButton("Delete");
+
+        // Create a panel for the buttons
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.add(updateButton);
+        buttonPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        buttonPanel.add(deleteButton);
+        buttonPanel.setBackground(Color.white);
+
         // Add an order list to the top right of the user list part
-        orderListPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        JPanel orderListRightPanel = new JPanel();
+        orderListRightPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+
         JComboBox<String> orderList = new JComboBox<>(new String[] { "Sort by name", "Sort by created time" });
         orderList.setMaximumSize(orderList.getPreferredSize()); // This will make the JComboBox not stretch
 
-//        orderListPanel.add(Box.createHorizontalGlue()); // This will push the JComboBox to the right
+        // orderListPanel.add(Box.createHorizontalGlue()); // This will push the
+        // JComboBox to the right
 
         // date picker for new registration find
         JPanel datePickerContainer = new JPanel();
 
-        for (int i = 0; i < 2; ++i){
+        for (int i = 0; i < 2; ++i) {
             JPanel datePanel = new JPanel();
 
             JXDatePicker picker = new JXDatePicker();
@@ -108,7 +124,7 @@ public class UserList extends JPanel {
 
             datePickerContainer.add(datePanel);
 
-            if (i == 0){
+            if (i == 0) {
                 JLabel toText = new JLabel("to");
                 datePickerContainer.add(toText);
             }
@@ -145,24 +161,27 @@ public class UserList extends JPanel {
         appOpensSearch.add(appOpenInput);
         appOpensSearch.setBackground(Color.white);
 
-        orderListPanel.add(appOpensSearch);
+        orderListRightPanel.add(appOpensSearch);
+        orderListRightPanel.add(datePickerContainer);
+        orderListRightPanel.add(orderList);
+        orderListRightPanel.setBackground(Color.white);
 
-        orderListPanel.add(datePickerContainer);
-        orderListPanel.add(orderList);
+        orderListPanel.add(buttonPanel);
+        orderListPanel.add(orderListRightPanel);
         orderListPanel.setBackground(Color.white);
 
         // Add the order list panel to the user list part
         userListPanel.add(orderListPanel, BorderLayout.NORTH);
 
         // Add a user list to the user list part
-        String[] columns = { "Username", "Name", "Address", "Day of birth", "Gender", "Email", "Number of direct friends", "Number of friends of friends", "Actions" };
+        String[] columns = { "Username", "Name", "Address", "Day of birth", "Gender", "Email",
+                "<html><center>Number of<br>direct friends", "<html><center>Number of friends<br>of friends" };
 
         // Define the table data
 
         Object[][] data = {
                 { "TuanTu", "Pham Tran Tuan Tu", "34 Nguyen Dinh Chieu, Q1, TP Ho Chi Minh", "05/01/2003", "Nam",
-                        "pttuantu@gmail.com","5", "5", "Update, Delete" },
-
+                        "pttuantu@gmail.com", "5", "5" },
 
         };
 
@@ -178,28 +197,32 @@ public class UserList extends JPanel {
         userListPanel.setBackground(Color.white);
 
         // Set a custom renderer and editor for the last column
-        table.getColumnModel().getColumn(8).setCellRenderer(new MultiButtonRenderer());
         // center element inside the number column's cell
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+
+        table.getTableHeader().setPreferredSize(
+                new Dimension(table.getColumnModel().getTotalColumnWidth(), 32));
+        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
         table.getColumnModel().getColumn(6).setCellRenderer(centerRenderer);
         table.getColumnModel().getColumn(7).setCellRenderer(centerRenderer);
 
         // Set the preferred width of each column
         table.getColumnModel().getColumn(0).setPreferredWidth(100); // "Tên Đăng Nhập"
-        table.getColumnModel().getColumn(1).setPreferredWidth(120); // "Họ Tên"
-        table.getColumnModel().getColumn(2).setPreferredWidth(250); // "Địa Chỉ"
-        table.getColumnModel().getColumn(3).setPreferredWidth(80); // "Ngày Sinh"
-        table.getColumnModel().getColumn(4).setPreferredWidth(60); // "Giới Tính"
+        table.getColumnModel().getColumn(1).setPreferredWidth(125); // "Họ Tên"
+        table.getColumnModel().getColumn(2).setPreferredWidth(300); // "Địa Chỉ"
+        table.getColumnModel().getColumn(3).setPreferredWidth(75); // "Ngày Sinh"
+        table.getColumnModel().getColumn(4).setPreferredWidth(50); // "Giới Tính"
         table.getColumnModel().getColumn(5).setPreferredWidth(150); // "Email"
-        table.getColumnModel().getColumn(6).setPreferredWidth(138); // "Number of friends"
-        table.getColumnModel().getColumn(7).setPreferredWidth(155); // "Number of friends of friend"
-        table.getColumnModel().getColumn(8).setPreferredWidth(160); // "Actions"
-//        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        table.getColumnModel().getColumn(6).setPreferredWidth(100); // "Number of friends"
+        table.getColumnModel().getColumn(7).setPreferredWidth(100); // "Number of friends of friend"
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
         table.setBackground(Color.white);
         table.setOpaque(true);
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF); // This line makes the table horizontally scrollable
+        // table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF); // This line makes the table
+        // horizontally scrollable
         table.getTableHeader().setResizingAllowed(false); // disable column resizing
         table.getTableHeader().setReorderingAllowed(false); // disable column reordering
 
@@ -207,7 +230,6 @@ public class UserList extends JPanel {
 
         tableScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         tableScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-
 
         tableScrollPane.setBackground(Color.white);
         tableScrollPane.setOpaque(true);
@@ -221,11 +243,11 @@ public class UserList extends JPanel {
                     for (int i = 1; i < 4; i++) {
                         searchButtons[i].setVisible(true);
                     }
-                // } else {
-                //     // No row is selected, hide the button
-                //     for (int i = 1; i < 4; i++) {
-                //         searchButtons[i].setVisible(false);
-                //     }
+                    // } else {
+                    // // No row is selected, hide the button
+                    // for (int i = 1; i < 4; i++) {
+                    // searchButtons[i].setVisible(false);
+                    // }
                 }
             }
         });
@@ -240,4 +262,3 @@ public class UserList extends JPanel {
     }
 
 }
-
