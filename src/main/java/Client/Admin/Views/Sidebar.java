@@ -11,16 +11,19 @@ public class Sidebar extends Box {
 
     public Sidebar() {
         super(BoxLayout.Y_AXIS);
-        setPreferredSize(new Dimension(256, 0));
-        setBackground(Color.gray);
+        setPreferredSize(new Dimension(200, 0));
+//        setBackground(Color.gray);
         add(Box.createRigidArea(new Dimension(0, 10)));
         String[] menuItems = { "User list", "Login list", "Group chat list",
                 "Report list" };
         String[] icons = {"user.png", "login.png", "groupchat.png", "report.png"};
         for (int i = 0; i < 4; i++) {
+            JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            panel.setOpaque(false); // panel transparent
             JButton button = new JButton(menuItems[i]);
+            button.setForeground(Color.white);
             button.setMaximumSize(new Dimension(Integer.MAX_VALUE, button.getMinimumSize().height));
-            button.setFont(new Font("Segoe UI Variable Text", Font.BOLD, 20));
+            button.setFont(new Font("Segoe UI Variable Text", Font.BOLD, 18));
             button.setBorderPainted(false);
             button.setFocusPainted(false);
             button.setContentAreaFilled(false);
@@ -40,6 +43,9 @@ public class Sidebar extends Box {
                 add(Box.createRigidArea(new Dimension(0, 20)));
             }
         }
+
+        setBackground(new Color(0x36598E));
+        setOpaque(true);
     }
 
     public JButton getButton(int index) {
