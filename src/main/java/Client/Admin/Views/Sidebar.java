@@ -11,8 +11,8 @@ public class Sidebar extends Box {
 
     public Sidebar() {
         super(BoxLayout.Y_AXIS);
-        setPreferredSize(new Dimension(200, 0));
-//        setBackground(Color.gray);
+        setPreferredSize(new Dimension(220, 0));
+        setBackground(Color.gray);
         add(Box.createRigidArea(new Dimension(0, 10)));
         String[] menuItems = { "User list", "Login list", "Group chat list",
                 "Report list" };
@@ -28,7 +28,7 @@ public class Sidebar extends Box {
             button.setFocusPainted(false);
             button.setContentAreaFilled(false);
             button.setCursor(new Cursor(Cursor.HAND_CURSOR)); // Change cursor to hand cursor when hovering over the
-                                                              // button
+
             button.setHorizontalAlignment(SwingConstants.LEFT); // Align text to the left
             ImageIcon icon = new ImageIcon(getClass().getResource("/Image/" + icons[i]));
             Image img = icon.getImage().getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH);
@@ -36,6 +36,9 @@ public class Sidebar extends Box {
             button.setIcon(icon);
             button.setIconTextGap(16);
             add(button);
+
+            setMaximumSize(new Dimension(Integer.MAX_VALUE, button.getPreferredSize().height)); // Set panel's maximum size to fit button
+
             buttons.add(button);
 
             // Add space between buttons
