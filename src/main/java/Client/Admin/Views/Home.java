@@ -27,6 +27,7 @@ public class Home extends JFrame {
         ReportList reportList = new ReportList();
         FriendList friendList = new FriendList();
         LoginHistory loginHistory = new LoginHistory();
+        ActiveUserScreen activeUserScreen = new ActiveUserScreen();
 
         getContentPane().add(sidebar, BorderLayout.WEST);
         bodyPanel.add(userManagement, "Client.Admin.Views.UserList");
@@ -36,12 +37,13 @@ public class Home extends JFrame {
         bodyPanel.add(groupMemberList, "Client.Admin.Views.GroupMemberList");
         bodyPanel.add(friendList, "Client.Admin.Views.FriendList");
         bodyPanel.add(loginHistory, "Client.Admin.Views.LoginHistory");
+        bodyPanel.add(activeUserScreen, "Client.Admin.Views.ActiveUserScreen");
         getContentPane().add(bodyPanel, BorderLayout.CENTER);
 
         // switch body panel
         cardLayout.show(bodyPanel, "Client.Admin.Views.UserList");
-        String[] menuItems = { "Client.Admin.Views.UserList", "Client.Admin.Views.LoginList", "Client.Admin.Views.GroupChatList", "Client.Admin.Views.ReportList" };
-        for (int i = 0; i < 4; i++) {
+        String[] menuItems = { "Client.Admin.Views.UserList", "Client.Admin.Views.LoginList", "Client.Admin.Views.GroupChatList", "Client.Admin.Views.ReportList", "Client.Admin.Views.ActiveUserScreen" };
+        for (int i = 0; i < menuItems.length; i++) {
             final int index = i;
             sidebar.getButton(i).addActionListener(new ActionListener() {
                 @Override

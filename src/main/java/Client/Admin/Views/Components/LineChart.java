@@ -24,9 +24,16 @@ public class LineChart extends JPanel {
     private ArrayList<Map.Entry<Integer, Integer>>dataPoints;
     private ChartPanel chartPanel;
     private JPanel yearPanel;
+    private String title;
+    private String xLabel;
+    private String yLabel;
 
-    public LineChart() {
+    public LineChart(String title, String xLabel, String yLabel) {
+        this.title = title;
+        this.xLabel = xLabel;
+        this.yLabel = yLabel;
         initUI();
+
     }
 
     private void initUI() {
@@ -115,9 +122,9 @@ public class LineChart extends JPanel {
     private JFreeChart createChart(XYDataset dataset) {
 
         JFreeChart chart = ChartFactory.createXYLineChart(
-                "Newly registered users per year",
-                "Month",
-                "The number of new registrations",
+                title,
+                xLabel,
+                yLabel,
                 dataset,
                 PlotOrientation.VERTICAL,
                 true,
@@ -151,7 +158,7 @@ public class LineChart extends JPanel {
 
         chart.getLegend().setFrame(BlockBorder.NONE);
 
-        chart.setTitle(new TextTitle("Newly Registered Users Per Year",
+        chart.setTitle(new TextTitle(title,
                         new Font("Serif", java.awt.Font.BOLD, 18)
                 )
         );

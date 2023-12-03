@@ -17,13 +17,18 @@ import java.util.Calendar;
 
 
 public class UserList extends JPanel {
+    protected JPanel searchBar = new JPanel();
+    protected JPanel userListPanel = new JPanel(new BorderLayout());
+    protected JPanel orderListPanel = new JPanel();
+
+    protected JTable table;
     // search button
     public JButton[] searchButtons = new JButton[4];
     
     public UserList() {
         setLayout(new BorderLayout());
         // Add a search bar to the body part
-        JPanel searchBar = new JPanel();
+
         searchBar.setBackground(Color.white); // Change to the color you want
 
         // Set the border
@@ -81,9 +86,7 @@ public class UserList extends JPanel {
         add(searchBar, BorderLayout.NORTH);
 
         // Add an order list to the top right of the user list part
-        JPanel userListPanel = new JPanel(new BorderLayout());
-        JPanel orderListPanel = new JPanel();
-        orderListPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        orderListPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         JComboBox<String> orderList = new JComboBox<>(new String[] { "Sort by name", "Sort by created time" });
         orderList.setMaximumSize(orderList.getPreferredSize()); // This will make the JComboBox not stretch
 
@@ -170,8 +173,7 @@ public class UserList extends JPanel {
             }
         };
 
-        // Create a new JTable instance
-        JTable table = new JTable(model);
+        table = new JTable(model);
         userListPanel.setBackground(Color.white);
 
         // Set a custom renderer and editor for the last column
@@ -228,5 +230,12 @@ public class UserList extends JPanel {
         });
     }
 
+    public JPanel getOrderListPanel() {
+        return orderListPanel;
+    }
+
+    public void setOrderListPanel(JPanel orderListPanel) {
+        this.orderListPanel = orderListPanel;
+    }
 }
 
