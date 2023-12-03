@@ -20,6 +20,8 @@ public class UserList extends JPanel {
     protected JPanel searchBar = new JPanel();
     protected JPanel userListPanel = new JPanel(new BorderLayout());
     protected JPanel orderListPanel = new JPanel();
+    protected JPanel appOpensSearch = new JPanel();
+
 
     protected JTable table;
     // search button
@@ -116,7 +118,6 @@ public class UserList extends JPanel {
         }
         datePickerContainer.setBackground(Color.white);
 
-        JPanel appOpensSearch = new JPanel();
         JComboBox<String> filter = new JComboBox<>(new String[] { "=", "<", ">" });
         JTextField appOpenInput = new JTextField(5);
 
@@ -237,5 +238,6 @@ public class UserList extends JPanel {
     public void setOrderListPanel(JPanel orderListPanel) {
         this.orderListPanel = orderListPanel;
     }
+
 }
 

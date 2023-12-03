@@ -20,6 +20,7 @@ public class ActiveUserList extends UserList {
     public ActiveUserList() {
         super();
         remove(searchBar);
+        appOpensSearch.getParent().remove(appOpensSearch);
         // Modify the columns array to include only the desired columns
         String[] columns = { "Username", "App Opens", "Chats with People", "Group Chats" };
         // Define the data for the active users
