@@ -96,7 +96,7 @@
                             <goal>java</goal>
                         </goals>
                         <configuration>
-                            <mainClass>Client.User.UserApp</mainClass>
+                            <mainClass>Client.User.Login</mainClass>
                         </configuration>
                     </execution>
                 </executions>
