@@ -108,15 +108,11 @@ public class UserList extends JPanel {
         buttonPanel.setBackground(Color.white);
 
         // Add an order list to the top right of the user list part
-<<<<<<< HEAD
         JPanel orderListRightPanel = new JPanel();
         orderListRightPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
         JComboBox<String> orderList = new JComboBox<>(new String[] { "Sort by name", "Sort by created time" });
-=======
         orderListPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        JComboBox<String> orderList = new JComboBox<>(new String[]{"Sort by name", "Sort by created time"});
->>>>>>> main
         orderList.setMaximumSize(orderList.getPreferredSize()); // This will make the JComboBox not stretch
 
         // orderListPanel.add(Box.createHorizontalGlue()); // This will push the
@@ -126,11 +122,8 @@ public class UserList extends JPanel {
         JXDatePicker[] pickers = new JXDatePicker[2];
         Date[] previousDates = new Date[2];
 
-<<<<<<< HEAD
-=======
         datePickerContainer.add(new JLabel("Created date: "));
 
->>>>>>> main
         for (int i = 0; i < 2; ++i) {
             JPanel datePanel = new JPanel();
 
