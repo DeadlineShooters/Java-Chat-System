@@ -26,8 +26,9 @@ public class UserList extends JPanel {
     protected JPanel orderListPanel = new JPanel();
     protected JPanel appOpensSearch = new JPanel();
     protected JPanel datePickerContainer = new JPanel();
-    private UserRepository userModel = new UserRepository();
-
+    protected UserRepository userRepository = new UserRepository();
+    protected ArrayList<RowFilter<Object,Object>> filters = new ArrayList<RowFilter<Object,Object>>();
+    protected TableRowSorter<DefaultTableModel> rowSorter;
 
     protected JTable table;
     // search button
@@ -128,7 +129,7 @@ public class UserList extends JPanel {
         }
 
 // Add a property change listener to each date picker
-        previousDates[0] = userModel.getOldestDate();
+        previousDates[0] = userRepository.getOldestDate();
         for (int i = 0; i < 2; ++i) {
             final int index = i;
             pickers[i].addActionListener(e -> {
@@ -143,7 +144,7 @@ public class UserList extends JPanel {
                 } else {
                     previousDates[index] = new java.sql.Date(pickers[index].getDate().getTime());
                     // Call getUsersByDateRange() with the new date range
-                    ArrayList<User> users = userModel.getUsersByDateRange(firstDate, secondDate);
+                    ArrayList<User> users = userRepository.getUsersByDateRange(firstDate, secondDate);
 
                     // Update your table with the new list of users
                     updateTable(users);
@@ -155,7 +156,7 @@ public class UserList extends JPanel {
 
 
         // set the first date picker to have the oldest date
-        pickers[0].setDate(userModel.getOldestDate());
+        pickers[0].setDate(userRepository.getOldestDate());
 
         previousDates[0] = new Date(pickers[0].getDate().getTime()); // Current date of the first picker
         previousDates[1] = new Date(pickers[1].getDate().getTime());  // Current date of the second picker
@@ -199,7 +200,7 @@ public class UserList extends JPanel {
         userListPanel.add(orderListPanel, BorderLayout.NORTH);
 
         // Add a user list to the user list part
-        String[] columns = {"Username", "Name", "Address", "Day of birth", "Gender", "Email", "<html>Number of <br>direct friends</html>", "<html>Number of<br>friends of friend</html>", "Created time", "Actions"};
+        String[] columns = {"Username", "Name", "Address", "Day of birth", "Gender", "Email", "<html>Number of <br>direct friends</html>", "Total friends", "Created time", "Actions"};
 
         // Create a new DefaultTableModel instance
         DefaultTableModel model = new DefaultTableModel(columns, 0) {
@@ -229,7 +230,7 @@ public class UserList extends JPanel {
         java.sql.Date firstDate = new java.sql.Date(firstUtilDate.getTime());
         java.sql.Date secondDate = new java.sql.Date(secondUtilDate.getTime());
 
-        ArrayList<User> users = userModel.getUsersByDateRange(firstDate, secondDate);
+        ArrayList<User> users = userRepository.getUsersByDateRange(firstDate, secondDate);
 
         // Update your table with the new list of users
         updateTable(users);
@@ -262,6 +263,10 @@ public class UserList extends JPanel {
         table.getTableHeader().setResizingAllowed(false); // disable column resizing
         table.getTableHeader().setReorderingAllowed(false); // disable column reordering
 
+        // set sorter for table
+         rowSorter = new TableRowSorter<>(model);
+        table.setRowSorter(rowSorter);
+
         JScrollPane tableScrollPane = new JScrollPane(table);
 
         tableScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -280,11 +285,6 @@ public class UserList extends JPanel {
                     for (int i = 1; i < 4; i++) {
                         searchButtons[i].setVisible(true);
                     }
-                    // } else {
-                    //     // No row is selected, hide the button
-                    //     for (int i = 1; i < 4; i++) {
-                    //         searchButtons[i].setVisible(false);
-                    //     }
                 }
             }
         });
@@ -302,6 +302,32 @@ public class UserList extends JPanel {
             String name = textField1.getText().trim();
             searchByName(name);
         });
+
+        // Inside the constructor after initializing the filter JComboBox and appOpenInput JTextField
+        appOpenInput.addActionListener(e -> {
+            String selectedItem = (String) filter.getSelectedItem();
+            if (!appOpenInput.getText().isEmpty()) {
+                int friendsFilterValue = Integer.parseInt(appOpenInput.getText());
+                RowFilter<Object, Object> rowFilter = null;
+                switch (selectedItem) {
+                    case "=":
+                        rowFilter = RowFilter.numberFilter(RowFilter.ComparisonType.EQUAL, friendsFilterValue, 6); // Assuming direct friends column index is 7
+                        break;
+                    case "<":
+                        rowFilter = RowFilter.numberFilter(RowFilter.ComparisonType.BEFORE, friendsFilterValue, 6); // Assuming direct friends column index is 7
+                        break;
+                    case ">":
+                        rowFilter = RowFilter.numberFilter(RowFilter.ComparisonType.AFTER, friendsFilterValue, 6); // Assuming direct friends column index is 7
+                        break;
+                }
+                rowSorter.setRowFilter(rowFilter);
+            } else {
+                rowSorter.setRowFilter(null); // Show all lines when the input field is empty
+            }
+        });
+
+
+
     }
 
     public JPanel getOrderListPanel() {
@@ -320,8 +346,13 @@ public class UserList extends JPanel {
             row[3] = user.dob();
             row[4] = user.gender();
             row[5] = user.email();
-            row[6] = ""; // Number of friends
-            row[7] = ""; // Number of friends of friend
+            // Fetch the number of friends for the user
+            int numberOfFriends = userRepository.fetchNumberOfFriends(user.username());
+            row[6] = numberOfFriends;
+
+            // Fetch the number of friends of friends for the user
+            int numberOfFriendsOfFriends = userRepository.fetchNumberOfFriendsOfFriends(user.username());
+            row[7] = numberOfFriendsOfFriends + numberOfFriends;
             row[8] = user.createdAt();
             row[9] = "Update, Delete"; // Actions
 
@@ -332,46 +363,33 @@ public class UserList extends JPanel {
         table.setModel(model);
     }
 
-    // Inside your UserList class...
 
     // Sort the table data by name
     public void sortByName() {
-        DefaultTableModel model = (DefaultTableModel) table.getModel();
-        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
-        table.setRowSorter(sorter);
-
         ArrayList<RowSorter.SortKey> sortKeys = new ArrayList<>();
         sortKeys.add(new RowSorter.SortKey(0, SortOrder.ASCENDING)); // sort based on username
-        sorter.setSortKeys(sortKeys);
-        sorter.sort();
+        rowSorter.setSortKeys(sortKeys);
+        rowSorter.sort();
     }
-
     // Sort the table data by created time
     public void sortByCreatedTime() {
-        DefaultTableModel model = (DefaultTableModel) table.getModel();
-        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
-        table.setRowSorter(sorter);
-
         ArrayList<RowSorter.SortKey> sortKeys = new ArrayList<>();
         sortKeys.add(new RowSorter.SortKey(8, SortOrder.ASCENDING));
-        sorter.setSortKeys(sortKeys);
-        sorter.sort();
+        rowSorter.setSortKeys(sortKeys);
+        rowSorter.sort();
     }
 
     public void searchByName(String name) {
-        DefaultTableModel model = (DefaultTableModel) table.getModel();
-        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
-        table.setRowSorter(sorter);
-
         if (name.trim().length() == 0) {
             // If the search field is empty, reset the row filter
-            sorter.setRowFilter(null);
+            rowSorter.setRowFilter(null);
         } else {
             // Perform name search using RowFilter
             RowFilter<DefaultTableModel, Object> rf = RowFilter.regexFilter("(?i)" + name, 0); // search for username
-            sorter.setRowFilter(rf);
+            rowSorter.setRowFilter(rf);
         }
     }
+
 
 
 }
