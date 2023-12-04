@@ -1,25 +1,22 @@
 package Client.Admin.Views.Components;
 
-import org.jdesktop.swingx.JXDatePicker;
-
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.PlainDocument;
 import java.awt.*;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import com.github.lgooddatepicker.components.DateTimePicker;
+import com.github.lgooddatepicker.components.TimePickerSettings;
 
 public class ActiveUserList extends UserList {
 
     public ActiveUserList() {
         super();
         remove(searchBar);
+        datePickerContainer.getParent().remove(datePickerContainer);
+
         appOpensSearch.getParent().remove(appOpensSearch);
         // Modify the columns array to include only the desired columns
         String[] columns = { "Username", "App Opens", "Chats with People", "Group Chats" };
@@ -77,5 +74,37 @@ public class ActiveUserList extends UserList {
 
         orderListPanel.add(appOpensSearch);
         appOpensSearch.setBackground(Color.white);
+
+        // add time picker
+        JPanel timePickerPanel = new JPanel();
+        JLabel startLabel = new JLabel("Start Datetime:");
+        JLabel endLabel = new JLabel("End Datetime:");
+        // Create a DateTimePicker with default settings.
+        DateTimePicker startPicker = new DateTimePicker();
+        // Create a DateTimePicker with custom settings.
+        DateTimePicker endPicker = new DateTimePicker();
+        TimePickerSettings timeSettings = new TimePickerSettings();
+        timeSettings.setDisplaySpinnerButtons(true);
+        timeSettings.setDisplayToggleTimeMenuButton(false);
+//        endPicker.setTimePickerSettings(timeSettings);
+        // Add the components to the panel.
+        timePickerPanel.add(startLabel);
+        timePickerPanel.add(startPicker);
+        timePickerPanel.add(endLabel);
+        timePickerPanel.add(endPicker);
+        // Add the panel to the frame.
+        orderListPanel.getParent().remove(orderListPanel);
+        JPanel filterContainer = new JPanel(new GridLayout(2, 1));
+        filterContainer.add(timePickerPanel);
+        filterContainer.add(orderListPanel);
+
+
+        timePickerPanel.setBackground(Color.white);
+        userListPanel.add(filterContainer, BorderLayout.NORTH);
+
+    }
+
+    protected void removeDatePickerContainer(){
+
     }
 }
