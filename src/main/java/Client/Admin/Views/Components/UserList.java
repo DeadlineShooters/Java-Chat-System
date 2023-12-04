@@ -1,18 +1,23 @@
 package Client.Admin.Views.Components;
 
+import Client.Models.User;
+import Client.Repository.UserRepository;
 import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.event.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableRowSorter;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.text.SimpleDateFormat;
+import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class UserList extends JPanel {
@@ -20,6 +25,8 @@ public class UserList extends JPanel {
     protected JPanel userListPanel = new JPanel(new BorderLayout());
     protected JPanel orderListPanel = new JPanel();
     protected JPanel appOpensSearch = new JPanel();
+    protected JPanel datePickerContainer = new JPanel();
+    private UserRepository userModel = new UserRepository();
 
     protected JTable table;
     // search button
@@ -58,7 +65,7 @@ public class UserList extends JPanel {
         JLabel label3 = new JLabel("Status");
         label3.setBackground(Color.white);
         label3.setOpaque(true);
-        JComboBox<String> comboBox = new JComboBox<>(new String[] { "Online", "Absent", "Offline" });
+        JComboBox<String> comboBox = new JComboBox<>(new String[]{"Online", "Absent", "Offline"});
         panel3.add(label3, BorderLayout.NORTH);
         panel3.add(comboBox, BorderLayout.CENTER);
 
@@ -101,18 +108,29 @@ public class UserList extends JPanel {
         buttonPanel.setBackground(Color.white);
 
         // Add an order list to the top right of the user list part
+<<<<<<< HEAD
         JPanel orderListRightPanel = new JPanel();
         orderListRightPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
         JComboBox<String> orderList = new JComboBox<>(new String[] { "Sort by name", "Sort by created time" });
+=======
+        orderListPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        JComboBox<String> orderList = new JComboBox<>(new String[]{"Sort by name", "Sort by created time"});
+>>>>>>> main
         orderList.setMaximumSize(orderList.getPreferredSize()); // This will make the JComboBox not stretch
 
         // orderListPanel.add(Box.createHorizontalGlue()); // This will push the
         // JComboBox to the right
 
         // date picker for new registration find
-        JPanel datePickerContainer = new JPanel();
+        JXDatePicker[] pickers = new JXDatePicker[2];
+        Date[] previousDates = new Date[2];
 
+<<<<<<< HEAD
+=======
+        datePickerContainer.add(new JLabel("Created date: "));
+
+>>>>>>> main
         for (int i = 0; i < 2; ++i) {
             JPanel datePanel = new JPanel();
 
@@ -121,7 +139,6 @@ public class UserList extends JPanel {
             picker.setFormats(new SimpleDateFormat("dd.MM.yyyy"));
 
             datePanel.add(picker);
-
             datePickerContainer.add(datePanel);
 
             if (i == 0) {
@@ -131,10 +148,46 @@ public class UserList extends JPanel {
             datePanel.setBackground(Color.white);
             datePanel.setOpaque(true);
 
+            pickers[i] = picker;
+            previousDates[i] = new java.sql.Date(picker.getDate().getTime());
         }
+
+// Add a property change listener to each date picker
+        previousDates[0] = userModel.getOldestDate();
+        for (int i = 0; i < 2; ++i) {
+            final int index = i;
+            pickers[i].addActionListener(e -> {
+                java.util.Date firstUtilDate = pickers[0].getDate();
+                java.util.Date secondUtilDate = pickers[1].getDate();
+
+                java.sql.Date firstDate = new java.sql.Date(firstUtilDate.getTime());
+                java.sql.Date secondDate = new java.sql.Date(secondUtilDate.getTime());
+
+                if (secondDate.before(firstDate)) {
+                    pickers[index].setDate(previousDates[index]);
+                } else {
+                    previousDates[index] = new java.sql.Date(pickers[index].getDate().getTime());
+                    // Call getUsersByDateRange() with the new date range
+                    ArrayList<User> users = userModel.getUsersByDateRange(firstDate, secondDate);
+
+                    // Update your table with the new list of users
+                    updateTable(users);
+                }
+
+
+            });
+        }
+
+
+        // set the first date picker to have the oldest date
+        pickers[0].setDate(userModel.getOldestDate());
+
+        previousDates[0] = new Date(pickers[0].getDate().getTime()); // Current date of the first picker
+        previousDates[1] = new Date(pickers[1].getDate().getTime());  // Current date of the second picker
+
         datePickerContainer.setBackground(Color.white);
 
-        JComboBox<String> filter = new JComboBox<>(new String[] { "=", "<", ">" });
+        JComboBox<String> filter = new JComboBox<>(new String[]{"=", "<", ">"});
         JTextField appOpenInput = new JTextField(5);
 
         // Apply a document filter to accept only numeric input
@@ -174,26 +227,40 @@ public class UserList extends JPanel {
         userListPanel.add(orderListPanel, BorderLayout.NORTH);
 
         // Add a user list to the user list part
-        String[] columns = { "Username", "Name", "Address", "Day of birth", "Gender", "Email",
-                "<html><center>Number of<br>direct friends", "<html><center>Number of friends<br>of friends" };
-
-        // Define the table data
-
-        Object[][] data = {
-                { "TuanTu", "Pham Tran Tuan Tu", "34 Nguyen Dinh Chieu, Q1, TP Ho Chi Minh", "05/01/2003", "Nam",
-                        "pttuantu@gmail.com", "5", "5" },
-
-        };
+        String[] columns = {"Username", "Name", "Address", "Day of birth", "Gender", "Email", "<html>Number of <br>direct friends</html>", "<html>Number of<br>friends of friend</html>", "Created time"};
 
         // Create a new DefaultTableModel instance
-        DefaultTableModel model = new DefaultTableModel(data, columns) {
+        DefaultTableModel model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // All cells are editable
             }
         };
 
+
         table = new JTable(model);
+
+        // Get the table header
+        JTableHeader header = table.getTableHeader();
+
+// Get the existing height
+        int headerHeight = header.getPreferredSize().height;
+
+// Increase the height
+        headerHeight *= 2; // Change this to the factor you want
+
+// Set the new preferred height
+        header.setPreferredSize(new Dimension(header.getPreferredSize().width, headerHeight));
+
+        java.util.Date firstUtilDate = pickers[0].getDate();
+        java.util.Date secondUtilDate = pickers[1].getDate();
+        java.sql.Date firstDate = new java.sql.Date(firstUtilDate.getTime());
+        java.sql.Date secondDate = new java.sql.Date(secondUtilDate.getTime());
+
+        ArrayList<User> users = userModel.getUsersByDateRange(firstDate, secondDate);
+
+        // Update your table with the new list of users
+        updateTable(users);
         userListPanel.setBackground(Color.white);
 
         // Set a custom renderer and editor for the last column
@@ -216,8 +283,9 @@ public class UserList extends JPanel {
         table.getColumnModel().getColumn(4).setPreferredWidth(50); // "Giới Tính"
         table.getColumnModel().getColumn(5).setPreferredWidth(150); // "Email"
         table.getColumnModel().getColumn(6).setPreferredWidth(100); // "Number of friends"
-        table.getColumnModel().getColumn(7).setPreferredWidth(100); // "Number of friends of friend"
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        table.getColumnModel().getColumn(7).setPreferredWidth(90); // "Number of direct friends"
+        table.getColumnModel().getColumn(8).setPreferredWidth(125); // "Number of friends of friend"
+//        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
         table.setBackground(Color.white);
         table.setOpaque(true);
@@ -243,13 +311,22 @@ public class UserList extends JPanel {
                     for (int i = 1; i < 4; i++) {
                         searchButtons[i].setVisible(true);
                     }
-                    // } else {
-                    // // No row is selected, hide the button
-                    // for (int i = 1; i < 4; i++) {
-                    // searchButtons[i].setVisible(false);
-                    // }
                 }
             }
+        });
+
+        orderList.addActionListener(e -> {
+            String selectedSort = (String) orderList.getSelectedItem();
+            if ("Sort by name".equals(selectedSort)) {
+                sortByName();
+            } else if ("Sort by created time".equals(selectedSort)) {
+                sortByCreatedTime();
+            }
+        });
+
+        searchButtons[0].addActionListener(e -> {
+            String name = textField1.getText().trim();
+            searchByName(name);
         });
     }
 
@@ -257,8 +334,70 @@ public class UserList extends JPanel {
         return orderListPanel;
     }
 
-    public void setOrderListPanel(JPanel orderListPanel) {
-        this.orderListPanel = orderListPanel;
+    public void updateTable(ArrayList<User> users) {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);
+
+        for (User user : users) {
+            Object[] row = new Object[10];
+            row[0] = user.username();
+            row[1] = user.name();
+            row[2] = user.address();
+            row[3] = user.dob();
+            row[4] = user.gender();
+            row[5] = user.email();
+            row[6] = ""; // Number of friends
+            row[7] = ""; // Number of friends of friend
+            row[8] = user.createdAt();
+            row[9] = "Update, Delete"; // Actions
+
+            model.addRow(row);
+        }
+
+        // Update the table model
+        table.setModel(model);
     }
+
+    // Inside your UserList class...
+
+    // Sort the table data by name
+    public void sortByName() {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
+        table.setRowSorter(sorter);
+
+        ArrayList<RowSorter.SortKey> sortKeys = new ArrayList<>();
+        sortKeys.add(new RowSorter.SortKey(0, SortOrder.ASCENDING)); // sort based on username
+        sorter.setSortKeys(sortKeys);
+        sorter.sort();
+    }
+
+    // Sort the table data by created time
+    public void sortByCreatedTime() {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
+        table.setRowSorter(sorter);
+
+        ArrayList<RowSorter.SortKey> sortKeys = new ArrayList<>();
+        sortKeys.add(new RowSorter.SortKey(8, SortOrder.ASCENDING));
+        sorter.setSortKeys(sortKeys);
+        sorter.sort();
+    }
+
+    public void searchByName(String name) {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
+        table.setRowSorter(sorter);
+
+        if (name.trim().length() == 0) {
+            // If the search field is empty, reset the row filter
+            sorter.setRowFilter(null);
+        } else {
+            // Perform name search using RowFilter
+            RowFilter<DefaultTableModel, Object> rf = RowFilter.regexFilter("(?i)" + name, 0); // search for username
+            sorter.setRowFilter(rf);
+        }
+    }
+
 
 }
