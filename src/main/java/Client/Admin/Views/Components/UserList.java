@@ -1,7 +1,7 @@
 package Client.Admin.Views.Components;
 
 import Client.Models.User;
-import Client.Controllers.UserController;
+import Client.Repository.UserRepository;
 import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
@@ -26,7 +26,7 @@ public class UserList extends JPanel {
     protected JPanel orderListPanel = new JPanel();
     protected JPanel appOpensSearch = new JPanel();
     protected JPanel datePickerContainer = new JPanel();
-    private UserController userModel = new UserController();
+    private UserRepository userModel = new UserRepository();
 
 
     protected JTable table;

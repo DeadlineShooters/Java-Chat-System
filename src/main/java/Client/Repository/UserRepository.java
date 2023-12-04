@@ -1,4 +1,4 @@
-package Client.Controllers;
+package Client.Repository;
 
 import Client.Admin.ConnectionManager;
 import Client.Models.User;
@@ -6,10 +6,10 @@ import Client.Models.User;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class UserController {
+public class UserRepository {
     private Connection con;
 
-    public UserController() {
+    public UserRepository() {
         this.con = ConnectionManager.getConnection();
     }
 
