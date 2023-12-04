@@ -5,6 +5,7 @@ import Client.Models.User;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class UserRepository {
     private Connection con;
@@ -70,6 +71,17 @@ public class UserRepository {
 
         return userList;
     }
+
+    public int getOldestYear() {
+        Date oldestDate = getOldestDate();
+        if (oldestDate != null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(oldestDate);
+            return calendar.get(Calendar.YEAR);
+        }
+        return -1; // return -1 or throw an exception if the date is null
+    }
+
 
     public void close() {
         ConnectionManager.closeConnection();
