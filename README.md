@@ -7,8 +7,8 @@
 
 ### Adding dependencies
 
-1. Search for dependency: https://central.sonatype.com/ and we get this `Apache Maven` snippet.
-   ![Alt text](image-1.png)
+1. Search for dependency: https://central.sonatype.com/ and we get this `Maven POM File` snippet.
+  ![img.png](img.png)
 2. Copy `<dependency>` block and paste into the <dependencies> section of pom.xml.
 
 ### Adding resources (i.g: .png, .jpg, etc)
@@ -28,8 +28,11 @@ In **powershell**:
 
 - Run Server:
   `.\mvnw exec:java`
-- Run Client:
-  `.\mvnw exec:java@client-execution`
+- Run Admin:
+  `.\mvnw exec:java@client-admin`
+- Run User:
+  `.\mvnw exec:java@client-user`
+- Run All: `.\mvnw package`
 
 ### Output
 
