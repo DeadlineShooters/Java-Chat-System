@@ -1,27 +1,30 @@
-package Client.Models;
+package Client.Controllers;
 
 import Client.Admin.ConnectionManager;
+import Client.Models.User;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
 
-public class UserModel {
+public class UserController {
     private Connection con;
 
-    public UserModel() {
+    public UserController() {
         this.con = ConnectionManager.getConnection();
     }
 
-    public ResultSet getUsers() {
-        ResultSet rs = null;
+    public ArrayList<User> getUsers() {
+        ArrayList<User> users = new ArrayList<>();
         try {
             Statement stmt = con.createStatement();
-            rs = stmt.executeQuery("SELECT * FROM User");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM User");
+            while (rs.next()) {
+                users.add(User.fromResultSet(rs));
+            }
         } catch (SQLException ex) {
             System.out.println("Failed to get users.");
         }
-        return rs;
+        return users;
     }
 
     public Date getOldestDate() {
@@ -56,18 +59,7 @@ public class UserModel {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                User user = new User(
-                        resultSet.getString("username"),
-                        resultSet.getString("full_name"),
-                        resultSet.getString("address"),
-                        resultSet.getDate("birth_date"),
-                        resultSet.getString("gender").charAt(0),
-                        resultSet.getString("email"),
-                        resultSet.getBoolean("status"),
-                        resultSet.getString("password"),
-                        resultSet.getTimestamp("created_at"),
-                        resultSet.getBoolean("is_locked")
-                );
+                User user = User.fromResultSet(resultSet);
 
                 userList.add(user);
             }

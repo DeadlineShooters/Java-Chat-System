@@ -1,7 +1,7 @@
 package Client.Admin.Views.Components;
 
 import Client.Models.User;
-import Client.Models.UserModel;
+import Client.Controllers.UserController;
 import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
@@ -15,7 +15,6 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.PlainDocument;
 import java.awt.*;
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -27,7 +26,7 @@ public class UserList extends JPanel {
     protected JPanel orderListPanel = new JPanel();
     protected JPanel appOpensSearch = new JPanel();
     protected JPanel datePickerContainer = new JPanel();
-    private UserModel userModel = new UserModel();
+    private UserController userModel = new UserController();
 
 
     protected JTable table;
