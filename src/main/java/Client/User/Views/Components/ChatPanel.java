@@ -1,4 +1,4 @@
-package Client.User.components;
+package Client.User.Views.Components;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

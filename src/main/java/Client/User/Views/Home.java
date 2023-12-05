@@ -1,19 +1,15 @@
-package Client.User;
+package Client.User.Views;
 
-import Client.User.components.ChatPanel;
-import Client.User.components.FriendsPanel;
-import Client.User.components.MenuBar;
-import Client.User.components.SettingsPanel;
+import Client.User.Views.Components.ChatPanel;
+import Client.User.Views.Components.FriendsPanel;
+import Client.User.Views.Components.MenuBar;
+import Client.User.Views.Components.SettingsPanel;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class ChatAppUI extends JFrame {
-
-
-
-
-    public ChatAppUI() {
+public class Home extends JFrame {
+    public Home() {
         // Set up the main frame
         setTitle("Chat App");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -43,6 +39,6 @@ public class ChatAppUI extends JFrame {
 
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new ChatAppUI());
+        SwingUtilities.invokeLater(() -> new Home());
     }
 }
