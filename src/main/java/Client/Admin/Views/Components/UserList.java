@@ -1,7 +1,7 @@
 package Client.Admin.Views.Components;
 
 import Client.Models.User;
-import Client.Repository.UserRepository;
+import Client.Admin.Repository.UserRepository;
 import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
