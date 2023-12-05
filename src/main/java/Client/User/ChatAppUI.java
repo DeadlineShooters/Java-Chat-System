@@ -20,6 +20,7 @@ public class ChatAppUI extends JFrame {
         setSize(800, 600);
         setLocationRelativeTo(null);
 
+
         // Create components
 
 
