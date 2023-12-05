@@ -15,35 +15,14 @@ public class ActiveUserList extends UserList {
     public ActiveUserList() {
         super();
         remove(searchBar);
+        remove(userListPanel);
+
         datePickerContainer.getParent().remove(datePickerContainer);
 
         appOpensSearch.getParent().remove(appOpensSearch);
         // Modify the columns array to include only the desired columns
         String[] columns = { "Username", "App Opens", "Chats with People", "Group Chats" };
-        // Define the data for the active users
-        Object[][] data = {
-                { "TuanTu", "158", "15", "4" },
-        };
-        // Create a new DefaultTableModel instance with the modified columns and data
-        DefaultTableModel model = new DefaultTableModel(data, columns) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; // All cells are not editable
-            }
-        };
-        // Set the model for the table component
-        table.setModel(model);
-        // Adjust the preferred width of each column
-        table.getColumnModel().getColumn(0).setPreferredWidth(100); // "Username"
-        table.getColumnModel().getColumn(1).setPreferredWidth(100); // "App Opens"
-        table.getColumnModel().getColumn(2).setPreferredWidth(120); // "Chats with People"
-        table.getColumnModel().getColumn(3).setPreferredWidth(120); // "Group Chats"
-
-
-        JPanel userListContainer = new JPanel();
-        remove(userListPanel);
-        userListContainer.add(userListPanel);
-        add(userListContainer, BorderLayout.CENTER);
+        initTable(columns);
 
         JPanel appOpensSearch = new JPanel();
         JComboBox<String> filter = new JComboBox<>(new String[] { "=", "<", ">" });
@@ -76,7 +55,7 @@ public class ActiveUserList extends UserList {
         appOpensSearch.setBackground(Color.white);
 
         // add time picker
-        JPanel timePickerPanel = new JPanel();
+        JPanel timePickerPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JLabel startLabel = new JLabel("Start Datetime:");
         JLabel endLabel = new JLabel("End Datetime:");
         // Create a DateTimePicker with default settings.
@@ -101,10 +80,31 @@ public class ActiveUserList extends UserList {
 
         timePickerPanel.setBackground(Color.white);
         userListPanel.add(filterContainer, BorderLayout.NORTH);
+        add(userListPanel, BorderLayout.NORTH);
 
     }
 
-    protected void removeDatePickerContainer(){
+    protected void initTable(String[] columns) {
+        DefaultTableModel model = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // All cells are not editable
+            }
+        };
 
+        table = new JTable(model);
+
+        // Adjust the preferred width of each column
+        table.getColumnModel().getColumn(0).setPreferredWidth(100); // "Username"
+        table.getColumnModel().getColumn(1).setPreferredWidth(100); // "App Opens"
+        table.getColumnModel().getColumn(2).setPreferredWidth(120); // "Chats with People"
+        table.getColumnModel().getColumn(3).setPreferredWidth(120); // "Group Chats"
+
+        // Add the table to the panel
+        JPanel userListContainer = new JPanel();
+        userListContainer.add(new JScrollPane(table));
+
+        add(userListContainer, BorderLayout.CENTER);
     }
+
 }

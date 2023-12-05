@@ -1,6 +1,6 @@
-package Client.Repository;
+package Client.Admin.Repository;
 
-import Client.Admin.ConnectionManager;
+import Client.ConnectionManager;
 import Client.Models.User;
 
 import java.sql.*;

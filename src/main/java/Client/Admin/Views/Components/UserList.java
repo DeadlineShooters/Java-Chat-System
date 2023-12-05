@@ -1,7 +1,7 @@
 package Client.Admin.Views.Components;
 
 import Client.Models.User;
-import Client.Repository.UserRepository;
+import Client.Admin.Repository.UserRepository;
 import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
@@ -128,6 +128,7 @@ public class UserList extends JPanel {
             previousDates[i] = new java.sql.Date(picker.getDate().getTime());
         }
 
+
 // Add a property change listener to each date picker
         previousDates[0] = userRepository.getOldestDate();
         for (int i = 0; i < 2; ++i) {
@@ -202,29 +203,7 @@ public class UserList extends JPanel {
         // Add a user list to the user list part
         String[] columns = {"Username", "Name", "Address", "Day of birth", "Gender", "Email", "<html>Number of <br>direct friends</html>", "Total friends", "Created time", "Actions"};
 
-        // Create a new DefaultTableModel instance
-        DefaultTableModel model = new DefaultTableModel(columns, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; // All cells are editable
-            }
-        };
-
-
-        table = new JTable(model);
-
-        // Get the table header
-        JTableHeader header = table.getTableHeader();
-
-// Get the existing height
-        int headerHeight = header.getPreferredSize().height;
-
-// Increase the height
-        headerHeight *= 2; // Change this to the factor you want
-
-// Set the new preferred height
-        header.setPreferredSize(new Dimension(header.getPreferredSize().width, headerHeight));
-
+        initTable(columns);
         java.util.Date firstUtilDate = pickers[0].getDate();
         java.util.Date secondUtilDate = pickers[1].getDate();
         java.sql.Date firstDate = new java.sql.Date(firstUtilDate.getTime());
@@ -236,46 +215,6 @@ public class UserList extends JPanel {
         updateTable(users);
         userListPanel.setBackground(Color.white);
 
-        // Set a custom renderer and editor for the last column
-        table.getColumnModel().getColumn(9).setCellRenderer(new MultiButtonRenderer());
-        // center element inside the number column's cell
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-        table.getColumnModel().getColumn(6).setCellRenderer(centerRenderer);
-        table.getColumnModel().getColumn(7).setCellRenderer(centerRenderer);
-
-        // Set the preferred width of each column
-        table.getColumnModel().getColumn(0).setPreferredWidth(100); // "Tên Đăng Nhập"
-        table.getColumnModel().getColumn(1).setPreferredWidth(120); // "Họ Tên"
-        table.getColumnModel().getColumn(2).setPreferredWidth(250); // "Địa Chỉ"
-        table.getColumnModel().getColumn(3).setPreferredWidth(80); // "Ngày Sinh"
-        table.getColumnModel().getColumn(4).setPreferredWidth(60); // "Giới Tính"
-        table.getColumnModel().getColumn(5).setPreferredWidth(150); // "Email"
-        table.getColumnModel().getColumn(6).setPreferredWidth(100); // "Number of friends"
-        table.getColumnModel().getColumn(7).setPreferredWidth(90); // "Number of direct friends"
-        table.getColumnModel().getColumn(8).setPreferredWidth(125); // "Number of friends of friend"
-        table.getColumnModel().getColumn(9).setPreferredWidth(160); // "Actions"
-//        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-
-        table.setBackground(Color.white);
-        table.setOpaque(true);
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF); // This line makes the table horizontally scrollable
-        table.getTableHeader().setResizingAllowed(false); // disable column resizing
-        table.getTableHeader().setReorderingAllowed(false); // disable column reordering
-
-        // set sorter for table
-         rowSorter = new TableRowSorter<>(model);
-        table.setRowSorter(rowSorter);
-
-        JScrollPane tableScrollPane = new JScrollPane(table);
-
-        tableScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        tableScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-
-
-        tableScrollPane.setBackground(Color.white);
-        tableScrollPane.setOpaque(true);
-        userListPanel.add(tableScrollPane, BorderLayout.CENTER);
         add(userListPanel, BorderLayout.CENTER);
 
         // Add a list selection listener to the table
@@ -330,10 +269,70 @@ public class UserList extends JPanel {
 
     }
 
-    public JPanel getOrderListPanel() {
-        return orderListPanel;
-    }
+    protected void initTable(String[] columns){
+        DefaultTableModel model = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // All cells are editable
+            }
+        };
 
+
+        table = new JTable(model);
+
+        // Get the table header
+        JTableHeader header = table.getTableHeader();
+
+// Get the existing height
+        int headerHeight = header.getPreferredSize().height;
+
+// Increase the height
+        headerHeight *= 2; // Change this to the factor you want
+
+// Set the new preferred height
+        header.setPreferredSize(new Dimension(header.getPreferredSize().width, headerHeight));
+
+        // Set a custom renderer and editor for the last column
+        table.getColumnModel().getColumn(9).setCellRenderer(new MultiButtonRenderer());
+        // center element inside the number column's cell
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        table.getColumnModel().getColumn(6).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(7).setCellRenderer(centerRenderer);
+
+        // Set the preferred width of each column
+        table.getColumnModel().getColumn(0).setPreferredWidth(100); // "Tên Đăng Nhập"
+        table.getColumnModel().getColumn(1).setPreferredWidth(120); // "Họ Tên"
+        table.getColumnModel().getColumn(2).setPreferredWidth(250); // "Địa Chỉ"
+        table.getColumnModel().getColumn(3).setPreferredWidth(80); // "Ngày Sinh"
+        table.getColumnModel().getColumn(4).setPreferredWidth(60); // "Giới Tính"
+        table.getColumnModel().getColumn(5).setPreferredWidth(150); // "Email"
+        table.getColumnModel().getColumn(6).setPreferredWidth(100); // "Number of friends"
+        table.getColumnModel().getColumn(7).setPreferredWidth(90); // "Number of direct friends"
+        table.getColumnModel().getColumn(8).setPreferredWidth(125); // "Number of friends of friend"
+        table.getColumnModel().getColumn(9).setPreferredWidth(160); // "Actions"
+//        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+
+        table.setBackground(Color.white);
+        table.setOpaque(true);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF); // This line makes the table horizontally scrollable
+        table.getTableHeader().setResizingAllowed(false); // disable column resizing
+        table.getTableHeader().setReorderingAllowed(false); // disable column reordering
+
+        // set sorter for table
+        rowSorter = new TableRowSorter<>(model);
+        table.setRowSorter(rowSorter);
+
+        JScrollPane tableScrollPane = new JScrollPane(table);
+
+        tableScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        tableScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+
+        tableScrollPane.setBackground(Color.white);
+        tableScrollPane.setOpaque(true);
+        userListPanel.add(tableScrollPane, BorderLayout.CENTER);
+    }
     public void updateTable(ArrayList<User> users) {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
@@ -389,7 +388,6 @@ public class UserList extends JPanel {
             rowSorter.setRowFilter(rf);
         }
     }
-
 
 
 }
