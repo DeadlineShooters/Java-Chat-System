@@ -9,7 +9,7 @@ public record User(
         Date dob,
         char gender,
         String email,
-        boolean status,
+        String status,
         String password,
         Timestamp createdAt,
         boolean isLocked
@@ -23,7 +23,7 @@ public record User(
                     resultSet.getDate("birth_date"),
                     resultSet.getString("gender").charAt(0),
                     resultSet.getString("email"),
-                    resultSet.getBoolean("status"),
+                    resultSet.getString("status"),
                     resultSet.getString("password"),
                     resultSet.getTimestamp("created_at"),
                     resultSet.getBoolean("is_locked")
