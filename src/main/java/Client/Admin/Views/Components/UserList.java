@@ -160,10 +160,17 @@ public class UserList extends JPanel {
 
         for (int i = 0; i < 2; ++i) {
             final int index = i;
+
             pickers[i].addActionListener(e -> {
+
                 java.util.Date firstUtilDate = pickers[0].getDate();
                 java.util.Date secondUtilDate = pickers[1].getDate();
+                if (firstUtilDate == null || secondUtilDate == null) {
+                    ArrayList<User> users = userRepository.getUsers();
 
+                    updateTable(users);
+                    return;
+                }
                 java.sql.Date firstDate = new java.sql.Date(firstUtilDate.getTime());
                 java.sql.Date secondDate = new java.sql.Date(secondUtilDate.getTime());
 
@@ -177,10 +184,8 @@ public class UserList extends JPanel {
                     }
                 } else {
                     previousDates[index] = new java.sql.Date(pickers[index].getDate().getTime());
-                    // Call getUsersByDateRange() with the new date range
                     ArrayList<User> users = userRepository.getUsersByDateRange(firstDate, secondDate);
 
-                    // Update your table with the new list of users
                     updateTable(users);
                 }
 
@@ -240,14 +245,8 @@ public class UserList extends JPanel {
         String[] columns = {"Username", "Name", "Address", "Day of birth", "Gender", "Email", "<html>Number of <br>direct friends</html>", "<html>Number of<br>friends of friend</html>", "Created time"};
 
         initTable(columns);
-        java.util.Date firstUtilDate = pickers[0].getDate();
-        java.util.Date secondUtilDate = pickers[1].getDate();
-        java.sql.Date firstDate = new java.sql.Date(firstUtilDate.getTime());
-        java.sql.Date secondDate = new java.sql.Date(secondUtilDate.getTime());
 
-        ArrayList<User> users = userRepository.getUsersByDateRange(firstDate, secondDate);
-
-        // Update your table with the new list of users
+        ArrayList<User> users = userRepository.getUsers();
         updateTable(users);
         userListPanel.setBackground(Color.white);
 

@@ -49,7 +49,7 @@ public class UserRepository {
     public ArrayList<User> getUsersByDateRange(Date startDate, Date endDate) {
         ArrayList<User> userList = new ArrayList<>();
 
-        String sql = "SELECT * FROM User WHERE created_at BETWEEN ? AND ?";
+        String sql = "SELECT * FROM User WHERE created_at BETWEEN ? AND ? ORDER BY username";
 
         try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
 
