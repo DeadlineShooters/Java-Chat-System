@@ -152,7 +152,12 @@ public class UserList extends JPanel {
 
 
 // Add a property change listener to each date picker
-        previousDates[0] = userRepository.getOldestDate();
+//        previousDates[0] = userRepository.getOldestDate();
+        previousDates[0] = null;
+        previousDates[1] = null;
+        pickers[0].setDate(null);
+        pickers[1].setDate(null);
+
         for (int i = 0; i < 2; ++i) {
             final int index = i;
             pickers[i].addActionListener(e -> {
@@ -163,9 +168,13 @@ public class UserList extends JPanel {
                 java.sql.Date secondDate = new java.sql.Date(secondUtilDate.getTime());
 
                 if (secondDate.before(firstDate)) {
-                    pickers[index].setDate(previousDates[index]);
                     JOptionPane.showMessageDialog(null, "End date cannot be before start date.");
 
+                    if (previousDates[index] == null){
+                        pickers[index].setDate(null);
+                    } else {
+                        pickers[index].setDate(previousDates[index]);
+                    }
                 } else {
                     previousDates[index] = new java.sql.Date(pickers[index].getDate().getTime());
                     // Call getUsersByDateRange() with the new date range
@@ -181,10 +190,10 @@ public class UserList extends JPanel {
 
 
         // set the first date picker to have the oldest date
-        pickers[0].setDate(userRepository.getOldestDate());
+//        pickers[0].setDate(userRepository.getOldestDate());
 
-        previousDates[0] = new Date(pickers[0].getDate().getTime()); // Current date of the first picker
-        previousDates[1] = new Date(pickers[1].getDate().getTime());  // Current date of the second picker
+//        previousDates[0] = new Date(pickers[0].getDate().getTime()); // Current date of the first picker
+//        previousDates[1] = new Date(pickers[1].getDate().getTime());  // Current date of the second picker
 
         datePickerContainer.setBackground(Color.white);
 
