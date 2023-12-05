@@ -16,10 +16,6 @@ public class Home extends JFrame {
         setSize(800, 600);
         setLocationRelativeTo(null);
 
-
-        // Create components
-
-
         // Set layout manager
         setLayout(new BorderLayout());
 

@@ -110,3 +110,25 @@
 //        }
 //    }
 //}
+//    ArrayList<User> getAllUsers() {
+//        ArrayList<User> users = new ArrayList<>();
+//        try {
+//        ResultSet resultSet = stmt.executeQuery("select * from user");
+//        while (resultSet.next()) {
+//        String username = resultSet.getString("username");
+//        String name = resultSet.getString("name");
+//        String address = resultSet.getString("address");
+//        Date dob = resultSet.getDate("dob");
+//        char gender = resultSet.getString("gender").charAt(0);
+//        String email = resultSet.getString("email");
+//        Timestamp createdAt = resultSet.getTimestamp("createdAt");
+//        boolean isLocked = resultSet.getBoolean("isLocked");
+//
+//        User user = new User(username, name, email, address, gender, dob, createdAt, isLocked);
+//        users.add(user);
+//        }
+//        } catch (SQLException e) {
+//        throw new RuntimeException(e);
+//        }
+//        return users;
+//        }

@@ -19,10 +19,36 @@ public class Register extends JFrame {
         super("Register");
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        setSize(450, 301);
 
         contentPane = new JPanel(new BorderLayout());
+        setSize(450, 340);
         setContentPane(contentPane);
+
+        topPanel();
+
+        inputPanel();
+
+        buttonPanel();
+
+//        pack();
+        setLocationRelativeTo(null); // Center the frame on the screens
+        setVisible(true);
+    }
+    void topPanel() {
+        JButton backBtn = new JButton("Back");
+        backBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                SwingUtilities.invokeLater(() -> new Login());
+            }
+        });
+        //btnForgot.setForeground(new Color(0, 0, 160));
+        //btnForgot.setBackground(new Color(192, 192, 192));
+//        backBtn.setContentAreaFilled(false);
+        backBtn.setFont(new Font("Arial", Font.ITALIC, 11));
+        backBtn.setBounds(20, 20, 60, 20);
+//        backBtn.setBorder(null);
+        contentPane.add(backBtn);
 
 
         JLabel title = new JLabel("REGISTER", SwingConstants.CENTER);
@@ -31,21 +57,13 @@ public class Register extends JFrame {
         title.setBounds(178, 15, 99, 40);
         title.setBorder(new EmptyBorder(20, 0, 20, 0));
         contentPane.add(title, BorderLayout.NORTH);
-
-        inputPanel();
-
-        buttonPanel();
-
-        pack();
-        setLocationRelativeTo(null); // Center the frame on the screens
-        setVisible(true);
     }
     void inputPanel() {
 
         JPanel panel = new JPanel(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 10, 5, 10); // Add some padding
+        gbc.insets = new Insets(5, 5, 5, 5); // Add some padding
 
         for (int i = 0; i < labels.length; i++) {
             gbc.gridx = 0;
@@ -78,6 +96,15 @@ public class Register extends JFrame {
                     }
                 }
 
+
+                if (values[0] == "email") {
+                    JOptionPane.showMessageDialog(contentPane, "Email has been used");
+                    return;
+                }
+                if (values[1] == "username") {
+                    JOptionPane.showMessageDialog(contentPane, "The username has been used");
+                    return;
+                }
                 if (!values[2].equals(values[3])) {
                     JOptionPane.showMessageDialog(contentPane, "Passwords don't match!");
                     return;
