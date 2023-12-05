@@ -304,11 +304,6 @@ public class UserList extends JPanel {
                     for (int i = 1; i < 4; i++) {
                         searchButtons[i].setVisible(true);
                     }
-                    // } else {
-                    //     // No row is selected, hide the button
-                    //     for (int i = 1; i < 4; i++) {
-                    //         searchButtons[i].setVisible(false);
-                    //     }
                 }
             }
         });
