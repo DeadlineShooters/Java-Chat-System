@@ -1,5 +1,6 @@
 package Client.Admin.Views.Components;
 
+import Client.Admin.Repository.SessionRepository;
 import Client.Models.User;
 import Client.Admin.Repository.UserRepository;
 import org.jdesktop.swingx.JXDatePicker;
@@ -29,6 +30,9 @@ public class UserList extends JPanel {
     protected UserRepository userRepository = new UserRepository();
     protected ArrayList<RowFilter<Object,Object>> filters = new ArrayList<RowFilter<Object,Object>>();
     protected TableRowSorter<DefaultTableModel> rowSorter;
+    protected JPanel buttonPanel = new JPanel();
+    protected SessionRepository sessionRepository = new SessionRepository();
+
 
     protected JTable table;
     // search button
@@ -102,7 +106,6 @@ public class UserList extends JPanel {
         JButton deleteButton = new JButton("Delete");
 
         // Create a panel for the buttons
-        JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(updateButton);
         buttonPanel.add(Box.createRigidArea(new Dimension(10, 0)));
@@ -161,6 +164,8 @@ public class UserList extends JPanel {
 
                 if (secondDate.before(firstDate)) {
                     pickers[index].setDate(previousDates[index]);
+                    JOptionPane.showMessageDialog(null, "End date cannot be before start date.");
+
                 } else {
                     previousDates[index] = new java.sql.Date(pickers[index].getDate().getTime());
                     // Call getUsersByDateRange() with the new date range
@@ -286,7 +291,30 @@ public class UserList extends JPanel {
                 rowSorter.setRowFilter(null); // Show all lines when the input field is empty
             }
         });
+        // Add a list selection listener to the table
+        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent event) {
+                if (!event.getValueIsAdjusting() && table.getSelectedRow() != -1) {
+                    for (int i = 1; i < 4; i++) {
+                        searchButtons[i].setVisible(true);
+                    }
+                }
+            }
+        });
 
+        orderList.addActionListener(e -> {
+            String selectedSort = (String) orderList.getSelectedItem();
+            if ("Sort by name".equals(selectedSort)) {
+                sortByName();
+            } else if ("Sort by created time".equals(selectedSort)) {
+                sortByCreatedTime();
+            }
+        });
+
+        searchButtons[0].addActionListener(e -> {
+            String name = textField1.getText().trim();
+            searchByName(name);
+        });
 
 
     }
@@ -359,30 +387,7 @@ public class UserList extends JPanel {
         userListPanel.add(tableScrollPane, BorderLayout.CENTER);
         add(userListPanel, BorderLayout.CENTER);
 
-        // Add a list selection listener to the table
-        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent event) {
-                if (!event.getValueIsAdjusting() && table.getSelectedRow() != -1) {
-                    for (int i = 1; i < 4; i++) {
-                        searchButtons[i].setVisible(true);
-                    }
-                }
-            }
-        });
 
-        orderList.addActionListener(e -> {
-            String selectedSort = (String) orderList.getSelectedItem();
-            if ("Sort by name".equals(selectedSort)) {
-                sortByName();
-            } else if ("Sort by created time".equals(selectedSort)) {
-                sortByCreatedTime();
-            }
-        });
-
-        searchButtons[0].addActionListener(e -> {
-            String name = textField1.getText().trim();
-            searchByName(name);
-        });
     }
     public void updateTable(ArrayList<User> users) {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -404,7 +409,7 @@ public class UserList extends JPanel {
             int numberOfFriendsOfFriends = userRepository.fetchNumberOfFriendsOfFriends(user.username());
             row[7] = numberOfFriendsOfFriends + numberOfFriends;
             row[8] = user.createdAt();
-            row[9] = "Update, Delete"; // Actions
+//            row[9] = "Update, Delete"; // Actions
 
             model.addRow(row);
         }

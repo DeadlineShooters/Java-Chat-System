@@ -18,7 +18,7 @@ public class UserRepository {
         ArrayList<User> users = new ArrayList<>();
         try {
             Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM User");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM User ORDER BY username;");
             while (rs.next()) {
                 users.add(User.fromResultSet(rs));
             }
