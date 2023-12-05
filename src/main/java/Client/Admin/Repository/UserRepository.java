@@ -1,4 +1,4 @@
-package Client.Repository;
+package Client.Admin.Repository;
 
 import Client.Admin.ConnectionManager;
 import Client.Models.User;
@@ -66,11 +66,59 @@ public class UserRepository {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            // Handle exception appropriately
         }
 
         return userList;
     }
+
+    public int fetchNumberOfFriends(String username) {
+        String sql = "SELECT COUNT(*) AS friend_count FROM Friend WHERE user1 = ? OR user2 = ?";
+        int numberOfFriends = 0;
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            stmt.setString(2, username);
+            ResultSet resultSet = stmt.executeQuery();
+            if (resultSet.next()) {
+                numberOfFriends = resultSet.getInt("friend_count");
+            }
+        } catch (SQLException exc) {
+            exc.printStackTrace();
+        }
+        return numberOfFriends;
+    }
+
+
+    public int fetchNumberOfFriendsOfFriends(String username) {
+        String sql = "SELECT SUM(total_num_friends_of_friends) as total_friends_of_friends FROM " +
+                "( " +
+                "    (SELECT count(DISTINCT CASE WHEN f1.user2 = f2.user2 THEN f2.user1 ELSE f2.user2 END) as total_num_friends_of_friends " +
+                "    FROM friend f1 " +
+                "    JOIN friend f2 ON  (f1.user2 = f2.user1 OR f1.user2 = f2.user2) " +
+                "    WHERE f1.user1 = ? AND (f2.user1 <> ? AND f2.user2 <> ?)) " +
+                " " +
+                "    UNION ALL " +
+                " " +
+                "    (SELECT count(DISTINCT CASE WHEN f1.user1 = f2.user2 THEN f2.user1 ELSE f2.user2 END) as total_num_friends_of_friends " +
+                "    FROM friend f1 " +
+                "    JOIN friend f2 ON  (f1.user1 = f2.user1 OR f1.user1 = f2.user2) " +
+                "    WHERE f1.user2 = ? AND (f2.user1 <> ? AND f2.user2 <> ?)) " +
+                ") as subquery;";
+
+        int numberOfFriendsOfFriends = 0;
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            for (int i = 1; i <= 6; ++i)
+                stmt.setString(i, username);
+            ResultSet resultSet = stmt.executeQuery();
+            if (resultSet.next()) {
+                numberOfFriendsOfFriends = resultSet.getInt("total_friends_of_friends");
+            }
+        } catch (SQLException exc) {
+            exc.printStackTrace();
+        }
+        return numberOfFriendsOfFriends;
+    }
+
+
 
     public int getOldestYear() {
         Date oldestDate = getOldestDate();

@@ -1,7 +1,7 @@
 package Client.Admin.Views.Components;
 
 import Client.Models.User;
-import Client.Repository.UserRepository;
+import Client.Admin.Repository.UserRepository;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
