@@ -15,8 +15,11 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.PlainDocument;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -99,12 +102,15 @@ public class UserList extends JPanel {
         orderListPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
 
         // Create Update and Delete buttons
+        JButton addButton = new JButton("Add");
         JButton updateButton = new JButton("Update");
         JButton deleteButton = new JButton("Delete");
 
         // Create a panel for the buttons
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.add(addButton);
+        buttonPanel.add(Box.createRigidArea(new Dimension(10, 0)));
         buttonPanel.add(updateButton);
         buttonPanel.add(Box.createRigidArea(new Dimension(10, 0)));
         buttonPanel.add(deleteButton);
@@ -329,8 +335,6 @@ public class UserList extends JPanel {
             String status = comboBox.getSelectedItem().toString();
             search(username, fullName, status);
         });
-        getRootPane().setDefaultButton(searchButtons[0]);
-
         // Inside the constructor after initializing the filter JComboBox and
         // appOpenInput JTextField
         appOpenInput.addActionListener(e -> {
@@ -352,6 +356,23 @@ public class UserList extends JPanel {
                 rowSorter.setRowFilter(rowFilter);
             } else {
                 rowSorter.setRowFilter(null); // Show all lines when the input field is empty
+            }
+        });
+
+        addButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                InputFrame inputFrame = new InputFrame();
+                inputFrame.submitButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        String username = inputFrame.textFields[0].getText();
+                        String fullName = inputFrame.textFields[1].getText();
+                        String email = inputFrame.textFields[2].getText();
+                        Timestamp createdAt = new Timestamp(System.currentTimeMillis());
+                        userRepository.insert(username, fullName, email, createdAt);
+                        inputFrame.dispose();
+                        updateTable(userRepository.getUsersByDateRange(firstDate, secondDate));
+                    }
+                });
             }
         });
 

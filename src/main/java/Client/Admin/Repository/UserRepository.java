@@ -87,18 +87,19 @@ public class UserRepository {
         return numberOfFriends;
     }
 
-
     public int fetchNumberOfFriendsOfFriends(String username) {
         String sql = "SELECT SUM(total_num_friends_of_friends) as total_friends_of_friends FROM " +
                 "( " +
-                "    (SELECT count(DISTINCT CASE WHEN f1.user2 = f2.user2 THEN f2.user1 ELSE f2.user2 END) as total_num_friends_of_friends " +
+                "    (SELECT count(DISTINCT CASE WHEN f1.user2 = f2.user2 THEN f2.user1 ELSE f2.user2 END) as total_num_friends_of_friends "
+                +
                 "    FROM friend f1 " +
                 "    JOIN friend f2 ON  (f1.user2 = f2.user1 OR f1.user2 = f2.user2) " +
                 "    WHERE f1.user1 = ? AND (f2.user1 <> ? AND f2.user2 <> ?)) " +
                 " " +
                 "    UNION ALL " +
                 " " +
-                "    (SELECT count(DISTINCT CASE WHEN f1.user1 = f2.user2 THEN f2.user1 ELSE f2.user2 END) as total_num_friends_of_friends " +
+                "    (SELECT count(DISTINCT CASE WHEN f1.user1 = f2.user2 THEN f2.user1 ELSE f2.user2 END) as total_num_friends_of_friends "
+                +
                 "    FROM friend f1 " +
                 "    JOIN friend f2 ON  (f1.user1 = f2.user1 OR f1.user1 = f2.user2) " +
                 "    WHERE f1.user2 = ? AND (f2.user1 <> ? AND f2.user2 <> ?)) " +
@@ -118,8 +119,6 @@ public class UserRepository {
         return numberOfFriendsOfFriends;
     }
 
-
-
     public int getOldestYear() {
         Date oldestDate = getOldestDate();
         if (oldestDate != null) {
@@ -130,6 +129,19 @@ public class UserRepository {
         return -1; // return -1 or throw an exception if the date is null
     }
 
+    public void insert(String username, String fullName, String email, Timestamp createdAt) {
+        String sql = "INSERT INTO user (username, full_name, email, created_at) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            stmt.setString(2, fullName);
+            stmt.setString(3, email);
+            stmt.setTimestamp(4, createdAt);
+            stmt.execute();
+            System.out.println("success");
+        } catch (SQLException exc) {
+            exc.printStackTrace();
+        }
+    }
 
     public void close() {
         ConnectionManager.closeConnection();
