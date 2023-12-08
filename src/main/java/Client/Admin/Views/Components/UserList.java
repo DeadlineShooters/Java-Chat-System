@@ -37,6 +37,10 @@ public class UserList extends JPanel {
     protected JPanel buttonPanel = new JPanel();
     protected SessionRepository sessionRepository = new SessionRepository();
     protected JPanel panel2 = new JPanel(new BorderLayout());
+    protected JTextField textField1 = new JTextField(16);
+    private java.sql.Date firstDate;
+    private java.sql.Date secondDate;
+
 
     protected JTable table;
     // search button
@@ -57,7 +61,6 @@ public class UserList extends JPanel {
         JLabel label1 = new JLabel("Username");
         label1.setBackground(Color.white);
         label1.setOpaque(true);
-        JTextField textField1 = new JTextField(16);
         panel1.add(label1, BorderLayout.NORTH);
         panel1.add(textField1, BorderLayout.CENTER);
 
@@ -74,7 +77,7 @@ public class UserList extends JPanel {
         JLabel label3 = new JLabel("Status");
         label3.setBackground(Color.white);
         label3.setOpaque(true);
-        JComboBox<String> comboBox = new JComboBox<>(new String[] { "All", "Online", "Absent", "Offline" });
+        JComboBox<String> comboBox = new JComboBox<>(new String[] { "Online", "Offline" });
         panel3.add(label3, BorderLayout.NORTH);
         panel3.add(comboBox, BorderLayout.CENTER);
 
@@ -175,8 +178,8 @@ public class UserList extends JPanel {
                     updateTable(users);
                     return;
                 }
-                java.sql.Date firstDate = new java.sql.Date(firstUtilDate.getTime());
-                java.sql.Date secondDate = new java.sql.Date(secondUtilDate.getTime());
+                firstDate = new java.sql.Date(firstUtilDate.getTime());
+                secondDate = new java.sql.Date(secondUtilDate.getTime());
 
                 if (secondDate.before(firstDate)) {
                     JOptionPane.showMessageDialog(null, "End date cannot be before start date.");
@@ -195,12 +198,6 @@ public class UserList extends JPanel {
 
             });
         }
-
-        // set the first date picker to have the oldest date
-//        pickers[0].setDate(userRepository.getOldestDate());
-
-//        previousDates[0] = new Date(pickers[0].getDate().getTime()); // Current date of the first picker
-//        previousDates[1] = new Date(pickers[1].getDate().getTime());  // Current date of the second picker
 
         datePickerContainer.setBackground(Color.white);
 
@@ -302,10 +299,29 @@ public class UserList extends JPanel {
             }
         });
 
+        searchButtons[0].addActionListener(e -> {
+            String username = textField1.getText().trim();
+            String fullName = textField2.getText().trim();
+            String status = comboBox.getSelectedItem().toString();
+            search(username, fullName, status);
+        });
 
-
-
-
+        addButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                InputFrame inputFrame = new InputFrame();
+                inputFrame.submitButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        String username = inputFrame.textFields[0].getText();
+                        String fullName = inputFrame.textFields[1].getText();
+                        String email = inputFrame.textFields[2].getText();
+                        Timestamp createdAt = new Timestamp(System.currentTimeMillis());
+                        userRepository.insert(username, fullName, email, createdAt);
+                        inputFrame.dispose();
+                        updateTable(userRepository.getUsersByDateRange(firstDate, secondDate));
+                    }
+                });
+            }
+        });
     }
 
     protected void initTable(String[] columns){
@@ -374,31 +390,6 @@ public class UserList extends JPanel {
         tableScrollPane.setOpaque(true);
         userListPanel.add(tableScrollPane, BorderLayout.CENTER);
         add(userListPanel, BorderLayout.CENTER);
-
-
-        searchButtons[0].addActionListener(e -> {
-            String username = textField1.getText().trim();
-            String fullName = textField2.getText().trim();
-            String status = comboBox.getSelectedItem().toString();
-            search(username, fullName, status);
-        });
-  
-        addButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                InputFrame inputFrame = new InputFrame();
-                inputFrame.submitButton.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        String username = inputFrame.textFields[0].getText();
-                        String fullName = inputFrame.textFields[1].getText();
-                        String email = inputFrame.textFields[2].getText();
-                        Timestamp createdAt = new Timestamp(System.currentTimeMillis());
-                        userRepository.insert(username, fullName, email, createdAt);
-                        inputFrame.dispose();
-                        updateTable(userRepository.getUsersByDateRange(firstDate, secondDate));
-                    }
-                });
-            }
-        });
 
     }
     public void updateTable(ArrayList<User> users) {
