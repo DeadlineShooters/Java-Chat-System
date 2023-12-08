@@ -259,12 +259,7 @@ public class UserList extends JPanel {
             }
         });
 
-
-
-        searchButtons[0].addActionListener(e -> {
-            String name = textField1.getText().trim();
-            searchByName(name);
-        });
+        
 
         // Inside the constructor after initializing the filter JComboBox and appOpenInput JTextField
         appOpenInput.addActionListener(e -> {
@@ -301,10 +296,6 @@ public class UserList extends JPanel {
 
 
 
-        searchButtons[0].addActionListener(e -> {
-            String name = textField1.getText().trim();
-            searchByName(name);
-        });
 
 
     }
@@ -424,16 +415,7 @@ public class UserList extends JPanel {
         rowSorter.sort();
     }
 
-    public void searchByName(String name) {
-        if (name.trim().length() == 0) {
-            // If the search field is empty, reset the row filter
-            rowSorter.setRowFilter(null);
-        } else {
-            // Perform name search using RowFilter
-            RowFilter<DefaultTableModel, Object> rf = RowFilter.regexFilter("(?i)" + name, 0); // search for username
-            rowSorter.setRowFilter(rf);
-        }
-    }
+
 
 
 }
