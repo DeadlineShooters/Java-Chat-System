@@ -134,12 +134,12 @@ public class ActiveUserList extends UserList {
         table.getColumnModel().getColumn(3).setPreferredWidth(165); // "Group Chats"
 
         // Add the table to the panel
-        JPanel userListContainer = new JPanel();
-        userListContainer.add(new JScrollPane(table));
+        JPanel userListContainer = new JPanel(new BorderLayout()); // Use BorderLayout here
+        userListContainer.add(new JScrollPane(table), BorderLayout.CENTER);
 
-        add(userListContainer, BorderLayout.CENTER);
-
+        add(userListContainer, BorderLayout.CENTER); // Add userListContainer to BorderLayout.CENTER
     }
+
 
     public void updateTableActivity(ArrayList<UserActivity> activities) {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
