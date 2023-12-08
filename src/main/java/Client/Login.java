@@ -1,4 +1,9 @@
-package Client.User.Views;
+package Client;
+
+import Client.Admin.AdminApp;
+import Client.Models.User;
+import Client.User.CurrentUser;
+import Client.User.UserApp;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -103,13 +108,20 @@ public class Login extends JFrame {
                 }
 
                 // check account existence
-                if (1 == 1) {
+                if (1 == 0) {
                     JOptionPane.showMessageDialog(contentPane, "Wrong username or password!");
                     return;
                 }
 
                 dispose();
-                SwingUtilities.invokeLater(() -> new Home());
+                if (username.equals("admin") && password.equals("admin")) {
+                    SwingUtilities.invokeLater(() -> new AdminApp());
+                } else {
+                    User user = new User("a@a", username, password);
+                    CurrentUser.getInstance().setUser(user);
+//                    SwingUtilities.invokeLater(() -> new UserApp());
+                    new Thread(new UserApp()).start();
+                }
             }
         });
 

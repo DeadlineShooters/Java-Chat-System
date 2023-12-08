@@ -7,13 +7,16 @@ public record User(
         String name,
         String address,
         Date dob,
-        char gender,
+        String gender,
         String email,
         boolean status,
         String password,
         Timestamp createdAt,
         boolean isLocked
 ) {
+    public User(String email, String username, String password) {
+        this(username, null, null, null, null, email, false, password, new Timestamp(System.currentTimeMillis()), false);
+    }
     public static User fromResultSet(ResultSet resultSet) {
         try {
             return new User(
@@ -21,7 +24,7 @@ public record User(
                     resultSet.getString("full_name"),
                     resultSet.getString("address"),
                     resultSet.getDate("birth_date"),
-                    resultSet.getString("gender").charAt(0),
+                    resultSet.getString("gender"),
                     resultSet.getString("email"),
                     resultSet.getBoolean("status"),
                     resultSet.getString("password"),
@@ -33,5 +36,7 @@ public record User(
             return null; // You should handle this case appropriately in your code
         }
     }
-
+    String encodePwd() {
+        return "";
+    }
 }

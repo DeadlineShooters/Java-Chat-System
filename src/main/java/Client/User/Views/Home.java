@@ -22,7 +22,7 @@ public class Home extends JFrame {
         // Add components to the main frame
         add(new MenuBar(), BorderLayout.NORTH);
         add(new FriendsPanel(), BorderLayout.WEST);
-        add(new ChatPanel(), BorderLayout.CENTER);
+        add(ChatPanel.getInstance(), BorderLayout.CENTER);
         add(new SettingsPanel(), BorderLayout.EAST);
 
         // Make the frame visible
