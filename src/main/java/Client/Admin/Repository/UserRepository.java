@@ -129,14 +129,30 @@ public class UserRepository {
         return -1; // return -1 or throw an exception if the date is null
     }
 
-    public void insert(String username, String fullName, String email, Timestamp createdAt) {
-        String sql = "INSERT INTO user (username, full_name, email, created_at) VALUES (?, ?, ?, ?)";
+    public void insert(String username, String password, String email, Timestamp createdAt) {
+        String sql = "insert into user (username, password, email, created_at) values (?, ?, ?, ?)";
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setString(1, username);
-            stmt.setString(2, fullName);
+            stmt.setString(2, password);
             stmt.setString(3, email);
             stmt.setTimestamp(4, createdAt);
             stmt.execute();
+            System.out.println("success");
+        } catch (SQLException exc) {
+            exc.printStackTrace();
+        }
+    }
+
+    public void update(String username, String fullName, String address, Timestamp dob, String gender, String email) {
+        String sql = "update user set full_name = ?, address = ?, birth_date = ?, gender = ?, email = ? where username = ?";
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, fullName);
+            stmt.setString(2, address);
+            stmt.setTimestamp(3, dob);
+            stmt.setString(4, gender);
+            stmt.setString(5, email);
+            stmt.setString(6, username);
+            stmt.executeUpdate();
             System.out.println("success");
         } catch (SQLException exc) {
             exc.printStackTrace();

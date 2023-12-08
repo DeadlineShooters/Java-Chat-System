@@ -8,17 +8,17 @@ import java.sql.Timestamp;
 
 import Client.Admin.Repository.UserRepository;
 
-public class InputFrame extends JFrame {
+public class AddFrame extends JFrame {
     protected UserRepository userRepository = new UserRepository();
     public JTextField[] textFields = new JTextField[3];
     public JButton submitButton = new JButton("Submit");
 
-    InputFrame() {
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    AddFrame() {
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
         JLabel[] labels = new JLabel[3];
         labels[0] = new JLabel("Username: ");
-        labels[1] = new JLabel("Full name: ");
+        labels[1] = new JLabel("Password: ");
         labels[2] = new JLabel("Email: ");
         JPanel[] panels = new JPanel[3];
         for (int i = 0; i < 3; i++) {

@@ -3,6 +3,7 @@ package Client.Admin.Views.Components;
 import Client.Models.User;
 import Client.Admin.Repository.UserRepository;
 import org.jdesktop.swingx.JXDatePicker;
+import org.w3c.dom.events.MouseEvent;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -17,10 +18,13 @@ import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseListener;
 import java.text.SimpleDateFormat;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Vector;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -361,18 +365,47 @@ public class UserList extends JPanel {
 
         addButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                InputFrame inputFrame = new InputFrame();
-                inputFrame.submitButton.addActionListener(new ActionListener() {
+                AddFrame addFrame = new AddFrame();
+                addFrame.submitButton.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        String username = inputFrame.textFields[0].getText();
-                        String fullName = inputFrame.textFields[1].getText();
-                        String email = inputFrame.textFields[2].getText();
+                        String username = addFrame.textFields[0].getText();
+                        String password = addFrame.textFields[1].getText();
+                        String email = addFrame.textFields[2].getText();
                         Timestamp createdAt = new Timestamp(System.currentTimeMillis());
-                        userRepository.insert(username, fullName, email, createdAt);
-                        inputFrame.dispose();
+                        userRepository.insert(username, password, email, createdAt);
+                        addFrame.dispose();
                         updateTable(userRepository.getUsersByDateRange(firstDate, secondDate));
                     }
                 });
+            }
+        });
+
+        // update list
+        updateButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (table.getSelectedRow() != -1) {
+                    int row = table.getSelectedRow();
+                    String username = (String) table.getValueAt(row, 0);
+                    String fullName = (String) table.getValueAt(row, 1);
+                    String address = (String) table.getValueAt(row, 2);
+                    Date dob = (Date) table.getValueAt(row, 3);
+                    String gender = (String) table.getValueAt(row, 4);
+                    String email = (String) table.getValueAt(row, 5);
+                    UpdateFrame updateFrame = new UpdateFrame(username, fullName, address, dob, gender, email);
+                    updateFrame.submitButton.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent e) {
+                            String username = updateFrame.textFields[0].getText();
+                            String fullName = updateFrame.textFields[1].getText();
+                            String address = updateFrame.textFields[2].getText();
+                            String gender = updateFrame.textFields[3].getText();
+                            String email = updateFrame.textFields[4].getText();
+                            Timestamp dob = new Timestamp(updateFrame.datePicker.getDate().getTime());
+                            userRepository.update(username, fullName, address, dob, gender, email);
+                            updateFrame.dispose();
+                            updateTable(userRepository.getUsersByDateRange(firstDate, secondDate));
+                        }
+                    });
+                }
             }
         });
 
