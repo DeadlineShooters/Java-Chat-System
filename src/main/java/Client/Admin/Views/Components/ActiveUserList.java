@@ -32,6 +32,7 @@ public class ActiveUserList extends UserList {
         String[] columns = {"Username", "App Opens", "Number of people chatted", "Number of groups chatted"};
         initTable(columns);
 
+        orderListPanel.add(panel2);
         // App Opens Search
         JPanel appOpensSearch = createNumericSearchPanel("App opens:");
         orderListPanel.add(appOpensSearch);
@@ -75,6 +76,11 @@ public class ActiveUserList extends UserList {
 
 
         timePickerPanel.setBackground(Color.white);
+
+        // Add an EmptyBorder with top padding (20 pixels in this example)
+        filterContainer.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+        filterContainer.setBackground(Color.white);
+
         userListPanel.add(filterContainer, BorderLayout.NORTH);
         add(userListPanel, BorderLayout.NORTH);
 

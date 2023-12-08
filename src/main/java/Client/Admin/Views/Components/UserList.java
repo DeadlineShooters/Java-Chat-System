@@ -32,7 +32,7 @@ public class UserList extends JPanel {
     protected TableRowSorter<DefaultTableModel> rowSorter;
     protected JPanel buttonPanel = new JPanel();
     protected SessionRepository sessionRepository = new SessionRepository();
-
+    protected JPanel panel2 = new JPanel(new BorderLayout());
 
     protected JTable table;
     // search button
@@ -58,7 +58,6 @@ public class UserList extends JPanel {
         panel1.add(textField1, BorderLayout.CENTER);
 
         // Label and text field 2
-        JPanel panel2 = new JPanel(new BorderLayout());
         JLabel label2 = new JLabel("Username");
         label2.setBackground(Color.white);
         label2.setOpaque(true);
@@ -116,9 +115,7 @@ public class UserList extends JPanel {
         JPanel orderListRightPanel = new JPanel();
         orderListRightPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-        JComboBox<String> orderList = new JComboBox<>(new String[] { "Sort by name", "Sort by created time" });
         orderListPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        orderList.setMaximumSize(orderList.getPreferredSize()); // This will make the JComboBox not stretch
 
         // orderListPanel.add(Box.createHorizontalGlue()); // This will push the
         // JComboBox to the right
@@ -231,7 +228,6 @@ public class UserList extends JPanel {
 
         orderListRightPanel.add(appOpensSearch);
         orderListRightPanel.add(datePickerContainer);
-        orderListRightPanel.add(orderList);
         orderListRightPanel.setBackground(Color.white);
 
         orderListPanel.add(buttonPanel);
@@ -263,14 +259,7 @@ public class UserList extends JPanel {
             }
         });
 
-        orderList.addActionListener(e -> {
-            String selectedSort = (String) orderList.getSelectedItem();
-            if ("Sort by name".equals(selectedSort)) {
-                sortByName();
-            } else if ("Sort by created time".equals(selectedSort)) {
-                sortByCreatedTime();
-            }
-        });
+
 
         searchButtons[0].addActionListener(e -> {
             String name = textField1.getText().trim();
@@ -310,14 +299,7 @@ public class UserList extends JPanel {
             }
         });
 
-        orderList.addActionListener(e -> {
-            String selectedSort = (String) orderList.getSelectedItem();
-            if ("Sort by name".equals(selectedSort)) {
-                sortByName();
-            } else if ("Sort by created time".equals(selectedSort)) {
-                sortByCreatedTime();
-            }
-        });
+
 
         searchButtons[0].addActionListener(e -> {
             String name = textField1.getText().trim();
