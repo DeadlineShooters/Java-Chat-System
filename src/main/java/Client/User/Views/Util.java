@@ -23,7 +23,7 @@ public class Util {
 
         return new ImageIcon(roundedImage);
     }
-    public static ImageIcon createImage(String path, int w, int h) {
+    public static ImageIcon createImageIcon(String path, int w, int h) {
         ImageIcon icon = new ImageIcon(Objects.requireNonNull(Util.class.getClassLoader().getResource(path)));
         Image img = icon.getImage().getScaledInstance(w, h,  java.awt.Image.SCALE_SMOOTH);
         return new ImageIcon(img);

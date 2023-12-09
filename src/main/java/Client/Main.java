@@ -1,14 +1,13 @@
 package Client;
 
+import Client.User.Repositories.UserRepo;
+
 import javax.swing.*;
 
-public class Main implements Runnable {
+public class Main {
     public static void main(String[] args) {
 //        new Thread(new Main()).start();
-        SwingUtilities.invokeLater(() -> new Login());
-    }
-    @Override
-    public void run() {
+        UserRepo user = new UserRepo();
         SwingUtilities.invokeLater(() -> new Login());
     }
 }

@@ -9,7 +9,7 @@ public class SettingsPanel extends JPanel {
         super(new BorderLayout());
 //        settingsTabbedPane = new JTabbedPane();
         setBorder(BorderFactory.createTitledBorder("Settings"));
-        setPreferredSize(new Dimension(200, this.getPreferredSize().height));
+        setPreferredSize(new Dimension(300, this.getPreferredSize().height));
 
 //        add(settingsTabbedPane, BorderLayout.CENTER);
 

@@ -13,7 +13,7 @@ public class Home extends JFrame {
         // Set up the main frame
         setTitle("Chat App");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
+        setSize(1200, 800);
         setLocationRelativeTo(null);
 
         // Set layout manager

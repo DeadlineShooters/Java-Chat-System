@@ -1,5 +1,8 @@
 package Client;
 
+import Client.Models.User;
+import Client.User.Repositories.UserRepo;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -36,6 +39,7 @@ public class Register extends JFrame {
     }
     void topPanel() {
         JButton backBtn = new JButton("Back");
+        backBtn.setFocusPainted(false);
         backBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 dispose();
@@ -97,21 +101,26 @@ public class Register extends JFrame {
                 }
 
 
-                if (values[0] == "email") {
-                    JOptionPane.showMessageDialog(contentPane, "Email has been used");
-                    return;
-                }
-                if (values[1] == "username") {
-                    JOptionPane.showMessageDialog(contentPane, "The username has been used");
-                    return;
-                }
+//                if (values[0] == "email") {
+//                    JOptionPane.showMessageDialog(contentPane, "Email has been used");
+//                    return;
+//                }
+//                if (values[1] == "username") {
+//                    JOptionPane.showMessageDialog(contentPane, "The username has been used");
+//                    return;
+//                }
                 if (!values[2].equals(values[3])) {
                     JOptionPane.showMessageDialog(contentPane, "Passwords don't match!");
                     return;
                 }
-
-                dispose();
-                SwingUtilities.invokeLater(() -> new Login());
+                if (UserRepo.add(values[0], values[1], User.encryptPassword(values[2]))) {
+                    JOptionPane.showMessageDialog(contentPane, "Account created!");
+                    dispose();
+                    SwingUtilities.invokeLater(() -> new Login());
+                } else {
+                    JOptionPane.showMessageDialog(contentPane, "Account existed!");
+                    return;
+                }
             }
         });
 

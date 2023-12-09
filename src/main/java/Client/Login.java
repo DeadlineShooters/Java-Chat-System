@@ -3,6 +3,7 @@ package Client;
 import Client.Admin.AdminApp;
 import Client.Models.User;
 import Client.User.CurrentUser;
+import Client.User.Repositories.UserRepo;
 import Client.User.UserApp;
 
 import javax.swing.*;
@@ -107,19 +108,19 @@ public class Login extends JFrame {
                     return;
                 }
 
-                // check account existence
-                if (1 == 0) {
-                    JOptionPane.showMessageDialog(contentPane, "Wrong username or password!");
-                    return;
-                }
 
-                dispose();
                 if (username.equals("admin") && password.equals("admin")) {
+                    dispose();
                     SwingUtilities.invokeLater(() -> new AdminApp());
                 } else {
-                    User user = new User("a@a", username, password);
+                    // Authentication
+                    if (!UserRepo.authen(username, password)) {
+                        JOptionPane.showMessageDialog(contentPane, "Wrong username or password!","Alert",JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+                    User user = UserRepo.getOne(username);
                     CurrentUser.getInstance().setUser(user);
-//                    SwingUtilities.invokeLater(() -> new UserApp());
+                    dispose();
                     new Thread(new UserApp()).start();
                 }
             }

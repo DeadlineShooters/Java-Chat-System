@@ -17,7 +17,7 @@ public class Client implements Runnable {
 
     public Client() {
         try {
-            this.socket = socket = new Socket("localhost", 3001);
+            this.socket = new Socket("localhost", 3001);
 //            this.currentUser = currentUser;
             this.printWriter = new PrintWriter(socket.getOutputStream(), true);
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -44,20 +44,16 @@ public class Client implements Runnable {
 
     @Override
     public void run() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String msgFromGroupChat;
-                while (socket.isConnected()) {
-                    try {
-                        msgFromGroupChat = bufferedReader.readLine();
-                        System.out.println(msgFromGroupChat);
-                        ChatPanel.getInstance().addSelfMsg(msgFromGroupChat);
-                    } catch (IOException e) {
-                        closeEverything();
-                    }
-                }
+        String msgFromGroupChat;
+        while (socket.isConnected()) {
+            try {
+                msgFromGroupChat = bufferedReader.readLine();
+                System.out.println(msgFromGroupChat);
+                ChatPanel.getInstance().addSelfMsg(msgFromGroupChat);
+            } catch (IOException e) {
+                closeEverything();
             }
-        }).start();
+        }
+
     }
 }
