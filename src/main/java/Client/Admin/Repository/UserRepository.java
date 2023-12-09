@@ -130,6 +130,31 @@ public class UserRepository {
         }
     }
 
+    public Date getCreatedDate(String username) {
+        Date createdDate = null;
+
+        String sql = "SELECT created_at FROM user WHERE username = ?";
+
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+            preparedStatement.setString(1, username);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                Timestamp timestamp = resultSet.getTimestamp("created_at");
+                if (timestamp != null) {
+                    createdDate = new Date(timestamp.getTime());
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Failed to get the created date for user: " + username);
+        }
+
+        return createdDate;
+    }
+
+
     public void close() {
         ConnectionManager.closeConnection();
     }

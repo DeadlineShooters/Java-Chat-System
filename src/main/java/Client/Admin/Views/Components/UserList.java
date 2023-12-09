@@ -29,10 +29,8 @@ public class UserList extends JPanel {
     protected JPanel searchBar = new JPanel();
     protected JPanel userListPanel = new JPanel(new BorderLayout());
     protected JPanel orderListPanel = new JPanel();
-    protected JPanel appOpensSearch = new JPanel();
-    protected JPanel datePickerContainer = new JPanel();
+    protected JPanel directFriendsSearch = new JPanel();
     protected UserRepository userRepository = new UserRepository();
-    protected ArrayList<RowFilter<Object, Object>> filters = new ArrayList<RowFilter<Object, Object>>();
     protected TableRowSorter<DefaultTableModel> rowSorter;
     protected JPanel buttonPanel = new JPanel();
     protected SessionRepository sessionRepository = new SessionRepository();
@@ -40,7 +38,7 @@ public class UserList extends JPanel {
     protected JTextField textField1 = new JTextField(16);
     private java.sql.Date firstDate;
     private java.sql.Date secondDate;
-
+    protected JPanel orderListRightPanel = new JPanel();
 
     protected JTable table;
     // search button
@@ -122,10 +120,8 @@ public class UserList extends JPanel {
         buttonPanel.setBackground(Color.white);
 
         // Add an order list to the top right of the user list part
-        JPanel orderListRightPanel = new JPanel();
         orderListRightPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-        orderListPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 0));
 
         // orderListPanel.add(Box.createHorizontalGlue()); // This will push the
         // JComboBox to the right
@@ -133,6 +129,7 @@ public class UserList extends JPanel {
         // date picker for new registration find
         JXDatePicker[] pickers = new JXDatePicker[2];
         Date[] previousDates = new Date[2];
+        JPanel datePickerContainer = new JPanel();
 
         datePickerContainer.add(new JLabel("Created date: "));
 
@@ -223,12 +220,12 @@ public class UserList extends JPanel {
             }
         });
 
-        appOpensSearch.add(new JLabel("Number of direct friends:"));
-        appOpensSearch.add(filter);
-        appOpensSearch.add(appOpenInput);
-        appOpensSearch.setBackground(Color.white);
+        directFriendsSearch.add(new JLabel("Number of direct friends:"));
+        directFriendsSearch.add(filter);
+        directFriendsSearch.add(appOpenInput);
+        directFriendsSearch.setBackground(Color.white);
 
-        orderListRightPanel.add(appOpensSearch);
+        orderListRightPanel.add(directFriendsSearch);
         orderListRightPanel.add(datePickerContainer);
         orderListRightPanel.setBackground(Color.white);
 

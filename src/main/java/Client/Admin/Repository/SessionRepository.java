@@ -64,9 +64,10 @@ public class SessionRepository {
                 "COALESCE(SUM(s.groups_chat_count), 0) AS number_of_groups_chatted " +
                 "FROM user u " +
                 "LEFT JOIN session s ON u.username = s.username " +
-                "AND s.login_time BETWEEN ? AND ? " +
+                "WHERE s.login_time BETWEEN ? AND ?" +
                 "GROUP BY u.username " +
                 "ORDER BY u.username";
+
 
         try (PreparedStatement preparedStatement = con.prepareStatement(query)) {
             preparedStatement.setTimestamp(1, startDatetime);

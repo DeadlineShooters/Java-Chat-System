@@ -2,6 +2,7 @@ package Client.Admin.Views.Components;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
@@ -19,40 +20,43 @@ public class ActiveUserList extends UserList {
     private DateTimePicker startPicker;
     private DateTimePicker endPicker;
     private Timestamp[] previousDatetimes = new Timestamp[2];
+    private JTextField usernameTextField;
+
 
 
     public ActiveUserList() {
         remove(searchBar);
         remove(userListPanel);
-        appOpensSearch.getParent().remove(appOpensSearch);
         buttonPanel.getParent().remove(buttonPanel);
+        orderListRightPanel.removeAll();
 
-        datePickerContainer.getParent().remove(datePickerContainer);
 
-        String[] columns = {"Username", "App Opens", "Number of people chatted", "Number of groups chatted"};
+        String[] columns = {"Username", "App Opens", "Number of people chatted", "Number of groups chatted", "Date created"};
         initTable(columns);
 
-        orderListPanel.add(panel2);
         // App Opens Search
-        JPanel appOpensSearch = createNumericSearchPanel("App opens:");
-        orderListPanel.add(appOpensSearch);
+        JPanel appOpensSearch = createNumericSearchPanel("App opens:", 1);
+        orderListRightPanel.add(appOpensSearch);
 
         // People Chatted Search
-        JPanel peopleChattedSearch = createNumericSearchPanel("Number of people chatted:");
-        orderListPanel.add(peopleChattedSearch);
+        JPanel peopleChattedSearch = createNumericSearchPanel("Number of people chatted:", 2);
+        orderListRightPanel.add(peopleChattedSearch);
 
         // Groups Chatted Search
-        JPanel groupsChattedSearch = createNumericSearchPanel("Number of groups chatted:");
-        orderListPanel.add(groupsChattedSearch);
+        JPanel groupsChattedSearch = createNumericSearchPanel("Number of groups chatted:", 3);
+        orderListRightPanel.add(groupsChattedSearch);
+
+        JPanel usernamePanel = createTextInputPanel("Username:");
+        orderListRightPanel.add(usernamePanel);
 
 
-        orderListPanel.add(appOpensSearch);
         appOpensSearch.setBackground(Color.white);
         peopleChattedSearch.setBackground(Color.white);
         groupsChattedSearch.setBackground(Color.white);
 
         // add time picker
         JPanel timePickerPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
         JLabel startLabel = new JLabel("Start Datetime:");
         JLabel endLabel = new JLabel("End Datetime:");
         // Create a DateTimePicker with default settings.
@@ -64,6 +68,7 @@ public class ActiveUserList extends UserList {
         timeSettings.setDisplayToggleTimeMenuButton(false);
 //        endPicker.setTimePickerSettings(timeSettings);
         // Add the components to the panel.
+        timePickerPanel.add(new JLabel("Active from"));
         timePickerPanel.add(startLabel);
         timePickerPanel.add(startPicker);
         timePickerPanel.add(endLabel);
@@ -86,11 +91,24 @@ public class ActiveUserList extends UserList {
 
         previousDatetimes[0] = null;
         previousDatetimes[1] = null;
+
+
+
         initActionListeners();
 
     }
+    private JPanel createTextInputPanel(String label) {
+        JPanel panel = new JPanel();
+        usernameTextField = new JTextField(16);
 
-    private JPanel createNumericSearchPanel(String label) {
+        panel.add(new JLabel(label));
+        panel.add(usernameTextField);
+        panel.setBackground(Color.white);
+
+        return panel;
+    }
+
+    private JPanel createNumericSearchPanel(String label, int column) {
         JPanel panel = new JPanel();
         JComboBox<String> filter = new JComboBox<>(new String[]{"=", "<", ">"});
         JTextField input = new JTextField(5);
@@ -119,6 +137,29 @@ public class ActiveUserList extends UserList {
         panel.add(input);
         panel.setBackground(Color.white);
 
+        // Add an action listener to the input field
+        input.addActionListener(e -> {
+            String selectedItem = (String) filter.getSelectedItem();
+            if (!input.getText().isEmpty()) {
+                int filterValue = Integer.parseInt(input.getText());
+                RowFilter<Object, Object> rowFilter = null;
+                switch (selectedItem) {
+                    case "=":
+                        rowFilter = RowFilter.numberFilter(RowFilter.ComparisonType.EQUAL, filterValue, column);
+                        break;
+                    case "<":
+                        rowFilter = RowFilter.numberFilter(RowFilter.ComparisonType.BEFORE, filterValue, column);
+                        break;
+                    case ">":
+                        rowFilter = RowFilter.numberFilter(RowFilter.ComparisonType.AFTER, filterValue, column);
+                        break;
+                }
+                rowSorter.setRowFilter(rowFilter);
+            } else {
+                rowSorter.setRowFilter(null); // Show all lines when the input field is empty
+            }
+        });
+
         return panel;
     }
 
@@ -132,6 +173,9 @@ public class ActiveUserList extends UserList {
         };
 
         table = new JTable(model);
+
+        rowSorter = new TableRowSorter<>(model);
+        table.setRowSorter(rowSorter);
 
         // Adjust the preferred width of each column
         table.getColumnModel().getColumn(0).setPreferredWidth(100); // "Username"
@@ -152,13 +196,14 @@ public class ActiveUserList extends UserList {
         model.setRowCount(0);
 
         for (UserActivity activity : activities) {
-            Object[] row = new Object[4]; // 4 columns specific to ActiveUserList
+            Object[] row = new Object[5]; // 4 columns specific to ActiveUserList
 
             // Populate columns for ActiveUserList
             row[0] = activity.username();
             row[1] = activity.app_opens();
             row[2] = activity.users_chat_count();
             row[3] = activity.groups_chat_count();
+            row[4] = userRepository.getCreatedDate(activity.username());
 
             model.addRow(row);
         }
@@ -179,6 +224,18 @@ public class ActiveUserList extends UserList {
 
         onChangeDateTimePicker(startPicker, "start");
         onChangeDateTimePicker(endPicker, "end");
+
+        usernameTextField.addActionListener(e -> {
+            String username = usernameTextField.getText().trim();
+            if (!username.isEmpty()) {
+                // Apply the username filter to the table
+                RowFilter<Object, Object> usernameFilter = RowFilter.regexFilter("(?i)" + username, 0);
+                rowSorter.setRowFilter(usernameFilter);
+            } else {
+                // If the username is empty, show all rows
+                rowSorter.setRowFilter(null);
+            }
+        });
     }
 
     private void onChangeDateTimePicker(DateTimePicker picker, String choice) {
@@ -216,9 +273,11 @@ public class ActiveUserList extends UserList {
                 return;
             }
             else {
-                System.out.println("test");
 
                 activitiesTemp = sessionRepository.getUsersActivity(startTime, endTime);
+                for (UserActivity activity : activitiesTemp){
+                    System.out.println(activity.username());
+                }
             }
 
 
