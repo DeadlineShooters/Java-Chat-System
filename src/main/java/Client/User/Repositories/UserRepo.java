@@ -72,7 +72,7 @@ public class UserRepo {
     public static ArrayList<String> findUsers(String prompt) {
         ArrayList<String> usernames = new ArrayList<>();
         try {
-            ResultSet rs = stmt.executeQuery("SELECT username FROM user where username like \""+prompt+"\"");
+            ResultSet rs = stmt.executeQuery("SELECT username FROM user where username like \"%"+prompt+"%\"");
             while (rs.next()) {
                 usernames.add(rs.getString("username"));
             }
