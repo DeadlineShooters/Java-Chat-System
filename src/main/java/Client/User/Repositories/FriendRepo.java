@@ -25,6 +25,8 @@ public class FriendRepo {
             ps.setString(1, user2);
             ps.execute();
 
+            ChatRoomRepo.createPrivateChat(user1, user2);
+
             System.out.println("Add friend successful");
             return true;
         } catch (SQLException exc) {

@@ -67,6 +67,20 @@ public class Login extends JFrame {
         passwordField.setBounds(157, 108, 220, 25);
         contentPane.add(passwordField);
 
+        userNameField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                performLogin();
+            }
+        });
+
+        passwordField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                performLogin();
+            }
+        });
+
         // Forget password
         JButton btnForgotPwd = new JButton("Forgot Password");
         btnForgotPwd.addActionListener(new ActionListener() {
@@ -101,28 +115,7 @@ public class Login extends JFrame {
             public void actionPerformed(ActionEvent e) {
 //                handleClickLogin();
 //                setVisible(false);
-                String username = userNameField.getText();
-                String password = passwordField.getText();
-                if (username.isEmpty() || password.isEmpty()) {
-                    JOptionPane.showMessageDialog(contentPane, "Please fill in all fields!");
-                    return;
-                }
-
-
-                if (username.equals("admin") && password.equals("admin")) {
-                    dispose();
-                    SwingUtilities.invokeLater(() -> new AdminApp());
-                } else {
-                    // Authentication
-                    if (!UserRepo.authen(username, password)) {
-                        JOptionPane.showMessageDialog(contentPane, "Wrong username or password!","Alert",JOptionPane.WARNING_MESSAGE);
-                        return;
-                    }
-                    User user = UserRepo.getOne(username);
-                    CurrentUser.getInstance().setUser(user);
-                    dispose();
-                    new Thread(new UserApp()).start();
-                }
+                performLogin();
             }
         });
 
@@ -201,6 +194,31 @@ public class Login extends JFrame {
         dialog.pack();
         dialog.setLocationRelativeTo(this); // Center the dialog on the parent frame
         dialog.setVisible(true);
+    }
+    void performLogin() {
+        String username = userNameField.getText();
+        String password = passwordField.getText();
+        if (username.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(contentPane, "Please fill in all fields!");
+            return;
+        }
+
+
+        if (username.equals("admin") && password.equals("admin")) {
+            dispose();
+            SwingUtilities.invokeLater(() -> new AdminApp());
+        } else {
+            // Authentication
+            if (!UserRepo.authen(username, password)) {
+                JOptionPane.showMessageDialog(contentPane, "Wrong username or password!","Alert",JOptionPane.WARNING_MESSAGE);
+                return
+                        ;
+            }
+            User user = UserRepo.getOne(username);
+            CurrentUser.getInstance().setUser(user);
+            dispose();
+            new Thread(new UserApp()).start();
+        }
     }
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Login());

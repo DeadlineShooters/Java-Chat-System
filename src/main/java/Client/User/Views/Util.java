@@ -4,7 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
+import java.sql.Timestamp;
 import java.util.Objects;
+import java.util.UUID;
 
 public class Util {
     public static ImageIcon createRoundedImageIcon(String path, int size) {
@@ -27,5 +29,11 @@ public class Util {
         ImageIcon icon = new ImageIcon(Objects.requireNonNull(Util.class.getClassLoader().getResource(path)));
         Image img = icon.getImage().getScaledInstance(w, h,  java.awt.Image.SCALE_SMOOTH);
         return new ImageIcon(img);
+    }
+    public static String createUUID() {
+        return UUID.randomUUID().toString();
+    }
+    public static Timestamp getCurrentTimestamp() {
+        return new Timestamp(System.currentTimeMillis());
     }
 }
