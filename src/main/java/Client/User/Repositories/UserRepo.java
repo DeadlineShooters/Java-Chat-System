@@ -1,36 +1,34 @@
 package Client.User.Repositories;
 
+import Client.ConnectionManager;
 import Client.Models.User;
-import Client.User.ConnectionManager;
 
 import java.sql.*;
 import java.util.ArrayList;
 
 public class UserRepo {
     private static Connection conn;
-    private static Statement stmt;
-    public UserRepo() {
+
+    static {
+        // Static block to initialize the connection when the class is loaded
         conn = ConnectionManager.getConnection();
-        try {
-            stmt = conn.createStatement();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
     }
+    private UserRepo() {}
     public static boolean add(String username, String email, String password) {
         try {
+            Statement stmt = conn.createStatement();
             ResultSet resultSet = stmt.executeQuery("select * from user where username=\""+username+"\"");
             if (resultSet.next()) {
                 return false;
             }
             Timestamp createdAt = new Timestamp(System.currentTimeMillis());
             String sql = "insert into user (username, password, email, created_at) values (?, ?, ?, ?)";
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, username);
-                stmt.setString(2, password);
-                stmt.setString(3, email);
-                stmt.setTimestamp(4, createdAt);
-                stmt.execute();
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, username);
+                ps.setString(2, password);
+                ps.setString(3, email);
+                ps.setTimestamp(4, createdAt);
+                ps.execute();
 //                stmt.close();
                 System.out.println("success");
             } catch (SQLException exc) {
@@ -44,6 +42,7 @@ public class UserRepo {
     }
     public static boolean authen(String username, String password) {
         try {
+            Statement stmt = conn.createStatement();
             ResultSet resultSet = stmt.executeQuery("select * from user where username=\""+username+"\"");
             if (!resultSet.next()) {
                 return false;
@@ -62,6 +61,7 @@ public class UserRepo {
     }
     public static User getOne(String username) {
         try {
+            Statement stmt = conn.createStatement();
             ResultSet resultSet = stmt.executeQuery("select * from user where username=\""+username+"\"");
             resultSet.next();
             return User.fromResultSet(resultSet);
@@ -72,6 +72,7 @@ public class UserRepo {
     public static ArrayList<String> findUsers(String prompt) {
         ArrayList<String> usernames = new ArrayList<>();
         try {
+            Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT username FROM user where username like \"%"+prompt+"%\"");
             while (rs.next()) {
                 usernames.add(rs.getString("username"));

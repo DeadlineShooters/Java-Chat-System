@@ -1,6 +1,7 @@
 package Client.User.Views.Components;
 
 import Client.User.CurrentUser;
+import Client.User.Repositories.FriendRepo;
 import Client.User.Repositories.UserRepo;
 import Client.User.Views.Util;
 
@@ -95,13 +96,9 @@ public class FriendsPanel extends JPanel {
         return panel;
     }
     private JPanel createFriendsListPanel() {
-
-
         friendsListPanel = new JPanel(new GridLayout(0, 1));
 
-        for (String username : CurrentUser.getInstance().getFriends()) {
-            friendsListPanel.add(createListItem(username, 200, 80));
-        }
+        displayFriends();
 
         JPanel subPanel = new JPanel(new BorderLayout());
         subPanel.add(friendsListPanel, BorderLayout.NORTH);
@@ -113,6 +110,11 @@ public class FriendsPanel extends JPanel {
         panel.add(friendsScrollPane, BorderLayout.CENTER);
 
         return panel;
+    }
+    void displayFriends() {
+        for (String username : CurrentUser.getInstance().getFriends()) {
+            friendsListPanel.add(createListItem(username, 200, 80));
+        }
     }
 
     private JPanel createListItem(String username, int width, int height) {
@@ -141,7 +143,16 @@ public class FriendsPanel extends JPanel {
             addFriendBtn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    addFriend(username);
+                    if (!addFriend(username)) {
+                        JOptionPane.showMessageDialog(item, "Wrong username or password!","Alert",JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+
+                    // Remove the button from its parent container
+                    Container parentContainer = addFriendBtn.getParent();
+                    parentContainer.remove(addFriendBtn);
+
+
                 }
             });
             item.add(addFriendBtn, BorderLayout.EAST);
@@ -166,16 +177,17 @@ public class FriendsPanel extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 itemClicked = content.getText();
                 updateItemColors();
+                startChatting(username);
                 // Handle other click actions if needed
             }
         });
 
         return item;
     }
-    void addFriend(String username) {
+    boolean addFriend(String username) {
         CurrentUser.getInstance().addFriend(username, "11");
-        friendsListPanel.revalidate();
-        System.out.println("add friend");
+        displayFriends();
+        return FriendRepo.addFriend(CurrentUser.getInstance().getUser().username(), username);
     }
     private void updateItemColors() {
         for (Component component : friendsListPanel.getComponents()) {
@@ -189,5 +201,8 @@ public class FriendsPanel extends JPanel {
                 }
             }
         }
+    }
+    void startChatting(String username) {
+
     }
 }
