@@ -140,7 +140,8 @@ public class UserList extends JPanel {
             JPanel datePanel = new JPanel();
 
             JXDatePicker picker = new JXDatePicker();
-            picker.setDate(Calendar.getInstance().getTime());
+            
+            picker.setDate(new java.util.Date());
             picker.setFormats(new SimpleDateFormat("dd.MM.yyyy"));
 
             datePanel.add(picker);
@@ -374,7 +375,9 @@ public class UserList extends JPanel {
                         Timestamp createdAt = new Timestamp(System.currentTimeMillis());
                         userRepository.insert(username, password, email, createdAt);
                         addFrame.dispose();
-                        updateTable(userRepository.getUsersByDateRange(firstDate, secondDate));
+                        updateTable(userRepository.getUsersByDateRange(firstDate,
+                                new java.sql.Date((new java.util.Date()).getTime())));
+                        pickers[1].setDate(new java.util.Date());
                     }
                 });
             }
@@ -402,9 +405,24 @@ public class UserList extends JPanel {
                             Timestamp dob = new Timestamp(updateFrame.datePicker.getDate().getTime());
                             userRepository.update(username, fullName, address, dob, gender, email);
                             updateFrame.dispose();
-                            updateTable(userRepository.getUsersByDateRange(firstDate, secondDate));
+                            updateTable(userRepository.getUsersByDateRange(firstDate,
+                                    new java.sql.Date((new java.util.Date()).getTime())));
+                            pickers[1].setDate(new java.util.Date());
                         }
                     });
+                }
+            }
+        });
+
+        // remove user account
+        deleteButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (table.getSelectedRow() != -1) {
+                    int row = table.getSelectedRow();
+                    String username = (String) table.getValueAt(row, 0);
+
+                    userRepository.remove(username);
+                    updateTable(userRepository.getUsersByDateRange(firstDate, secondDate));
                 }
             }
         });

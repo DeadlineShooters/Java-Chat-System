@@ -55,7 +55,13 @@ public class UserRepository {
 
             // Set the start and end dates in the prepared statement
             preparedStatement.setDate(1, new java.sql.Date(startDate.getTime()));
-            preparedStatement.setDate(2, new java.sql.Date(endDate.getTime()));
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(endDate);
+            calendar.add(Calendar.DATE, 1);
+            java.util.Date utilDate = calendar.getTime();
+            java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+
+            preparedStatement.setDate(2, sqlDate);
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -154,6 +160,15 @@ public class UserRepository {
             stmt.setString(6, username);
             stmt.executeUpdate();
             System.out.println("success");
+        } catch (SQLException exc) {
+            exc.printStackTrace();
+        }
+    }
+
+    public void remove(String username) {
+        String sql = "delete from user where username = '" + username + "'";
+        try (Statement stmt = con.createStatement()) {
+            stmt.executeUpdate(sql);
         } catch (SQLException exc) {
             exc.printStackTrace();
         }

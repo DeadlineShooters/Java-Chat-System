@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 import Client.Admin.Repository.UserRepository;
 
@@ -40,6 +41,7 @@ public class UpdateFrame extends JFrame {
                 textFields[i].setPreferredSize(new Dimension(200, 20));
                 panels[i].add(textFields[i]);
             } else {
+                datePicker.setFormats(new SimpleDateFormat("dd.MM.yyyy"));
                 datePicker.setDate(dob);
                 panels[i].setLayout(new FlowLayout(FlowLayout.LEFT));
                 panels[i].add(datePicker);
@@ -53,6 +55,7 @@ public class UpdateFrame extends JFrame {
         buttonPanel.add(submitButton);
 
         add(buttonPanel);
+        // getRootPane().setDefaultButton(submitButton);
         pack();
         setLocationRelativeTo(null); // Center the frame
         setVisible(true);

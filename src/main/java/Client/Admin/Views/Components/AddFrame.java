@@ -34,6 +34,7 @@ public class AddFrame extends JFrame {
         }
         
         add(submitButton);
+        // getRootPane().setDefaultButton(submitButton);
         pack();
         setLocationRelativeTo(null); // Center the frame
         setVisible(true);
