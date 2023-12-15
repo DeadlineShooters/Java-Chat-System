@@ -1,4 +1,4 @@
-package Client.Admin;
+package Client;
 
 import java.sql.*;
 
