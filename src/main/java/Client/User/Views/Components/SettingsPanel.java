@@ -3,6 +3,8 @@ package Client.User.Views.Components;
 import Client.User.Views.Util;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -16,37 +18,35 @@ public class SettingsPanel extends JPanel {
         ImageIcon searchIcon = Util.createRoundedImageIcon("searchIcon.png", 30);
         searchButton.setIcon(searchIcon);
 
-        // Create add user button
-        JButton addUserButton = new JButton();
-        ImageIcon addIcon = Util.createRoundedImageIcon("add-user.png", 30);
-        addUserButton.setIcon(addIcon);
+        // // Create add user button
+        // JButton addUserButton = new JButton();
+        // ImageIcon addIcon = Util.createRoundedImageIcon("add-user.png", 30);
+        // addUserButton.setIcon(addIcon);
 
         // Create a panel to hold the buttons
         JPanel topPanel = new JPanel();
         topPanel.add(searchButton);
-        topPanel.add(addUserButton);
+        // topPanel.add(addUserButton);
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.Y_AXIS));
 
-        String[] buttonTexts = {"Unfriend", "Block", "Report Spam", "Delete History"};
+        String[] buttonTexts = {"Unfriend", "Block", "Report spam", "Delete history", "Create group with this person"};
 
         for (String buttonText : buttonTexts) {
             HoverablePanel textPanel = new HoverablePanel();
-
-
-
-            textPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            bottomPanel.add(textPanel);
-
+            textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.X_AXIS));
+        
             JLabel label = new JLabel(buttonText);
-            label.setHorizontalAlignment(JLabel.CENTER);
-            label.setFont(new Font(label.getFont().getName(), label.getFont().getStyle(), 18)); // Change 18 to your desired font size
-
+            label.setFont(new Font(label.getFont().getName(), label.getFont().getStyle(), 16));
+            label.setBorder(new EmptyBorder(0, 10, 0, 0));
+        
             textPanel.add(label);
-
+            textPanel.add(Box.createHorizontalGlue()); // This will push the label to the left
+        
+            bottomPanel.add(textPanel);
             bottomPanel.add(Box.createVerticalStrut(5)); // set vertical gap between buttons
-
+        
             // Set the preferred height of the button based on the text height
             int preferredHeight = getFontMetrics(label.getFont()).getHeight() + 18; // gets text's height + 10 is for padding
             textPanel.setPreferredSize(new Dimension(Integer.MAX_VALUE, preferredHeight));
