@@ -1,6 +1,6 @@
 package Client.Admin.Repository;
 
-import Client.Admin.ConnectionManager;
+import Client.ConnectionManager;
 import Client.Models.User;
 
 import java.sql.*;
@@ -18,7 +18,7 @@ public class UserRepository {
         ArrayList<User> users = new ArrayList<>();
         try {
             Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM User");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM User ORDER BY username;");
             while (rs.next()) {
                 users.add(User.fromResultSet(rs));
             }
@@ -48,8 +48,8 @@ public class UserRepository {
 
     public ArrayList<User> getUsersByDateRange(Date startDate, Date endDate) {
         ArrayList<User> userList = new ArrayList<>();
-
-        String sql = "SELECT * FROM User WHERE created_at BETWEEN ? AND ?";
+        
+        String sql = "SELECT * FROM User WHERE created_at BETWEEN ? AND ? ORDER BY username";
 
         try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
 
@@ -94,27 +94,14 @@ public class UserRepository {
     }
 
     public int fetchNumberOfFriendsOfFriends(String username) {
-        String sql = "SELECT SUM(total_num_friends_of_friends) as total_friends_of_friends FROM " +
-                "( " +
-                "    (SELECT count(DISTINCT CASE WHEN f1.user2 = f2.user2 THEN f2.user1 ELSE f2.user2 END) as total_num_friends_of_friends "
-                +
-                "    FROM friend f1 " +
-                "    JOIN friend f2 ON  (f1.user2 = f2.user1 OR f1.user2 = f2.user2) " +
-                "    WHERE f1.user1 = ? AND (f2.user1 <> ? AND f2.user2 <> ?)) " +
-                " " +
-                "    UNION ALL " +
-                " " +
-                "    (SELECT count(DISTINCT CASE WHEN f1.user1 = f2.user2 THEN f2.user1 ELSE f2.user2 END) as total_num_friends_of_friends "
-                +
-                "    FROM friend f1 " +
-                "    JOIN friend f2 ON  (f1.user1 = f2.user1 OR f1.user1 = f2.user2) " +
-                "    WHERE f1.user2 = ? AND (f2.user1 <> ? AND f2.user2 <> ?)) " +
-                ") as subquery;";
-
+        String sql = "SELECT count(*) as total_friends_of_friends " +
+                "FROM friend f1, friend f2 " +
+                "where f1.user1 = ? and f1.user2 = f2.user1 and f2.user2 <> ?";
         int numberOfFriendsOfFriends = 0;
+
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
-            for (int i = 1; i <= 6; ++i)
-                stmt.setString(i, username);
+            stmt.setString(1, username);
+            stmt.setString(2, username);
             ResultSet resultSet = stmt.executeQuery();
             if (resultSet.next()) {
                 numberOfFriendsOfFriends = resultSet.getInt("total_friends_of_friends");
@@ -143,21 +130,21 @@ public class UserRepository {
             stmt.setString(3, email);
             stmt.setTimestamp(4, createdAt);
             stmt.execute();
-            System.out.println("success");
         } catch (SQLException exc) {
             exc.printStackTrace();
         }
     }
 
-    public void update(String username, String fullName, String address, Timestamp dob, String gender, String email) {
-        String sql = "update user set full_name = ?, address = ?, birth_date = ?, gender = ?, email = ? where username = ?";
+    public void update(String username, String fullName, String address, Timestamp dob, String gender, String email, String password) {
+        String sql = "update user set full_name = ?, address = ?, birth_date = ?, gender = ?, email = ?, password = ? where username = ?";
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setString(1, fullName);
             stmt.setString(2, address);
             stmt.setTimestamp(3, dob);
             stmt.setString(4, gender);
             stmt.setString(5, email);
-            stmt.setString(6, username);
+            stmt.setString(6, password);
+            stmt.setString(7, username);
             stmt.executeUpdate();
             System.out.println("success");
         } catch (SQLException exc) {
@@ -173,6 +160,40 @@ public class UserRepository {
             exc.printStackTrace();
         }
     }
+
+    public void lock(String username, boolean isLocked) {
+        String sql = "update user set is_locked = '" + (isLocked ? 0 : 1) + "' where username = '" + username + "'";
+        try (Statement stmt = con.createStatement()) {
+            stmt.executeUpdate(sql);
+        } catch (SQLException exc) {
+            exc.printStackTrace();
+        }
+    }
+
+    public Date getCreatedDate(String username) {
+        Date createdDate = null;
+
+        String sql = "SELECT created_at FROM user WHERE username = ?";
+
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+            preparedStatement.setString(1, username);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                Timestamp timestamp = resultSet.getTimestamp("created_at");
+                if (timestamp != null) {
+                    createdDate = new Date(timestamp.getTime());
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Failed to get the created date for user: " + username);
+        }
+
+        return createdDate;
+    }
+
 
     public void close() {
         ConnectionManager.closeConnection();

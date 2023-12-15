@@ -1,28 +1,20 @@
-package Client.User;
+package Client.User.Views;
 
-import Client.User.components.ChatPanel;
-import Client.User.components.FriendsPanel;
-import Client.User.components.MenuBar;
-import Client.User.components.SettingsPanel;
+import Client.User.Views.Components.ChatPanel;
+import Client.User.Views.Components.FriendsPanel;
+import Client.User.Views.Components.MenuBar;
+import Client.User.Views.Components.SettingsPanel;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class ChatAppUI extends JFrame {
-
-
-
-
-    public ChatAppUI() {
+public class Home extends JFrame {
+    public Home() {
         // Set up the main frame
         setTitle("Chat App");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
+        setSize(1200, 800);
         setLocationRelativeTo(null);
-
-
-        // Create components
-
 
         // Set layout manager
         setLayout(new BorderLayout());
@@ -30,7 +22,7 @@ public class ChatAppUI extends JFrame {
         // Add components to the main frame
         add(new MenuBar(), BorderLayout.NORTH);
         add(new FriendsPanel(), BorderLayout.WEST);
-        add(new ChatPanel(), BorderLayout.CENTER);
+        add(ChatPanel.getInstance(), BorderLayout.CENTER);
         add(new SettingsPanel(), BorderLayout.EAST);
 
         // Make the frame visible
@@ -43,6 +35,6 @@ public class ChatAppUI extends JFrame {
 
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new ChatAppUI());
+        SwingUtilities.invokeLater(() -> new Home());
     }
 }

@@ -23,13 +23,13 @@ public class LoginHistory extends JPanel {
         JPanel userListPanel = new JPanel(new BorderLayout());
 
         // Add a user list to the user list part
-        String[] columns = { "Login time", "Logout time", "Device" };
+        String[] columns = { "Login time", "Logout time"};
 
         // Define the table data
         Object[][] data = {
-                { "2001-01-01 01:01:01", "2001-01-01 02:02:02", "Windows" },
-                { "2001-01-01 01:01:01", "2001-01-01 02:02:02", "Windows" },
-                { "2001-01-01 01:01:01", "2001-01-01 02:02:02", "Windows" }
+                { "2001-01-01 01:01:01", "2001-01-01 02:02:02" },
+                { "2001-01-01 01:01:01", "2001-01-01 02:02:02" },
+                { "2001-01-01 01:01:01", "2001-01-01 02:02:02" }
         };
 
         // Create a new DefaultTableModel instance

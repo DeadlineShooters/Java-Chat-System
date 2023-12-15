@@ -1,8 +1,15 @@
 package Client.User;
 
-public class UserApp {
-    public static void main(String[] args) {
-		System.out.println("hi from client"); 
-		
+import Client.User.Views.Home;
+
+import javax.swing.*;
+
+public class UserApp implements Runnable {
+	@Override
+	public void run() {
+		SwingUtilities.invokeLater(() -> {
+			new Home();
+		});
+		new Thread(new Client()).start();
 	}
 }

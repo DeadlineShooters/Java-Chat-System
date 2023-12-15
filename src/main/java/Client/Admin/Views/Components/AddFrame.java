@@ -2,9 +2,6 @@ package Client.Admin.Views.Components;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.sql.Timestamp;
 
 import Client.Admin.Repository.UserRepository;
 
