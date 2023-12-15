@@ -46,7 +46,6 @@ public class LoginHistory extends JPanel {
         // Set the preferred width of each column
         table.getColumnModel().getColumn(0).setPreferredWidth(100); // "hời gian đăng nhập"
         table.getColumnModel().getColumn(1).setPreferredWidth(100); // "Thời gian đăng xuất"
-        table.getColumnModel().getColumn(2).setPreferredWidth(80); // "Thiết bị"
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
         userListPanel.add(new JScrollPane(table), BorderLayout.CENTER);

@@ -48,7 +48,7 @@ public class UserRepository {
 
     public ArrayList<User> getUsersByDateRange(Date startDate, Date endDate) {
         ArrayList<User> userList = new ArrayList<>();
-        
+
         String sql = "SELECT * FROM User WHERE created_at BETWEEN ? AND ? ORDER BY username";
 
         try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
@@ -136,17 +136,22 @@ public class UserRepository {
     }
 
     public void update(String username, String fullName, String address, Timestamp dob, String gender, String email, String password) {
-        String sql = "update user set full_name = ?, address = ?, birth_date = ?, gender = ?, email = ?, password = ? where username = ?";
+        String sql = !password.equals("") ? "update user set full_name = ?, address = ?, birth_date = ?, gender = ?, email = ?, password = ? where username = ?"
+        : "update user set full_name = ?, address = ?, birth_date = ?, gender = ?, email = ? where username = ?";
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setString(1, fullName);
             stmt.setString(2, address);
             stmt.setTimestamp(3, dob);
             stmt.setString(4, gender);
             stmt.setString(5, email);
-            stmt.setString(6, password);
-            stmt.setString(7, username);
+            if (password.equals("")) {
+                stmt.setString(6, username);
+            }
+            else {
+                stmt.setString(6, User.encryptPassword(password));
+                stmt.setString(7, username);
+            }
             stmt.executeUpdate();
-            System.out.println("success");
         } catch (SQLException exc) {
             exc.printStackTrace();
         }
@@ -193,7 +198,6 @@ public class UserRepository {
 
         return createdDate;
     }
-
 
     public void close() {
         ConnectionManager.closeConnection();

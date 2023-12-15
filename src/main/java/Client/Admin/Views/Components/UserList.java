@@ -238,7 +238,7 @@ public class UserList extends JPanel {
         String[] columns = { "Username", "Full name", "Address", "Day of birth", "Gender", "Email",
                 "<html><center>Number<br>of direct<br>friends", "<html><center>Number<br>of friends<br>of friends",
                 "Status",
-                "Created at", "Lock status", "Password" };
+                "Created at", "Lock status"};
 
         initTable(columns);
 
@@ -381,8 +381,7 @@ public class UserList extends JPanel {
                     Date dob = (Date) table.getValueAt(row, 3);
                     String gender = (String) table.getValueAt(row, 4);
                     String email = (String) table.getValueAt(row, 5);
-                    String password = (String) table.getValueAt(row, 11);
-                    UpdateFrame updateFrame = new UpdateFrame(username, fullName, address, dob, gender, email, password);
+                    UpdateFrame updateFrame = new UpdateFrame(username, fullName, address, dob, gender, email);
                     updateFrame.submitButton.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                             String username = updateFrame.textFields[0].getText();
@@ -478,8 +477,6 @@ public class UserList extends JPanel {
         table.getColumnModel().getColumn(9).setPreferredWidth(130); // "Created at"
         table.getColumnModel().getColumn(10).setMinWidth(0); // "Lock status"
         table.getColumnModel().getColumn(10).setMaxWidth(0); // "Lock status"
-        table.getColumnModel().getColumn(11).setMinWidth(0); // "Password"
-        table.getColumnModel().getColumn(11).setMaxWidth(0); // "Password"
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
         table.setBackground(Color.white);
@@ -546,7 +543,6 @@ public class UserList extends JPanel {
             row[8] = user.status() ? "Online" : "Offline";
             row[9] = user.createdAt();
             row[10] = user.isLocked();
-            row[11] = user.password();
 
             model.addRow(row);
         }
