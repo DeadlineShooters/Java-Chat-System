@@ -12,14 +12,18 @@ public class SettingsPanel extends JPanel {
         super(new BorderLayout(0, 15));
         setPreferredSize(new Dimension(300, this.getPreferredSize().height));
 
+        JButton searchButton = new JButton();
+        ImageIcon searchIcon = Util.createRoundedImageIcon("searchIcon.png", 30);
+        searchButton.setIcon(searchIcon);
+
         // Create add user button
         JButton addUserButton = new JButton();
-        ImageIcon addIcon = Util.createRoundedImageIcon("add-user.png", 50);
+        ImageIcon addIcon = Util.createRoundedImageIcon("add-user.png", 30);
         addUserButton.setIcon(addIcon);
-        addUserButton.setPreferredSize(new Dimension(addIcon.getIconWidth(), addIcon.getIconHeight()));
 
         // Create a panel to hold the buttons
         JPanel topPanel = new JPanel();
+        topPanel.add(searchButton);
         topPanel.add(addUserButton);
 
         JPanel bottomPanel = new JPanel();
@@ -30,19 +34,23 @@ public class SettingsPanel extends JPanel {
         for (String buttonText : buttonTexts) {
             HoverablePanel textPanel = new HoverablePanel();
 
-            // Set the preferred height of the button based on the text height
-            int preferredHeight = getFontMetrics(textPanel.getFont()).getHeight() + 10; // gets text's height + 10 is for padding
-            textPanel.setPreferredSize(new Dimension(Integer.MAX_VALUE, preferredHeight));
-            textPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, preferredHeight));
+
 
             textPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
             bottomPanel.add(textPanel);
 
             JLabel label = new JLabel(buttonText);
             label.setHorizontalAlignment(JLabel.CENTER);
+            label.setFont(new Font(label.getFont().getName(), label.getFont().getStyle(), 18)); // Change 18 to your desired font size
+
             textPanel.add(label);
 
             bottomPanel.add(Box.createVerticalStrut(5)); // set vertical gap between buttons
+
+            // Set the preferred height of the button based on the text height
+            int preferredHeight = getFontMetrics(label.getFont()).getHeight() + 18; // gets text's height + 10 is for padding
+            textPanel.setPreferredSize(new Dimension(Integer.MAX_VALUE, preferredHeight));
+            textPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, preferredHeight));
         }
 
         // Add the button panel to the settings panel
@@ -77,6 +85,8 @@ public class SettingsPanel extends JPanel {
                 g.fillRect(0, 0, getWidth(), getHeight());
             }
         }
+
+
     }
 
     public static void main(String[] args) {
