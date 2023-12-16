@@ -44,6 +44,7 @@ public class UserList extends JPanel {
     protected JTable table;
     // search button
     public JButton[] searchButtons = new JButton[4];
+    public String selectedUser;
 
     public UserList() {
         setLayout(new BorderLayout());
@@ -286,6 +287,7 @@ public class UserList extends JPanel {
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent event) {
                 if (!event.getValueIsAdjusting() && table.getSelectedRow() != -1) {
+                    selectedUser = (String) table.getValueAt(table.getSelectedRow(), 0);
                     for (int i = 1; i < 4; i++) {
                         searchButtons[i].setVisible(true);
                     }

@@ -1,6 +1,7 @@
 package Client.Admin.Repository;
 
 import Client.ConnectionManager;
+import Client.Models.Session;
 import Client.Models.User;
 import Client.Models.UserActivity;
 
@@ -97,6 +98,20 @@ public class SessionRepository {
         }
 
         return activities;
+    }
+
+    public ArrayList<Session> getSessions(String username) {
+        ArrayList<Session> sessions = new ArrayList<Session>();
+        String sql = "select * from session where username = '" + username + "'";
+        try (Statement stmt = con.createStatement()) {
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                sessions.add(Session.fromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return sessions;
     }
 
 }

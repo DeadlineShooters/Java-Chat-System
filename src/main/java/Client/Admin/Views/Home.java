@@ -51,6 +51,8 @@ public class Home extends JFrame {
         }
         userManagement.getUserList().searchButtons[1].addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                loginHistory.username = userManagement.getUserList().selectedUser;
+                loginHistory.updateTable();
                 cardLayout.show(bodyPanel, "Client.Admin.Views.LoginHistory");
             }
         });
