@@ -99,9 +99,23 @@ public class SessionRepository {
         return activities;
     }
 
-    public ArrayList<Session> getSessions(String username) {
+    public ArrayList<Session> getSession(String username) {
         ArrayList<Session> sessions = new ArrayList<Session>();
         String sql = "select * from session where username = '" + username + "'";
+        try (Statement stmt = con.createStatement()) {
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                sessions.add(Session.fromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return sessions;
+    }
+
+    public ArrayList<Session> getSessions() {
+        ArrayList<Session> sessions = new ArrayList<Session>();
+        String sql = "select * from session";
         try (Statement stmt = con.createStatement()) {
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {

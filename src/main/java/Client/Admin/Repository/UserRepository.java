@@ -14,6 +14,18 @@ public class UserRepository {
         this.con = ConnectionManager.getConnection();
     }
 
+    public User getUser(String username) {
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM User where username = '" + username +"'");
+            rs.next();
+            return User.fromResultSet(rs);
+        } catch (SQLException ex) {
+            System.out.println("Failed to get users.");
+        }
+        return null;
+    }
+
     public ArrayList<User> getUsers() {
         ArrayList<User> users = new ArrayList<>();
         try {

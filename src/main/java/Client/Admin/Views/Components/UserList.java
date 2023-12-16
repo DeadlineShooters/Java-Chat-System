@@ -281,7 +281,7 @@ public class UserList extends JPanel {
                 rowSorter.setRowFilter(rowFilter);
             } else {
                 rowSorter.setRowFilter(null); // Show all lines when the input field is empty
-            }
+            } 
         });
         // Add a list selection listener to the table
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -406,8 +406,8 @@ public class UserList extends JPanel {
                                 pickers[1].setDate(new java.util.Date());
                             }
                         }
-                    });
-                }
+                    }); 
+                } 
             }
         });
 

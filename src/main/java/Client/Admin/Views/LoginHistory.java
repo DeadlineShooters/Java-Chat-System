@@ -47,7 +47,7 @@ public class LoginHistory extends JPanel {
         table.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
         table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
 
-        table.getColumnModel().getColumn(0).setPreferredWidth(100); // "hời gian đăng nhập"
+        table.getColumnModel().getColumn(0).setPreferredWidth(100); // "Thời gian đăng nhập"
         table.getColumnModel().getColumn(1).setPreferredWidth(100); // "Thời gian đăng xuất"
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
@@ -62,7 +62,7 @@ public class LoginHistory extends JPanel {
     }
 
     public void updateTable() {
-        ArrayList<Session> sessions = sessionRepository.getSessions(username);
+        ArrayList<Session> sessions = sessionRepository.getSession(username);
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
 
