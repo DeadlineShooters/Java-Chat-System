@@ -1,14 +1,26 @@
 package Client.Admin.Views;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 
-public class GroupChatList extends JPanel {
+import Client.Admin.Repository.ChatRoomRepository;
+import Client.Admin.Repository.SessionRepository;
+import Client.Models.ChatRoom;
+import Client.Models.Session;
 
-    // search button
+public class GroupChatList extends JPanel {
+    protected JTable table;
+    protected ChatRoomRepository chatRoomRepository = new ChatRoomRepository();
+    protected TableRowSorter<DefaultTableModel> rowSorter;
+
+    public String selectedGroupChat;
     public JButton[] searchButtons = new JButton[3];
 
     public GroupChatList() {
@@ -54,28 +66,10 @@ public class GroupChatList extends JPanel {
 
         // Add an order list to the top right of the user list part
         JPanel userListPanel = new JPanel(new BorderLayout());
-        JPanel orderListPanel = new JPanel();
-        orderListPanel.setLayout(new BoxLayout(orderListPanel, BoxLayout.X_AXIS));
-        JComboBox<String> orderList = new JComboBox<>(new String[] { "Sort by name", "Sort by created time" });
-        orderList.setMaximumSize(orderList.getPreferredSize()); // This will make the JComboBox not stretch
-        orderListPanel.add(Box.createHorizontalGlue()); // This will push the JComboBox to the right
-        orderListPanel.add(orderList);
 
-        // Add the order list panel to the user list part
-        userListPanel.add(orderListPanel, BorderLayout.NORTH);
+        String[] columns = { "Group chat name", "Created at", "Chat room ID" };
 
-        // Add a user list to the user list part
-        String[] columns = { "Group chat name", "Created at" };
-
-        // Define the table data
-        Object[][] data = {
-                { "Hello World", "2001-01-01 01:01:01" },
-                { "Hello World 1", "2001-01-01 01:01:01" },
-                { "Hello World 2", "2001-01-01 01:01:01" },
-        };
-
-        // Create a new DefaultTableModel instance
-        DefaultTableModel model = new DefaultTableModel(data, columns) {
+        DefaultTableModel model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // All cells are editable
@@ -83,33 +77,63 @@ public class GroupChatList extends JPanel {
         };
 
         // Create a new JTable instance
-        JTable table = new JTable(model);
+        table = new JTable(model);
 
         // Set the preferred width of each column
         table.getColumnModel().getColumn(0).setPreferredWidth(100); // "Tên nhóm"
         table.getColumnModel().getColumn(1).setPreferredWidth(120); // "Thời gian tạo"
+        table.getColumnModel().getColumn(2).setMinWidth(0);
+        table.getColumnModel().getColumn(2).setMaxWidth(0);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+
+        rowSorter = new TableRowSorter<>(model);
+        table.setRowSorter(rowSorter);
+
+        updateTable();
 
         userListPanel.add(new JScrollPane(table), BorderLayout.CENTER);
 
-        // Add the user list part to the body part
         add(userListPanel, BorderLayout.CENTER);
 
-        // Add a list selection listener to the table
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent event) {
+                selectedGroupChat = (String) table.getValueAt(table.getSelectedRow(), 2);
                 if (!event.getValueIsAdjusting() && table.getSelectedRow() != -1) {
                     for (int i = 1; i < 3; i++) {
                         searchButtons[i].setVisible(true);
                     }
-                // } else {
-                //     // No row is selected, hide the button
-                //     for (int i = 1; i < 3; i++) {
-                //         searchButtons[i].setVisible(false);
-                //     }
                 }
             }
         });
+
+        searchButtons[0].addActionListener(e -> {
+            String groupChatName = textField1.getText().trim();
+            search(groupChatName);
+        });
+    }
+
+    public void updateTable() {
+        ArrayList<ChatRoom> chatRooms = chatRoomRepository.getChatRooms(); 
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);
+
+        for (ChatRoom chatRoom : chatRooms) {
+            Object[] row = new Object[3];
+            row[0] = chatRoom.getName();
+            row[1] = chatRoom.getCreatedAt();
+            row[2] = chatRoom.getId();
+            model.addRow(row);
+        }
+        table.setModel(model); 
+    }
+
+    public void search(String groupChatName) {
+        List<RowFilter<DefaultTableModel, Object>> filters = new ArrayList<RowFilter<DefaultTableModel, Object>>();
+        if (groupChatName.length() > 0) {
+            RowFilter<DefaultTableModel, Object> groupChatNameFilter = RowFilter.regexFilter("(?i)" + groupChatName, 0);
+            filters.add(groupChatNameFilter);
+        }
+        RowFilter<DefaultTableModel, Object> compoundRowFilter = RowFilter.andFilter(filters);
+        rowSorter.setRowFilter(compoundRowFilter);
     }
 }
-

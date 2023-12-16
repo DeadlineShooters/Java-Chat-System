@@ -1,12 +1,25 @@
 package Client.Admin.Views;
 
 import java.awt.*;
+import java.util.List;
+import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.table.*;
 
+import Client.Admin.Repository.ChatMemberRepository;
+import Client.Admin.Repository.GroupAdminRepository;
+import Client.Models.User;
+
 public class GroupMemberList extends JPanel {
+    protected JTable table;
+    protected JButton[] searchButtons = new JButton[3];
+    protected TableRowSorter<DefaultTableModel> rowSorter;
+    protected ChatMemberRepository chatMemberRepository = new ChatMemberRepository();
+    protected GroupAdminRepository groupAdminRepository = new GroupAdminRepository();
+    public String chatRoomId;
     public JButton returnButton = new JButton("Return");
+
     public GroupMemberList() {
         setLayout(new BorderLayout());
         setBackground(Color.white);
@@ -46,12 +59,11 @@ public class GroupMemberList extends JPanel {
         JLabel label3 = new JLabel("Status");
         label3.setBackground(Color.white);
         label3.setOpaque(true);
-        JComboBox<String> comboBox = new JComboBox<>(new String[] { "Online", "Absent", "Offline" });
+        JComboBox<String> comboBox = new JComboBox<>(new String[] { "All", "Online", "Offline" });
         panel3.add(label3, BorderLayout.NORTH);
         panel3.add(comboBox, BorderLayout.CENTER);
 
         // search button
-        JButton[] searchButtons = new JButton[3];
         searchButtons[0] = new JButton("Search");
         searchButtons[1] = new JButton("Member list");
         searchButtons[2] = new JButton("Admin list");
@@ -75,56 +87,88 @@ public class GroupMemberList extends JPanel {
         northPanel.add(topPanel);
         northPanel.add(searchBar);
         add(northPanel, BorderLayout.NORTH);
-        
-        // Add an order list to the top right of the user list part
+
         JPanel userListPanel = new JPanel(new BorderLayout());
-        JPanel orderListPanel = new JPanel();
-        orderListPanel.setLayout(new BoxLayout(orderListPanel, BoxLayout.X_AXIS));
-        JComboBox<String> orderList = new JComboBox<>(new String[] { "Sort by name", "Sort by created time" });
-        orderList.setMaximumSize(orderList.getPreferredSize()); // This will make the JComboBox not stretch
-        orderListPanel.add(Box.createHorizontalGlue()); // This will push the JComboBox to the right
-        orderListPanel.add(orderList);
 
-        // Add the order list panel to the user list part
-        userListPanel.add(orderListPanel, BorderLayout.NORTH);
+        String[] columns = { "Username", "Name", "Address", "Day of birth", "Gender", "Email", "Status" };
 
-        // Add a user list to the user list part
-        String[] columns = { "Username", "Name", "Address", "Day of birth", "Gender", "Email" };
-
-        // Define the table data
-        Object[][] data = {
-                { "HTVinh", "Huynh Tan Vinh", "135 Tran Hung Dao, Q1, TP Ho Chi Minh", "01/01/1111", "Nam",
-                        "htvinh201@gmail.com" },
-                { "TAKhoi", "Tran Anh Khoi", "135 Tran Hung Dao, Q1, TP Ho Chi Minh", "01/01/1111", "Nam",
-                        "takhoi@gmail.com" },
-                { "TAKhoi", "Tran Anh Khoi", "135 Tran Hung Dao, Q1, TP Ho Chi Minh", "01/01/1111", "Nam",
-                        "takhoi@gmail.com" }
-        };
-
-        // Create a new DefaultTableModel instance
-        DefaultTableModel model = new DefaultTableModel(data, columns) {
+        DefaultTableModel model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // All cells are editable
             }
         };
 
-        // Create a new JTable instance
-        JTable table = new JTable(model);
+        table = new JTable(model);
 
-        // Set the preferred width of each column
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+
+        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(6).setCellRenderer(centerRenderer);
+
         table.getColumnModel().getColumn(0).setPreferredWidth(100); // "Tên Đăng Nhập"
         table.getColumnModel().getColumn(1).setPreferredWidth(120); // "Họ Tên"
-        table.getColumnModel().getColumn(2).setPreferredWidth(250); // "Địa Chỉ"
-        table.getColumnModel().getColumn(3).setPreferredWidth(80); // "Ngày Sinh"
-        table.getColumnModel().getColumn(4).setPreferredWidth(60); // "Giới Tính"
+        table.getColumnModel().getColumn(2).setPreferredWidth(240); // "Địa Chỉ"
+        table.getColumnModel().getColumn(3).setPreferredWidth(60); // "Ngày Sinh"
+        table.getColumnModel().getColumn(4).setPreferredWidth(40); // "Giới Tính"
         table.getColumnModel().getColumn(5).setPreferredWidth(150); // "Email"
+        table.getColumnModel().getColumn(6).setPreferredWidth(50); // "Status"
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+
+        rowSorter = new TableRowSorter<>(model);
+        table.setRowSorter(rowSorter);
+
+        updateTable(searchButtons[1].getText());
 
         userListPanel.add(new JScrollPane(table), BorderLayout.CENTER);
 
         // Add the user list part to the body part
         add(userListPanel, BorderLayout.CENTER);
     }
-}
 
+    public void updateTable(String type) {
+        ArrayList<User> chatMembers = new ArrayList<User>();
+        if (type.equals(searchButtons[1].getText())) {
+            chatMembers = chatMemberRepository.getChatMembers(chatRoomId);
+        }
+        else {
+            chatMembers = groupAdminRepository.getGroupAdmins(chatRoomId);
+        }
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);
+
+        for (User user : chatMembers) {
+            Object[] row = new Object[7];
+            row[0] = user.username();
+            row[1] = user.name();
+            row[2] = user.address();
+            row[3] = user.dob();
+            row[4] = user.gender();
+            row[5] = user.email();
+            row[6] = user.status() ? "Online" : "Offline";
+            model.addRow(row);
+        }
+        table.setModel(model);
+    }
+
+    public void search(String username, String fullName, String status) {
+        List<RowFilter<DefaultTableModel, Object>> filters = new ArrayList<RowFilter<DefaultTableModel, Object>>();
+        if (username.length() > 0) {
+            RowFilter<DefaultTableModel, Object> usernameFilter = RowFilter.regexFilter("(?i)" + username, 0);
+            filters.add(usernameFilter);
+        }
+        if (fullName.length() > 0) {
+            RowFilter<DefaultTableModel, Object> fullNameFilter = RowFilter.regexFilter("(?i)" + fullName, 1);
+            filters.add(fullNameFilter);
+        }
+        if (!status.equals("All")) {
+            RowFilter<DefaultTableModel, Object> statusFilter = RowFilter.regexFilter("(?i)" + status, 6);
+            filters.add(statusFilter);
+        }
+
+        RowFilter<DefaultTableModel, Object> compoundRowFilter = RowFilter.andFilter(filters);
+        rowSorter.setRowFilter(compoundRowFilter);
+    }
+}

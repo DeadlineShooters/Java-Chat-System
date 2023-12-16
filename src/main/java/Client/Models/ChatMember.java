@@ -1,5 +1,8 @@
 package Client.Models;
 
-public class ChatMember {
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
+public record ChatMember(String chatRoomId, String username) {
+    
 }

@@ -79,12 +79,16 @@ public class Home extends JFrame {
 
         groupChatList.searchButtons[1].addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                groupMemberList.chatRoomId = groupChatList.selectedGroupChat;
+                groupMemberList.updateTable("Member list");
                 cardLayout.show(bodyPanel, "Client.Admin.Views.GroupMemberList");
             }
         });
 
         groupChatList.searchButtons[2].addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                groupMemberList.chatRoomId = groupChatList.selectedGroupChat;
+                groupMemberList.updateTable("Admin list");
                 cardLayout.show(bodyPanel, "Client.Admin.Views.GroupMemberList");
             }
         });
