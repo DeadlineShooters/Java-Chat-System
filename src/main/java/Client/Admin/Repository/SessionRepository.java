@@ -13,7 +13,6 @@ public class SessionRepository {
 
     public SessionRepository(){
         this.con = ConnectionManager.getConnection();
-
     }
 
     public int getAppOpens(String username) {

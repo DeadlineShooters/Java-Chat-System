@@ -59,6 +59,8 @@ public class Home extends JFrame {
 
         userManagement.getUserList().searchButtons[2].addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                friendList.username = userManagement.getUserList().selectedUser;
+                friendList.updateTable();
                 cardLayout.show(bodyPanel, "Client.Admin.Views.FriendList");
             }
         });

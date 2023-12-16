@@ -6,13 +6,12 @@ import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.*;
 
-import Client.Models.User;
 import Client.Models.Session;
 import Client.Admin.Repository.SessionRepository;
-import Client.Admin.Repository.UserRepository;
 
 public class LoginHistory extends JPanel {
     protected JTable table;
+    protected TableRowSorter<DefaultTableModel> rowSorter;
     protected SessionRepository sessionRepository = new SessionRepository();
     public String username;
     public JButton returnButton = new JButton("Return");
@@ -51,6 +50,9 @@ public class LoginHistory extends JPanel {
         table.getColumnModel().getColumn(0).setPreferredWidth(100); // "hời gian đăng nhập"
         table.getColumnModel().getColumn(1).setPreferredWidth(100); // "Thời gian đăng xuất"
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+
+        rowSorter = new TableRowSorter<>(model);
+        table.setRowSorter(rowSorter);
 
         updateTable();
 
