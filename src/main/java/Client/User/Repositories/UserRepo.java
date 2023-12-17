@@ -4,7 +4,7 @@ import Client.ConnectionManager;
 import Client.Models.User;
 
 import java.sql.*;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class UserRepo {
     private static Connection conn;
@@ -13,7 +13,6 @@ public class UserRepo {
         // Static block to initialize the connection when the class is loaded
         conn = ConnectionManager.getConnection();
     }
-    private UserRepo() {}
     public static boolean add(String username, String email, String password) {
         try {
             Statement stmt = conn.createStatement();
@@ -69,19 +68,35 @@ public class UserRepo {
             throw new RuntimeException(e);
         }
     }
-    public static ArrayList<String> findUsers(String prompt) {
-        ArrayList<String> usernames = new ArrayList<>();
-        try {
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT username FROM user where username like \"%"+prompt+"%\"");
+    public static HashMap<String, Boolean> findUsers(String currentUsername, String prompt) {
+        HashMap<String, Boolean> users = new HashMap<>();
+        String sql = "SELECT username, status FROM user where username like ? and username != ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, "%"+prompt+"%");
+            ps.setString(2, currentUsername);
+
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                usernames.add(rs.getString("username"));
+                // Check for null status before using getBoolean
+                boolean isOnline = rs.getBoolean("status");
+                users.put(rs.getString("username"), isOnline);
             }
+
         } catch (SQLException ex) {
             System.out.println("Failed to get users.");
         }
-        return usernames;
+        return users;
     }
+    public static Boolean isOnline(String username) {
+        String sql = "select status from user where username = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            return rs.getBoolean("status");
 
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

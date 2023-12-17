@@ -4,7 +4,9 @@ import Client.ConnectionManager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 public class FriendRepo {
     private static Connection conn;
@@ -34,4 +36,24 @@ public class FriendRepo {
         }
         return false;
     }
+    public static HashMap<String, Boolean> getAllFriends(String username) {
+        HashMap<String, Boolean> friends = new HashMap<>();
+        String sql = "SELECT f.user2, u.status FROM friend f, user u WHERE f.user1 = ? and f.user2 = u.username";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                // Check for null status before using getBoolean
+                boolean isOnline = rs.getBoolean("status");
+                friends.put(rs.getString("user2"), isOnline);
+            }
+
+        } catch (SQLException exc) {
+            exc.printStackTrace();
+        }
+        return friends;
+    }
+
+
 }

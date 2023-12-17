@@ -1,6 +1,7 @@
 package Client.User.Views.Components;
 
 import Client.User.CurrentUser;
+import Client.User.Repositories.ChatRoomRepo;
 import Client.User.Repositories.FriendRepo;
 import Client.User.Repositories.UserRepo;
 import Client.User.Views.Util;
@@ -13,14 +14,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class FriendsPanel extends JPanel {
-//    String[] friendsUsername = new String[]{"Nguyen Tuan Kietdfafafasfasdfasdf", "Friend 2adfs", "Friend 3", "Friend 99", "Friend 2", "Friend h", "Friend 4", "Friend sdf", "Friend sg", "Friend 4", "Friend  sf2", "Friend 3 s", "Friend sd f4"  };
-//    String[] friendsUsername = new String[]{"Nguyen Tuan Kietdfafafasfasdfasdf"};
     private String itemClicked = "";
-    JPanel friendsListPanel;
+    JPanel chatRoomsPanel;
+    JPanel usersPanel;
+    JTabbedPane friendsTabbedPane;
     Color itemBgColor = Color.pink;
 
     public FriendsPanel() {
@@ -28,9 +30,8 @@ public class FriendsPanel extends JPanel {
 
         setPreferredSize(new Dimension(230, this.getPreferredSize().height));
 
-        JTabbedPane friendsTabbedPane = new JTabbedPane();
-        friendsTabbedPane.addTab("Friends", createFriendsListPanel());
-        friendsTabbedPane.addTab("Explore", createExplorePanel());
+        friendsTabbedPane = new JTabbedPane();
+        friendsTabbedPane.addTab("Chat", chatRoomsTab());
         friendsTabbedPane.addTab("Explore", createExplorePanel());
 
         add(friendsTabbedPane, BorderLayout.CENTER);
@@ -56,7 +57,7 @@ public class FriendsPanel extends JPanel {
 
 
         // list section
-        JPanel usersPanel = new JPanel(new GridLayout(0, 1));
+        usersPanel = new JPanel(new GridLayout(0, 1));
         JPanel subPanel = new JPanel(new BorderLayout());
         subPanel.add(usersPanel, BorderLayout.NORTH);
 
@@ -71,11 +72,10 @@ public class FriendsPanel extends JPanel {
 
                 String prompt = searchField.getText();
                 searchField.setText("");
-                ArrayList<String> usernames = UserRepo.findUsers(prompt);
-                for (String username : usernames) {
-                    if (username.equals(CurrentUser.getInstance().getUser().username()))
-                        continue;
-                    usersPanel.add(createListItem(username, usersPanel.getPreferredSize().width, 80));
+                String currentUsername = CurrentUser.getInstance().getUser().username();
+                HashMap<String, Boolean> users = UserRepo.findUsers(currentUsername, prompt);
+                for (String username : users.keySet()) {
+                    usersPanel.add(createListItem("",username, users.get(username), usersPanel.getPreferredSize().width, 80));
 
                 }
                 usersPanel.revalidate(); // Trigger layout update
@@ -87,7 +87,7 @@ public class FriendsPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 usersPanel.removeAll();
                 usersPanel.revalidate(); // Trigger layout update
-                usersPanel.repaint();
+//                usersPanel.repaint();
             }
         });
         JPanel panel = new JPanel(new BorderLayout());
@@ -95,13 +95,13 @@ public class FriendsPanel extends JPanel {
         panel.add(usersScrollPane, BorderLayout.CENTER);
         return panel;
     }
-    private JPanel createFriendsListPanel() {
-        friendsListPanel = new JPanel(new GridLayout(0, 1));
+    private JPanel chatRoomsTab() {
+        chatRoomsPanel = new JPanel(new GridLayout(0, 1));
 
-        displayFriends();
+        displayChatrooms();
 
         JPanel subPanel = new JPanel(new BorderLayout());
-        subPanel.add(friendsListPanel, BorderLayout.NORTH);
+        subPanel.add(chatRoomsPanel, BorderLayout.NORTH);
 
         JScrollPane friendsScrollPane = new JScrollPane(subPanel);
         friendsScrollPane.getVerticalScrollBar().setUnitIncrement(10);
@@ -111,29 +111,29 @@ public class FriendsPanel extends JPanel {
 
         return panel;
     }
-    void displayFriends() {
-        for (String username : CurrentUser.getInstance().getFriends()) {
-            friendsListPanel.add(createListItem(username, 200, 80));
+    void displayChatrooms() {
+        Map<String, String> chatRooms = CurrentUser.getInstance().getChatRooms();
+        for (String chatRoomId : chatRooms.keySet()) {
+            System.out.println("adding");
+            chatRoomsPanel.add(createListItem(chatRoomId,chatRooms.get(chatRoomId), false, 200, 80));
         }
     }
 
-    private JPanel createListItem(String username, int width, int height) {
+    private JPanel createListItem(String chatRoomId, String name, Boolean status, int width, int height) {
         JPanel item = new JPanel(new BorderLayout());
         item.setPreferredSize(new Dimension(width, height));
         item.setBackground(itemBgColor);
-//        item.setMaximumSize(new Dimension(width, height)); // Set maximum size
-//        item.setSize(width, height);
 
         JLabel content = new JLabel();
         content.setBorder(new EmptyBorder(0, 10, 0, 10));
-        content.setText("   " + username);
+        content.setText("   " + name);
         content.setIcon(Util.createRoundedImageIcon("user-avatar.jpg", 60));
         content.setFont(new Font("Arial", Font.BOLD, 13));
 
         item.setBorder(new LineBorder(Color.black, 1));
         item.add(content, BorderLayout.CENTER);
 
-        if (!CurrentUser.getInstance().isFriend(username)) {
+        if (!CurrentUser.getInstance().isFriend(name) && !ChatRoomRepo.isGroupChat(chatRoomId)) {
             JButton addFriendBtn = new JButton();
             addFriendBtn.setIcon(Util.createImageIcon("addFriendIcon.png", 20, 20));
             addFriendBtn.setPreferredSize(new Dimension(40, 20));
@@ -143,16 +143,18 @@ public class FriendsPanel extends JPanel {
             addFriendBtn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if (!addFriend(username)) {
+                    if (!addFriend(name)) {
                         JOptionPane.showMessageDialog(item, "Wrong username or password!","Alert",JOptionPane.WARNING_MESSAGE);
                         return;
                     }
 
                     // Remove the button from its parent container
-                    Container parentContainer = addFriendBtn.getParent();
-                    parentContainer.remove(addFriendBtn);
+//                    Container parentContainer = addFriendBtn.getParent();
+//                    parentContainer.remove(addFriendBtn);
 
-
+                    usersPanel.removeAll();
+                    usersPanel.revalidate(); // Trigger layout update
+                    friendsTabbedPane.setSelectedIndex(0);
                 }
             });
             item.add(addFriendBtn, BorderLayout.EAST);
@@ -177,7 +179,7 @@ public class FriendsPanel extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 itemClicked = content.getText();
                 updateItemColors();
-                startChatting(username);
+                startChatting(chatRoomId);
                 // Handle other click actions if needed
             }
         });
@@ -185,12 +187,12 @@ public class FriendsPanel extends JPanel {
         return item;
     }
     boolean addFriend(String username) {
-        CurrentUser.getInstance().addFriend(username, "11");
-        displayFriends();
+        CurrentUser.getInstance().addFriend(username);
+        displayChatrooms();
         return FriendRepo.addFriend(CurrentUser.getInstance().getUser().username(), username);
     }
     private void updateItemColors() {
-        for (Component component : friendsListPanel.getComponents()) {
+        for (Component component : chatRoomsPanel.getComponents()) {
             if (component instanceof JPanel) {
                 JPanel itemPanel = (JPanel) component;
                 JLabel label = (JLabel) itemPanel.getComponent(0);
