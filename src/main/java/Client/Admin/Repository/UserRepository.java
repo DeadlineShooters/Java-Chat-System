@@ -18,7 +18,7 @@ public class UserRepository {
         ArrayList<User> users = new ArrayList<>();
         try {
             Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM User ORDER BY username;");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM \"user\" ORDER BY username;");
             while (rs.next()) {
                 users.add(User.fromResultSet(rs));
             }
@@ -32,7 +32,7 @@ public class UserRepository {
         Date oldestDate = null;
         try {
             Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT MIN(created_at) AS oldest_date FROM User");
+            ResultSet rs = stmt.executeQuery("SELECT MIN(created_at) AS oldest_date FROM \"user\"");
             // move to the next row to convert to DATE because DatePicker needs DATE
             if (rs.next()) {
                 Timestamp timestamp = rs.getTimestamp("oldest_date");
@@ -49,7 +49,7 @@ public class UserRepository {
     public ArrayList<User> getUsersByDateRange(Date startDate, Date endDate) {
         ArrayList<User> userList = new ArrayList<>();
 
-        String sql = "SELECT * FROM User WHERE created_at BETWEEN ? AND ? ORDER BY username";
+        String sql = "SELECT * FROM \"user\" WHERE created_at BETWEEN ? AND ? ORDER BY username";
 
         try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
 
@@ -117,7 +117,7 @@ public class UserRepository {
     }
 
     public void insert(String username, String fullName, String email, Timestamp createdAt) {
-        String sql = "INSERT INTO user (username, full_name, email, created_at) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO \"user\" (username, full_name, email, created_at) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setString(1, username);
             stmt.setString(2, fullName);
@@ -133,7 +133,7 @@ public class UserRepository {
     public Date getCreatedDate(String username) {
         Date createdDate = null;
 
-        String sql = "SELECT created_at FROM user WHERE username = ?";
+        String sql = "SELECT created_at FROM \"user\" WHERE username = ?";
 
         try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
             preparedStatement.setString(1, username);
@@ -155,7 +155,4 @@ public class UserRepository {
     }
 
 
-    public void close() {
-        ConnectionManager.closeConnection();
-    }
 }
