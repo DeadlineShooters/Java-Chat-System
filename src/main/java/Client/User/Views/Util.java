@@ -1,8 +1,10 @@
 package Client.User.Views;
 
 import javax.swing.*;
+import javax.swing.border.AbstractBorder;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.sql.Timestamp;
 import java.util.Objects;
@@ -35,5 +37,37 @@ public class Util {
     }
     public static Timestamp getCurrentTimestamp() {
         return new Timestamp(System.currentTimeMillis());
+    }
+
+    public static class RoundedBorder extends AbstractBorder {
+
+        private int cornerRadius;
+
+        public RoundedBorder(int cornerRadius) {
+            this.cornerRadius = cornerRadius;
+        }
+
+        @Override
+        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+            Graphics2D g2d = (Graphics2D) g.create();
+
+            RoundRectangle2D roundedRectangle = new RoundRectangle2D.Float(x, y, width - 1, height - 1, cornerRadius, cornerRadius);
+
+            g2d.setColor(Color.BLACK); // You can customize the border color here
+            g2d.draw(roundedRectangle);
+
+            g2d.dispose();
+        }
+
+        @Override
+        public Insets getBorderInsets(Component c) {
+            return new Insets(cornerRadius, cornerRadius, cornerRadius, cornerRadius);
+        }
+
+        @Override
+        public Insets getBorderInsets(Component c, Insets insets) {
+            insets.left = insets.top = insets.right = insets.bottom = cornerRadius;
+            return insets;
+        }
     }
 }

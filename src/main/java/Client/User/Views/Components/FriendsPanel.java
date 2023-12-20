@@ -32,11 +32,11 @@ public class FriendsPanel extends JPanel {
 
         friendsTabbedPane = new JTabbedPane();
         friendsTabbedPane.addTab("Chat", chatRoomsTab());
-        friendsTabbedPane.addTab("Explore", createExplorePanel());
+        friendsTabbedPane.addTab("Explore", createExploreTab());
 
         add(friendsTabbedPane, BorderLayout.CENTER);
     }
-    private JPanel createExplorePanel() {
+    private JPanel createExploreTab() {
         // search panel
         JPanel searchPanel = new JPanel();
 //        searchPanel.setBorder(new LineBorder(Color.black, 1));
@@ -75,7 +75,7 @@ public class FriendsPanel extends JPanel {
                 String currentUsername = CurrentUser.getInstance().getUser().username();
                 HashMap<String, Boolean> users = UserRepo.findUsers(currentUsername, prompt);
                 for (String username : users.keySet()) {
-                    usersPanel.add(createListItem("",username, users.get(username), usersPanel.getPreferredSize().width, 80));
+                    usersPanel.add(createListItem("",username, users.get(username), 80));
 
                 }
                 usersPanel.revalidate(); // Trigger layout update
@@ -115,13 +115,13 @@ public class FriendsPanel extends JPanel {
         Map<String, String> chatRooms = CurrentUser.getInstance().getChatRooms();
         for (String chatRoomId : chatRooms.keySet()) {
             System.out.println("adding");
-            chatRoomsPanel.add(createListItem(chatRoomId,chatRooms.get(chatRoomId), false, 200, 80));
+            chatRoomsPanel.add(createListItem(chatRoomId,chatRooms.get(chatRoomId), false, 80));
         }
     }
 
-    private JPanel createListItem(String chatRoomId, String name, Boolean status, int width, int height) {
+    private JPanel createListItem(String chatRoomId, String name, Boolean status, int height) {
         JPanel item = new JPanel(new BorderLayout());
-        item.setPreferredSize(new Dimension(width, height));
+        item.setPreferredSize(new Dimension(item.getPreferredSize().width, height));
         item.setBackground(itemBgColor);
 
         JLabel content = new JLabel();
@@ -179,7 +179,7 @@ public class FriendsPanel extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 itemClicked = content.getText();
                 updateItemColors();
-                startChatting(chatRoomId);
+                ChatPanel.getInstance().startChatting(chatRoomId);
                 // Handle other click actions if needed
             }
         });
@@ -203,8 +203,5 @@ public class FriendsPanel extends JPanel {
                 }
             }
         }
-    }
-    void startChatting(String username) {
-
     }
 }

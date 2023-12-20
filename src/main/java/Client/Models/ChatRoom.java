@@ -8,7 +8,7 @@ public class ChatRoom {
     Timestamp createdAt;
 //    Map<String, Boolean> members = new HashMap<>(); // true means the member is an ADMIN
 //    List<Message> messages = new ArrayList<>();
-public ChatRoom(String name) {
+    public ChatRoom(String name) {
         this.id = UUID.randomUUID().toString();;
         this.name = name;
         this.createdAt = new Timestamp(System.currentTimeMillis());
