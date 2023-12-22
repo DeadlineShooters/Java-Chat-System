@@ -5,9 +5,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ConnectionManager {
-    private static String url = "jdbc:postgresql://ep-broken-cake-17622184.ap-southeast-1.postgres.vercel-storage.com:5432/javachatsystem";
-    private static String username = "default";
-    private static String password = "mLq3nuT4QkUZ";
+    private static String url = "jdbc:mysql://localhost:3306/javachatsystem";
+    private static String username = "root";
+    private static String password = "Resil4skul";
     private static Connection con;
 
     // Private constructor to prevent instantiation from outside
