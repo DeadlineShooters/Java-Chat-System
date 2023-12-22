@@ -1,5 +1,6 @@
 package Client.Admin.Repository;
 
+import Client.ConnectionManager;
 import Client.Models.User;
 import Client.Models.UserActivity;
 
