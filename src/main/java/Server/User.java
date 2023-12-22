@@ -6,8 +6,9 @@ public class User {
     private String username;
     private PrintWriter printWriter;
 
-    public User(String username) {
+    public User(String username, PrintWriter printWriter) {
         this.username = username;
+        this.printWriter = printWriter;
     }
 
     public String getUsername() {

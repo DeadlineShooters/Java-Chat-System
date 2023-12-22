@@ -14,7 +14,8 @@ public class ClientHandler implements Runnable {
     private BufferedReader bufferedReader;
     private PrintWriter printWriter;
     private String clientUsername;
-    private String roomId;
+    private String chatRoomId;
+    String spliter = "<21127089>";
 
     public ClientHandler(Socket socket, Map<String, ChatRoom> chatRooms) {
         try {
@@ -24,15 +25,15 @@ public class ClientHandler implements Runnable {
             this.printWriter = new PrintWriter(socket.getOutputStream(), true);
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            this.clientUsername = bufferedReader.readLine();
-            this.roomId = bufferedReader.readLine();
+//            this.clientUsername = bufferedReader.readLine();
+//            this.roomId = bufferedReader.readLine();
 
 
 
-            chatRooms.computeIfAbsent(roomId, k -> new ChatRoom(roomId));
-            User user = new User(clientUsername);
-            user.setPrintWriter(printWriter);
-            chatRooms.get(roomId).join(user);
+//            chatRooms.computeIfAbsent(roomId, k -> new ChatRoom(roomId));
+//            User user = new User(clientUsername);
+//            user.setPrintWriter(printWriter);
+//            chatRooms.get(roomId).join(user);
 //            clientHandlers.add(this);
 //            broadcastMessage("SERVER: " + clientUsername + " has entered the chat with ID "+chatRoomId);
         } catch (IOException e) {
@@ -46,12 +47,31 @@ public class ClientHandler implements Runnable {
         while (socket.isConnected()) {
             try {
                 messageFromClient = bufferedReader.readLine();
+                String[] msgSplit = messageFromClient.split(spliter);
+//                System.out.println(msgSplit.length);
+                if (msgSplit.length >= 5) {
+                    handleCommands(msgSplit);
+                    continue;
+                }
 //                broadcastMessage(messageFromClient);
-                chatRooms.get(roomId).broadcastMessage(clientUsername,messageFromClient);
+                chatRooms.get(chatRoomId).broadcastMessage(clientUsername,messageFromClient);
             } catch (IOException e) {
                 closeEverything();
                 break;
             }
+        }
+    }
+    void handleCommands(String[] msgSplit) {
+//        myUsername - content - sentAt - chatRoomId - command
+        String command = msgSplit[4];
+
+        if (command.equals("joinRoom")) {
+            this.clientUsername = msgSplit[0];
+            this.chatRoomId = msgSplit[3];
+//            System.out.println("ádfa");
+            chatRooms.computeIfAbsent(chatRoomId, k -> new ChatRoom(chatRoomId));
+            User user = new User(clientUsername,printWriter);
+            chatRooms.get(chatRoomId).join(user);
         }
     }
 

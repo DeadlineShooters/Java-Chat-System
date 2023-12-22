@@ -1,5 +1,7 @@
 package Client.User;
 
+import Client.User.Views.Components.ChatPanel;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -47,7 +49,7 @@ public class Client implements Runnable {
             try {
                 msgFromGroupChat = bufferedReader.readLine();
                 System.out.println(msgFromGroupChat);
-//                ChatPanel.getInstance().addMsg(msgFromGroupChat, false);
+                ChatPanel.getInstance().receiveMessage(msgFromGroupChat);
             } catch (IOException e) {
                 closeEverything();
             }

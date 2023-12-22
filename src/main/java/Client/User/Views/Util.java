@@ -7,6 +7,8 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -69,5 +71,23 @@ public class Util {
             insets.left = insets.top = insets.right = insets.bottom = cornerRadius;
             return insets;
         }
+    }
+    public static Timestamp stringToTimestamp(String timestampString) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        java.util.Date parsedDate = null;
+        try {
+            parsedDate = dateFormat.parse(timestampString);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return new Timestamp(parsedDate.getTime());
+    }
+
+    public static void main(String[] args) {
+        Timestamp t=  new Timestamp(System.currentTimeMillis());
+        String sentAt = ""+t;
+        Timestamp b = stringToTimestamp(sentAt);
+        System.out.println(t);
+        System.out.println(b);
     }
 }

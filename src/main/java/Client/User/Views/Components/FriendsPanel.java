@@ -179,7 +179,7 @@ public class FriendsPanel extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 itemClicked = content.getText();
                 updateItemColors();
-                ChatPanel.getInstance().startChatting(chatRoomId);
+                ChatPanel.getInstance().startChatting(chatRoomId, name);
                 // Handle other click actions if needed
             }
         });

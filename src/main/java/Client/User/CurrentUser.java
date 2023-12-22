@@ -43,6 +43,7 @@ public class CurrentUser {
         this.printWriter = printWriter;
     }
     public void sendMessage(String message) {
+        System.out.println(message);
         printWriter.println(message);
     }
     public boolean isFriend(String username) {
