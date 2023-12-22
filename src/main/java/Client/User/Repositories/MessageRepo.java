@@ -31,4 +31,19 @@ public class MessageRepo {
             throw new RuntimeException(e);
         }
     }
+    public static void saveMessage(Message message) {
+        String sql = "insert into message (chatroomid, username, content, status, sentAt) values (?, ?, ?,?,?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, message.chatRoomId());
+            ps.setString(2, message.username());
+            ps.setString(3, message.content());
+            ps.setString(4, message.status());
+            ps.setTimestamp(5, message.sentAt());
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

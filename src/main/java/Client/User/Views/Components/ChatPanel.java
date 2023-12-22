@@ -2,6 +2,7 @@ package Client.User.Views.Components;
 
 import Client.Models.Message;
 import Client.User.CurrentUser;
+import Client.User.Repositories.MessageRepo;
 import Client.User.Views.Util;
 
 import javax.swing.*;
@@ -9,13 +10,17 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 public class ChatPanel extends JPanel {
     private JTextArea inputArea;
     private JButton sendButton;
     private static ChatPanel chatPanel;
+    JScrollPane chatScrollPane;
     JPanel overFlowPane;
     static int row = 0;
     String chatRoomId = null;
@@ -55,7 +60,7 @@ public class ChatPanel extends JPanel {
         JPanel subPanel = new JPanel(new BorderLayout());
         subPanel.add(overFlowPane, BorderLayout.NORTH);
 
-        JScrollPane chatScrollPane = new JScrollPane(subPanel);
+        chatScrollPane = new JScrollPane(subPanel);
         chatScrollPane.setBorder(new EmptyBorder(0,0,0,0));
         chatScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         this.add(chatScrollPane, BorderLayout.CENTER);
@@ -72,6 +77,15 @@ public class ChatPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 sendMessage();
+            }
+        });
+        inputArea.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    sendMessage();
+                    e.consume(); // Consume the Enter key event to prevent adding a new line
+                }
             }
         });
 
@@ -97,12 +111,18 @@ public class ChatPanel extends JPanel {
     public void startChatting(String chatRoomId, String name) {
         this.chatRoomId = chatRoomId;
         this.name = name;
-//        ArrayList<Message> messages = MessageRepo.getAllMessages(chatRoomId);
 
         CurrentUser.getInstance().sendMessage(myUsername+spliter+""+spliter+""+spliter+chatRoomId+spliter+"joinRoom");
         initView();
 //        System.out.println(chatRoomId);
+        loadMessages();
 
+    }
+    void loadMessages() {
+        ArrayList<Message> messages = MessageRepo.getAllMessages(chatRoomId);
+        for (Message msg : messages) {
+            addMsg(msg);
+        }
     }
     public void receiveMessage(String msgReceived) {
 //        String text = inputArea.getText();
@@ -124,6 +144,16 @@ public class ChatPanel extends JPanel {
         Message message = new Message(chatRoomId, myUsername, content, "", sentAt);
         addMsg(message);
         inputArea.setText("");
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                JScrollBar verticalScrollBar = chatScrollPane.getVerticalScrollBar();
+                verticalScrollBar.setValue(verticalScrollBar.getMaximum());
+                chatScrollPane.revalidate();
+                chatScrollPane.repaint();
+            }
+        });
+        MessageRepo.saveMessage(message);
 
         CurrentUser.getInstance().sendMessage(myUsername+spliter+content+spliter+sentAt+spliter+chatRoomId);
     }
@@ -149,7 +179,7 @@ public class ChatPanel extends JPanel {
 
         JPanel hold = new JPanel();
 
-        hold.setBorder(new EmptyBorder(isMyMessage?10:0, 10, 0,10));
+        hold.setBorder(new EmptyBorder(isMyMessage?10:0, 10, 0,20));
         hold.setLayout(new BorderLayout());
 //        hold.setBackground(Color.gray);
 
@@ -159,29 +189,14 @@ public class ChatPanel extends JPanel {
         timeStamp.setForeground(Color.gray);
         timeStamp.setFont(new Font("Arial", Font.ITALIC, 10));
 
-
-
-        JPanel timeWrapper = new JPanel();
-        if (isMyMessage) {
-            timeWrapper.setLayout(new FlowLayout(FlowLayout.RIGHT));
-            timeWrapper.setBorder(new EmptyBorder(0, 0, 0,10));
-        } else {
-            timeWrapper.setLayout(new FlowLayout(FlowLayout.LEFT));
-            timeWrapper.setBorder(new EmptyBorder(0, 57, 0,0));
-        }
-        timeWrapper.add(timeStamp);
-
         JPanel outer = new JPanel();
         outer.setLayout(new BoxLayout(outer, BoxLayout.Y_AXIS));
 
-        outer.add(hold);
-        outer.add(timeWrapper);
-//        outer.setBackground(Color.red);
         if (!isMyMessage) {
             JPanel usernameWrapper = new JPanel();
             if (isMyMessage) {
                 usernameWrapper.setLayout(new FlowLayout(FlowLayout.RIGHT));
-                usernameWrapper.setBorder(new EmptyBorder(0, 0, 0, 10));
+                usernameWrapper.setBorder(new EmptyBorder(0, 0, 0, 20));
             } else {
                 usernameWrapper.setLayout(new FlowLayout(FlowLayout.LEFT));
                 usernameWrapper.setBorder(new EmptyBorder(0, 57, 0, 0));
@@ -191,6 +206,22 @@ public class ChatPanel extends JPanel {
             outer.add(usernameWrapper);
         }
 
+
+        JPanel timeWrapper = new JPanel();
+        if (isMyMessage) {
+            timeWrapper.setLayout(new FlowLayout(FlowLayout.RIGHT));
+            timeWrapper.setBorder(new EmptyBorder(0, 0, 0,20));
+        } else {
+            timeWrapper.setLayout(new FlowLayout(FlowLayout.LEFT));
+            timeWrapper.setBorder(new EmptyBorder(0, 57, 0,0));
+        }
+        timeWrapper.add(timeStamp);
+
+
+
+        outer.add(hold);
+        outer.add(timeWrapper);
+//        outer.setBackground(Color.red);
 
         JLabel ava = new JLabel();
         ava.setIcon(Util.createRoundedImageIcon("user-avatar.jpg", 40));
@@ -208,16 +239,16 @@ public class ChatPanel extends JPanel {
         } else {
             if (isLong) {
                 hold.add(wrapper, BorderLayout.CENTER);
-
             } else {
                 hold.add(wrapper, BorderLayout.EAST);
+
             }
         }
 
 
         GridBagConstraints c = new GridBagConstraints();
 
-        c.gridy = row;
+        c.gridy = row++;
         c.gridx = isMyMessage?1:0;
         c.weightx = 0.5;
         //c.insets = new Insets(10,10,10,10);  //top padding
@@ -240,10 +271,9 @@ public class ChatPanel extends JPanel {
         }
         overFlowPane.add(temp, c);
 
+
         overFlowPane.revalidate();
     }
-    static void loadMessages(String username) {
 
-    }
 
 }
