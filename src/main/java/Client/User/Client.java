@@ -1,55 +1,34 @@
 package Client.User;
 
-import java.io.*;
-import java.net.Socket;
-import java.util.Scanner;
+import Client.User.Views.Components.ChatPanel;
 
-public class Client {
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+
+public class Client implements Runnable {
     private Socket socket;
     private BufferedReader bufferedReader;
     private PrintWriter printWriter;
-    private String username;
+//    private User currentUser;
     private String chatRoomId;
 
-    public Client(Socket socket, String username, String chatRoomId) {
+    public Client() {
         try {
-            this.socket = socket;
+            this.socket = new Socket("localhost", 3001);
+//            this.currentUser = currentUser;
             this.printWriter = new PrintWriter(socket.getOutputStream(), true);
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.username = username;
-            this.chatRoomId = chatRoomId;
+//            this.username = username;
+//            this.chatRoomId ;
+            CurrentUser.getInstance().setPrintWriter(printWriter);
         } catch (IOException e) {
             closeEverything();
         }
     }
-    public void sendMessage() {
-        printWriter.println(username);
 
-
-        printWriter.println(chatRoomId);
-
-        Scanner scanner = new Scanner(System.in);
-        while (socket.isConnected()) {
-            String messageToSend = scanner.nextLine();
-            printWriter.println(username+": "+messageToSend);
-        }
-    }
-    public void listenForMessage() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String msgFromGroupChat;
-                while (socket.isConnected()) {
-                    try {
-                        msgFromGroupChat = bufferedReader.readLine();
-                        System.out.println(msgFromGroupChat);
-                    } catch (IOException e) {
-                        closeEverything();
-                    }
-                }
-            }
-        }).start();
-    }
     public void closeEverything() {
         try {
             if (bufferedReader != null) // the underlying streams are closed when you close the wrapper
@@ -63,17 +42,18 @@ public class Client {
         }
     }
 
-    public static void main(String[] args) throws IOException {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter your username for the group chat: ");
-        String username = scanner.nextLine();
-        System.out.print("Enter the chat room ID: ");
-        String chatRoomId = scanner.nextLine();
-        System.out.println(chatRoomId);
+    @Override
+    public void run() {
+        String msgFromGroupChat;
+        while (socket.isConnected()) {
+            try {
+                msgFromGroupChat = bufferedReader.readLine();
+                System.out.println(msgFromGroupChat);
+                ChatPanel.getInstance().addSelfMsg(msgFromGroupChat);
+            } catch (IOException e) {
+                closeEverything();
+            }
+        }
 
-        Socket socket = new Socket("localhost", 3001);
-        Client client = new Client(socket, username, chatRoomId);
-        client.listenForMessage();
-        client.sendMessage();
     }
 }

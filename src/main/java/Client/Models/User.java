@@ -1,5 +1,7 @@
 package Client.Models;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 
 public record User(
@@ -9,7 +11,7 @@ public record User(
         Date dob,
         String gender,
         String email,
-        String status,
+        boolean status,
         String password,
         Timestamp createdAt,
         boolean isLocked
@@ -23,7 +25,7 @@ public record User(
                     resultSet.getDate("birth_date"),
                     resultSet.getString("gender"),
                     resultSet.getString("email"),
-                    resultSet.getString("status"),
+                    resultSet.getBoolean("status"),
                     resultSet.getString("password"),
                     resultSet.getTimestamp("created_at"),
                     resultSet.getBoolean("is_locked")
@@ -33,5 +35,28 @@ public record User(
             return null; // You should handle this case appropriately in your code
         }
     }
+    public static String encryptPassword(String passwordToHash) {
+        try {
+            // Create MessageDigest instance for MD5
+            MessageDigest md = MessageDigest.getInstance("MD5");
 
+            // Add password bytes to digest
+            md.update(passwordToHash.getBytes());
+
+            // Get the hash's bytes
+            byte[] bytes = md.digest();
+
+            // This bytes[] has bytes in decimal format. Convert it to hexadecimal format
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < bytes.length; i++) {
+                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+            }
+
+            // Get complete hashed password in hex format
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 }
