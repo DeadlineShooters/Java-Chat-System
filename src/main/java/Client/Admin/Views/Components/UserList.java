@@ -271,13 +271,13 @@ public class UserList extends JPanel {
                 RowFilter<Object, Object> rowFilter = null;
                 switch (selectedItem) {
                     case "=":
-                        rowFilter = RowFilter.numberFilter(RowFilter.ComparisonType.EQUAL, friendsFilterValue, 6); // Assuming direct friends column index is 7
+                        rowFilter = RowFilter.numberFilter(RowFilter.ComparisonType.EQUAL, friendsFilterValue, 6);
                         break;
                     case "<":
-                        rowFilter = RowFilter.numberFilter(RowFilter.ComparisonType.BEFORE, friendsFilterValue, 6); // Assuming direct friends column index is 7
+                        rowFilter = RowFilter.numberFilter(RowFilter.ComparisonType.BEFORE, friendsFilterValue, 6);
                         break;
                     case ">":
-                        rowFilter = RowFilter.numberFilter(RowFilter.ComparisonType.AFTER, friendsFilterValue, 6); // Assuming direct friends column index is 7
+                        rowFilter = RowFilter.numberFilter(RowFilter.ComparisonType.AFTER, friendsFilterValue, 6);
                         break;
                 }
                 rowSorter.setRowFilter(rowFilter);
