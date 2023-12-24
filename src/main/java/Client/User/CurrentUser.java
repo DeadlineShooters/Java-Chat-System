@@ -6,7 +6,6 @@ import Client.User.Repositories.FriendRepo;
 import Client.User.Repositories.UserRepo;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,7 +31,7 @@ public class CurrentUser {
     }
     public User getUser() { return user; }
     public Map<String, String> getChatRooms() { return chatRooms; }
-    public ArrayList<String> getFriends() { return new ArrayList<String>(friends.keySet()); }
+    public Map<String, Boolean> getFriends() { return friends; }
     public void addFriend(String username) {
         friends.put(username, UserRepo.isOnline(username));
     }

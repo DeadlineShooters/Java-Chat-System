@@ -23,7 +23,7 @@ public class Home extends JFrame {
         add(new MenuBar(), BorderLayout.NORTH);
         add(new FriendsPanel(), BorderLayout.WEST);
         add(ChatPanel.getInstance(), BorderLayout.CENTER);
-        add(new SettingsPanel(), BorderLayout.EAST);
+        add(SettingsPanel.getInstance(), BorderLayout.EAST);
 
         // Make the frame visible
         setVisible(true);

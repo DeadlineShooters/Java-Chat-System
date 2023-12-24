@@ -2,6 +2,7 @@ package Client.User.Views.Components;
 
 import Client.Models.Message;
 import Client.User.CurrentUser;
+import Client.User.Repositories.ChatRoomRepo;
 import Client.User.Repositories.MessageRepo;
 import Client.User.Views.Util;
 
@@ -89,12 +90,12 @@ public class ChatPanel extends JPanel {
             }
         });
 
-//        JButton receivebtn = new JButton("Receive");
-//        inputPanel.add(receivebtn, BorderLayout.WEST);
-//        receivebtn.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                String content = inputArea.getText();
+        JButton receivebtn = new JButton("Receive");
+        inputPanel.add(receivebtn, BorderLayout.WEST);
+        receivebtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String content = inputArea.getText();
 //                if (content.isEmpty()) {
 //                    return;
 //                }
@@ -103,8 +104,16 @@ public class ChatPanel extends JPanel {
 //                Message message = new Message(chatRoomId, "nguyen tuan kiet", content, "", sentAt);
 //                addMsg(message);
 //                inputArea.setText("");
-//            }
-//        });
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        chatScrollPane.getVerticalScrollBar().setValue((int) content.charAt(0));
+                        chatScrollPane.revalidate();
+                    }
+                });
+
+            }
+        });
         this.add(inputPanel, BorderLayout.SOUTH);
         this.revalidate();
     }
@@ -114,6 +123,13 @@ public class ChatPanel extends JPanel {
 
         CurrentUser.getInstance().sendMessage(myUsername+spliter+""+spliter+""+spliter+chatRoomId+spliter+"joinRoom");
         initView();
+
+        if (ChatRoomRepo.isGroupChat(chatRoomId)) {
+
+        } else {
+            System.out.println("afdas");
+            SettingsPanel.getInstance().initPrivateChat();
+        }
 //        System.out.println(chatRoomId);
         loadMessages();
 
@@ -123,13 +139,18 @@ public class ChatPanel extends JPanel {
         for (Message msg : messages) {
             addMsg(msg);
         }
+        JScrollBar verticalScrollBar = chatScrollPane.getVerticalScrollBar();
+        verticalScrollBar.setValue(verticalScrollBar.getMaximum());
+
+        chatScrollPane.revalidate();
+//        chatScrollPane.repaint();
     }
     public void receiveMessage(String msgReceived) {
 //        String text = inputArea.getText();
         System.out.println("ayy: "+msgReceived);
 
         String[] msgSplit = msgReceived.split(spliter);
-        Message message = new Message(chatRoomId, msgSplit[0], msgSplit[1], "", Util.stringToTimestamp(msgSplit[2]));
+        Message message = new Message(chatRoomId, msgSplit[0], msgSplit[1], "", 0, Util.stringToTimestamp(msgSplit[2]));
 
         addMsg(message);
     }
@@ -141,7 +162,7 @@ public class ChatPanel extends JPanel {
         }
 
         Timestamp sentAt = Util.getCurrentTimestamp();
-        Message message = new Message(chatRoomId, myUsername, content, "", sentAt);
+        Message message = new Message(chatRoomId, myUsername, content, "", chatScrollPane.getVerticalScrollBar().getValue(), sentAt);
         addMsg(message);
         inputArea.setText("");
         SwingUtilities.invokeLater(new Runnable() {
@@ -150,10 +171,11 @@ public class ChatPanel extends JPanel {
                 JScrollBar verticalScrollBar = chatScrollPane.getVerticalScrollBar();
                 verticalScrollBar.setValue(verticalScrollBar.getMaximum());
                 chatScrollPane.revalidate();
-                chatScrollPane.repaint();
+//                chatScrollPane.repaint();
             }
         });
         MessageRepo.saveMessage(message);
+        System.out.println(chatScrollPane.getVerticalScrollBar().getValue());
 
         CurrentUser.getInstance().sendMessage(myUsername+spliter+content+spliter+sentAt+spliter+chatRoomId);
     }
@@ -196,7 +218,7 @@ public class ChatPanel extends JPanel {
             JPanel usernameWrapper = new JPanel();
             if (isMyMessage) {
                 usernameWrapper.setLayout(new FlowLayout(FlowLayout.RIGHT));
-                usernameWrapper.setBorder(new EmptyBorder(0, 0, 0, 20));
+                usernameWrapper.setBorder(new EmptyBorder(0, 0, 0, 10));
             } else {
                 usernameWrapper.setLayout(new FlowLayout(FlowLayout.LEFT));
                 usernameWrapper.setBorder(new EmptyBorder(0, 57, 0, 0));
@@ -210,7 +232,7 @@ public class ChatPanel extends JPanel {
         JPanel timeWrapper = new JPanel();
         if (isMyMessage) {
             timeWrapper.setLayout(new FlowLayout(FlowLayout.RIGHT));
-            timeWrapper.setBorder(new EmptyBorder(0, 0, 0,20));
+            timeWrapper.setBorder(new EmptyBorder(0, 0, 0,10));
         } else {
             timeWrapper.setLayout(new FlowLayout(FlowLayout.LEFT));
             timeWrapper.setBorder(new EmptyBorder(0, 57, 0,0));

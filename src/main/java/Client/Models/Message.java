@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 
 public record Message (
     String chatRoomId, String username, String content, String status,
+    int scrollPosition,
     Timestamp sentAt
 ) {
     public static Message fromResultSet(ResultSet rs) {
@@ -15,6 +16,7 @@ public record Message (
                     rs.getString("username"),
                     rs.getString("content"),
                     rs.getString("status"),
+                    rs.getInt("scrollPosition"),
                     rs.getTimestamp("sentAt")
                     );
         } catch (SQLException e) {
