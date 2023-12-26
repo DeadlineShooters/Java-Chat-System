@@ -1,12 +1,15 @@
 package Client.User.Views;
 
+import Client.User.Client;
 import Client.User.Views.Components.ChatPanel;
-import Client.User.Views.Components.FriendsPanel;
 import Client.User.Views.Components.MenuBar;
 import Client.User.Views.Components.SettingsPanel;
+import Client.User.Views.Components.SidePanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class Home extends JFrame {
     public Home() {
@@ -21,12 +24,29 @@ public class Home extends JFrame {
 
         // Add components to the main frame
         add(new MenuBar(), BorderLayout.NORTH);
-        add(new FriendsPanel(), BorderLayout.WEST);
+        add(SidePanel.getInstance(), BorderLayout.WEST);
         add(ChatPanel.getInstance(), BorderLayout.CENTER);
         add(SettingsPanel.getInstance(), BorderLayout.EAST);
 
         // Make the frame visible
         setVisible(true);
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+//                int choice = JOptionPane.showConfirmDialog(Home.this,
+//                        "Are you sure you want to close the application?",
+//                        "Confirm Close", JOptionPane.YES_NO_OPTION);
+//
+//                if (choice == JOptionPane.YES_OPTION) {
+//                    // Perform any cleanup or additional actions before closing
+//                    dispose();
+//                }
+//                UserRepo.setStatus(CurrentUser.getInstance().getUser().username(), false);
+                System.out.println("at Home");
+                Client.getInstance().closeEverything();
+            }
+        });
     }
 
 

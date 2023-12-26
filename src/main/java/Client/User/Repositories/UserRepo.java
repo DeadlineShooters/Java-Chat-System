@@ -92,11 +92,23 @@ public class UserRepo {
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, username);
             ResultSet rs = ps.executeQuery();
+            rs.next();
             return rs.getBoolean("status");
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
+    public static void setStatus(String username, Boolean status) {
+        String sql = "update user set status = ? where username = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setBoolean(1, status);
+            ps.setString(2, username);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
 }

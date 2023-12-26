@@ -47,4 +47,14 @@ public class MessageRepo {
             throw new RuntimeException(e);
         }
     }
+    public static void deleteAllPrivateMessages(String chatRoomId) {
+        String sql = "delete from message where chatroomid = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, chatRoomId);
+
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

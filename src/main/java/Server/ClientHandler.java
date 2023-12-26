@@ -36,6 +36,15 @@ public class ClientHandler implements Runnable {
 //            chatRooms.get(roomId).join(user);
 //            clientHandlers.add(this);
 //            broadcastMessage("SERVER: " + clientUsername + " has entered the chat with ID "+chatRoomId);
+
+//            this.clientUsername = bufferedReader.readLine();
+//            System.out.println(clientUsername);
+//
+//
+//            for (String chatRoomId : chatRooms.keySet()) {
+//                String msg = "online"+spliter+clientUsername+spliter+chatRoomId;
+//                chatRooms.get(chatRoomId).broadcastMessage(clientUsername, msg);
+//            }
         } catch (IOException e) {
             closeEverything();
         }
@@ -49,7 +58,7 @@ public class ClientHandler implements Runnable {
                 messageFromClient = bufferedReader.readLine();
                 String[] msgSplit = messageFromClient.split(spliter);
 //                System.out.println(msgSplit.length);
-                if (msgSplit.length >= 5) {
+                if (msgSplit[0] != "message") {
                     handleCommands(msgSplit);
                     continue;
                 }
@@ -62,33 +71,47 @@ public class ClientHandler implements Runnable {
         }
     }
     void handleCommands(String[] msgSplit) {
-//        myUsername - content - sentAt - chatRoomId - command
-        String command = msgSplit[4];
+//      command - myUsername - content - sentAt - chatRoomId
+        String command = msgSplit[0];
 
+        if (command.equals("login")) {
+            this.clientUsername = msgSplit[1];
+            System.out.println(clientUsername + " just logged in");
+            String lobby = "lobby";
+
+            chatRooms.computeIfAbsent(lobby, k -> new ChatRoom(lobby));
+            User user = new User(clientUsername,printWriter);
+            chatRooms.get(lobby).join(user);
+
+            for (String chatRoomId : chatRooms.keySet()) {
+                String msg = "online"+spliter+clientUsername+spliter+chatRoomId;
+                chatRooms.get(chatRoomId).broadcastMessage(clientUsername, msg);
+            }
+            return;
+        }
         if (command.equals("joinRoom")) {
-            this.clientUsername = msgSplit[0];
-            this.chatRoomId = msgSplit[3];
+            chatRooms.get(this.chatRoomId).remove(clientUsername);
+            this.chatRoomId = msgSplit[4];
 //            System.out.println("ádfa");
             chatRooms.computeIfAbsent(chatRoomId, k -> new ChatRoom(chatRoomId));
             User user = new User(clientUsername,printWriter);
             chatRooms.get(chatRoomId).join(user);
+            return;
+        }
+        if (command.equals("logout")) {
+            System.out.println(clientUsername+ " just logged out");
+            for (String chatRoomId : chatRooms.keySet()) {
+                String msg = "offline"+spliter+clientUsername+spliter+chatRoomId;
+                chatRooms.get(chatRoomId).broadcastMessage(clientUsername, msg);
+            }
+            closeEverything();
         }
     }
-
-//    public void broadcastMessage(String messageToSend) {
-//        for (ClientHandler clientHandler : clientHandlers) {
-//            if (!clientHandler.clientUsername.equals(clientUsername)) {
-//                clientHandler.printWriter.println(messageToSend);
-//            }
-//        }
-//    }
-
-//    public void removeClientHandler() {
-//        clientHandlers.remove(this);
-//        broadcastMessage("SERVER: "+clientUsername+" has left the chat!");
-//    }
     public void closeEverything() {
 //        removeClientHandler();
+        for (String chatRoomId : chatRooms.keySet()) {
+            chatRooms.get(chatRoomId).remove(clientUsername);
+        }
         try {
             if (bufferedReader != null) // the underlying streams are closed when you close the wrapper
                 bufferedReader.close();

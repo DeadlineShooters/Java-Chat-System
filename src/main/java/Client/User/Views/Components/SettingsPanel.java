@@ -1,5 +1,7 @@
 package Client.User.Views.Components;
 
+import Client.User.CurrentUser;
+import Client.User.Repositories.FriendRepo;
 import Client.User.Views.Util;
 
 import javax.swing.*;
@@ -11,6 +13,9 @@ import java.awt.event.MouseEvent;
 public class SettingsPanel extends JPanel {
     private static SettingsPanel settingsPanel;
     final String[] buttonTexts = {"Unfriend", "Block", "Report spam", "Delete history", "Create group with this person"};
+    String chatUsername = null;
+    String username = CurrentUser.getInstance().getUser().username();
+    String currentChatRoomId = null;
     public static SettingsPanel getInstance() {
         if (settingsPanel == null)
             settingsPanel = new SettingsPanel();
@@ -22,7 +27,10 @@ public class SettingsPanel extends JPanel {
 
 
     }
-    void initPrivateChat() {
+    void initPrivateChat(String chatRoomId, String chatUsername) {
+        this.removeAll();
+        this.chatUsername = chatUsername;
+        this.currentChatRoomId = chatRoomId;
         JButton searchButton = new JButton();
         ImageIcon searchIcon = Util.createImageIcon("searchIcon.png", 15, 15);
         searchButton.setIcon(searchIcon);
@@ -43,6 +51,9 @@ public class SettingsPanel extends JPanel {
 
 
         for (String buttonText : buttonTexts) {
+            if (buttonText.equals("Unfriend") && !FriendRepo.isFriend(username, chatUsername)) {
+                continue;
+            }
             HoverablePanel textPanel = new HoverablePanel(buttonText);
             textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.X_AXIS));
 
@@ -106,10 +117,15 @@ public class SettingsPanel extends JPanel {
     }
 
     private void deleteHistory() {
+
     }
 
     void unfriend() {
-
+        CurrentUser.getInstance().removeFriend(chatUsername);
+        FriendRepo.unfriend(username, chatUsername);
+        SidePanel.getInstance().displayChatrooms();
+        SidePanel.getInstance().displayFriends();
+        initPrivateChat(currentChatRoomId, chatUsername);
     }
     void block() {
 

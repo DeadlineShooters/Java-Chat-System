@@ -121,15 +121,15 @@ public class ChatPanel extends JPanel {
         this.chatRoomId = chatRoomId;
         this.name = name;
 
-        CurrentUser.getInstance().sendMessage(myUsername+spliter+""+spliter+""+spliter+chatRoomId+spliter+"joinRoom");
+        CurrentUser.getInstance().sendMessage("joinRoom"+spliter+myUsername+spliter+""+spliter+""+spliter+chatRoomId);
         initView();
 
-        if (ChatRoomRepo.isGroupChat(chatRoomId)) {
-
-        } else {
-            System.out.println("afdas");
-            SettingsPanel.getInstance().initPrivateChat();
-        }
+//        if (ChatRoomRepo.isGroupChat(chatRoomId)) {
+//
+//        } else {
+//            System.out.println("afdas");
+//            SettingsPanel.getInstance().initPrivateChat();
+//        }
 //        System.out.println(chatRoomId);
         loadMessages();
 
@@ -147,10 +147,39 @@ public class ChatPanel extends JPanel {
     }
     public void receiveMessage(String msgReceived) {
 //        String text = inputArea.getText();
-        System.out.println("ayy: "+msgReceived);
+//        System.out.println("ayy: "+msgReceived);
 
+        System.out.println("at ChatPanel "+msgReceived);
         String[] msgSplit = msgReceived.split(spliter);
-        Message message = new Message(chatRoomId, msgSplit[0], msgSplit[1], "", 0, Util.stringToTimestamp(msgSplit[2]));
+        if (msgSplit[0].equals("online")) {
+            String username = msgSplit[1];
+            String chatRoomId = msgSplit[2];
+            System.out.println("at ChatPanel: "+username+" is online");
+//            chatRoomPoint
+//            CurrentUser.getInstance().updateFriendStatus(username, true);
+//            System.out.println(username+ ":: " + CurrentUser.getInstance().getFriends().get(username));
+//            SidePanel.getInstance().displayChatrooms();
+            String privateChatId = ChatRoomRepo.findPrivateChatId(CurrentUser.getInstance().getUser().username(), username);
+            if (privateChatId != null)
+                SidePanel.getInstance().updateIsOnline(privateChatId);
+//            SidePanel.getInstance().displayFriends();
+            SidePanel.getInstance().updateIsOnline(username);
+            return;
+        }
+        if (msgSplit[0].equals("offline")) {
+            String username = msgSplit[1];
+            String chatRoomId = msgSplit[2];
+            System.out.println(username+" is offline");
+//            SidePanel.getInstance().displayChatrooms();
+//            SidePanel.getInstance().displayFriends();
+            String privateChatId = ChatRoomRepo.findPrivateChatId(CurrentUser.getInstance().getUser().username(), username);
+            if (privateChatId != null)
+                SidePanel.getInstance().updateIsOffline(privateChatId);
+//            SidePanel.getInstance().displayFriends();
+            SidePanel.getInstance().updateIsOffline(username);
+            return;
+        }
+        Message message = new Message(chatRoomId, msgSplit[1], msgSplit[2], "", 0, Util.stringToTimestamp(msgSplit[3]));
 
         addMsg(message);
     }
@@ -177,7 +206,7 @@ public class ChatPanel extends JPanel {
         MessageRepo.saveMessage(message);
         System.out.println(chatScrollPane.getVerticalScrollBar().getValue());
 
-        CurrentUser.getInstance().sendMessage(myUsername+spliter+content+spliter+sentAt+spliter+chatRoomId);
+        CurrentUser.getInstance().sendMessage("message"+spliter+myUsername+spliter+content+spliter+sentAt+spliter+chatRoomId);
     }
     public void addMsg(Message message) {
         JTextArea chatBox = new JTextArea();

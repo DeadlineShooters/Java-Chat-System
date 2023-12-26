@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class FriendsPanel extends JPanel {
+public class SidePanel extends JPanel {
     private String itemClicked = "";
     JPanel chatRoomsPanel;
     JPanel usersPanel;
@@ -26,9 +26,16 @@ public class FriendsPanel extends JPanel {
     JTabbedPane friendsTabbedPane;
     Color itemBgColor = Color.pink;
     Color itemClickedColor = Color.lightGray;
-    HashMap<String, JPanel> chatRoomsPointer = new HashMap<>(); // <chatRoomId, listItem>
+    HashMap<String, JPanel> itemsPointer = new HashMap<>(); // <chatRoomId, listItem>
+    private static SidePanel sidePanel = null;
 
-    public FriendsPanel() {
+    public static SidePanel getInstance() {
+        if (sidePanel == null)
+            sidePanel = new SidePanel();
+        return sidePanel;
+    }
+
+    private SidePanel() {
         super(new BorderLayout());
 
         setPreferredSize(new Dimension(230, this.getPreferredSize().height));
@@ -119,12 +126,21 @@ public class FriendsPanel extends JPanel {
         return panel;
     }
     void displayChatrooms() {
+        chatRoomsPanel.removeAll();
+        chatRoomsPanel.revalidate();
         Map<String, String> chatRooms = CurrentUser.getInstance().getChatRooms();
         for (String chatRoomId : chatRooms.keySet()) {
 //            System.out.println("adding");
-            JPanel chatRoom = createListItem(chatRoomId,chatRooms.get(chatRoomId), false);
+
+//            System.out.println(chatRooms.get(chatRoomId));
+            Boolean status = false;
+            if (!ChatRoomRepo.isGroupChat(chatRoomId)) {
+                status = UserRepo.isOnline(chatRooms.get(chatRoomId));
+//                System.out.println(chatRooms.get(chatRoomId)+" "+status);
+            }
+            JPanel chatRoom = createListItem(chatRoomId,chatRooms.get(chatRoomId), status);
             chatRoomsPanel.add(chatRoom);
-            chatRoomsPointer.put(chatRoomId, chatRoom);
+            itemsPointer.put(chatRoomId, chatRoom);
         }
     }
     private JPanel createListItem(String chatRoomId, String name, Boolean status) {
@@ -133,6 +149,7 @@ public class FriendsPanel extends JPanel {
         JPanel item = new JPanel(new BorderLayout());
         item.setPreferredSize(new Dimension(item.getPreferredSize().width, 80));
         item.setBackground(itemBgColor);
+        item.setBorder(new LineBorder(Color.black, 1));
 
         JLabel content = new JLabel();
         content.setBorder(new EmptyBorder(0, 10, 0, 10));
@@ -140,8 +157,13 @@ public class FriendsPanel extends JPanel {
         content.setIcon(Util.createRoundedImageIcon("user-avatar.jpg", 60));
         content.setFont(new Font("Arial", Font.BOLD, 13));
 
-        item.setBorder(new LineBorder(Color.black, 1));
-        item.add(content, BorderLayout.CENTER);
+        JPanel contentWrapper = new JPanel();
+        contentWrapper.setLayout(null);
+        contentWrapper.setBackground(null);
+        contentWrapper.add(content);
+        content.setBounds(0,10, content.getPreferredSize().width, content.getPreferredSize().height);
+
+        item.add(contentWrapper, BorderLayout.CENTER);
         if (isChatRoom)
             item.putClientProperty("chatRoomId", chatRoomId);
         item.putClientProperty("name", name);
@@ -150,10 +172,12 @@ public class FriendsPanel extends JPanel {
             if (!CurrentUser.getInstance().isFriend(name)) {
                 JButton addFriendBtn = new JButton();
                 addFriendBtn.setIcon(Util.createImageIcon("addFriendIcon.png", 20, 20));
-                addFriendBtn.setPreferredSize(new Dimension(40, 20));
+//                addFriendBtn.setPreferredSize(new Dimension(40, 20));
                 //            addFriendBtn.setContentAreaFilled(false);
                 //            addFriendBtn.setBorder(null);
                 addFriendBtn.setFocusPainted(false);
+                contentWrapper.add(addFriendBtn);
+                addFriendBtn.setBounds(180, 30, 25, 25);
                 addFriendBtn.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -162,19 +186,32 @@ public class FriendsPanel extends JPanel {
                             return;
                         }
 
-                        // Remove the button from its parent container
-                        // Container parentContainer = addFriendBtn.getParent();
-                        // parentContainer.remove(addFriendBtn);
+//                         Remove the button from its parent container
+//                         Container parentContainer = addFriendBtn.getParent();
+//                         parentContainer.remove(addFriendBtn);
 
-                        usersPanel.removeAll();
-                        usersPanel.revalidate(); // Trigger layout update
+//                        usersPanel.removeAll();
+//                        usersPanel.revalidate(); // Trigger layout update
+                        displayChatrooms();
+                        displayFriends();
                         friendsTabbedPane.setSelectedIndex(0);
+                        SettingsPanel.getInstance().initPrivateChat(chatRoomId, name);
                     }
                 });
-                item.add(addFriendBtn, BorderLayout.EAST);
+
             }
+            if (status) {
+                JPanel greenBall = new JPanel();
+                greenBall.setBorder(new Util.RoundedBorder(12));
+                greenBall.setBackground(Color.green);
 
 
+                greenBall.setBounds(55, 55, 15, 15);
+
+                contentWrapper.add(greenBall);
+                contentWrapper.setComponentZOrder(greenBall, 0);
+            }
+//                updateIsOnline(chatRoomId.isEmpty()? name: chatRoomId);
         }
 
         // Add hover effect and click event
@@ -204,13 +241,48 @@ public class FriendsPanel extends JPanel {
 
         return item;
     }
+    void updateIsOnline(String id) {
+//        System.out.println("at SidePanel, updateIsOnline: "+id);
+//        System.out.println();
+        JPanel item = itemsPointer.get(id);
+        System.out.println("at SidePanel, updateIsOnline: "+item.getClientProperty("name"));
+        JPanel contentWrapper = (JPanel) item.getComponent(0);
+        JPanel greenBall = new JPanel();
+        greenBall.setBorder(new Util.RoundedBorder(12));
+        greenBall.setBackground(Color.green);
+
+
+        greenBall.setBounds(55, 55, 15, 15);
+
+        contentWrapper.add(greenBall);
+        contentWrapper.setComponentZOrder(greenBall, 0);
+        contentWrapper.revalidate();
+        contentWrapper.repaint();
+//        item.revalidate();
+    }
+    void updateIsOffline(String id) {
+        JPanel item = itemsPointer.get(id);
+        System.out.println("at SidePanel, updateIsOffline: "+item.getClientProperty("name"));
+        JPanel contentWrapper = (JPanel) item.getComponent(0);
+        contentWrapper.remove(contentWrapper.getComponent(0));
+        contentWrapper.revalidate();
+        contentWrapper.repaint();
+    }
     void handleChatRoomClick(JPanel chatRoom) {
         String chatRoomId = (String)chatRoom.getClientProperty("chatRoomId");
         if (!itemClicked.isEmpty())
-            chatRoomsPointer.get(itemClicked).setBackground(itemBgColor);
+            itemsPointer.get(itemClicked).setBackground(itemBgColor);
         itemClicked = chatRoomId;
         chatRoom.setBackground(itemClickedColor);
-        ChatPanel.getInstance().startChatting(chatRoomId, (String)chatRoom.getClientProperty("name"));
+
+        String chatUsername = (String)chatRoom.getClientProperty("name");
+        ChatPanel.getInstance().startChatting(chatRoomId, chatUsername);
+//        SettingsPanel.getInstance().chatUsername = chatUsername;
+        if (ChatRoomRepo.isGroupChat(chatRoomId)) {
+
+        } else {
+            SettingsPanel.getInstance().initPrivateChat(chatRoomId, chatUsername);
+        }
     }
     void handleUserClick(JPanel user) {
         String user1 = CurrentUser.getInstance().getUser().username();
@@ -224,7 +296,7 @@ public class FriendsPanel extends JPanel {
             chatRoomsPanel.add(chatroom, 0);
             handleChatRoomClick(chatroom);
         } else {
-            handleChatRoomClick(chatRoomsPointer.get(chatRoomId));
+            handleChatRoomClick(itemsPointer.get(chatRoomId));
         }
 
         friendsTabbedPane.setSelectedIndex(0);
@@ -251,10 +323,14 @@ public class FriendsPanel extends JPanel {
         return panel;
     }
     void displayFriends() {
+        friendsPanel.removeAll();
+        friendsPanel.revalidate();
         Map<String, Boolean> friends = CurrentUser.getInstance().getFriends();
         for (String username : friends.keySet()) {
-            System.out.println(username);
-            friendsPanel.add(createListItem("", username, friends.get(username)));
+//            System.out.println(username);
+            JPanel item = createListItem("", username, friends.get(username));
+            friendsPanel.add(item);
+            itemsPointer.put(username, item);
         }
     }
 

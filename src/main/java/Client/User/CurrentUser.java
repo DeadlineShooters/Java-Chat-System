@@ -42,10 +42,11 @@ public class CurrentUser {
         this.printWriter = printWriter;
     }
     public void sendMessage(String message) {
-        System.out.println(message);
+        System.out.println("at CurrentUser: "+message);
         printWriter.println(message);
     }
     public boolean isFriend(String username) {
         return friends.containsKey(username);
     }
+    public void updateFriendStatus(String username, boolean status) {friends.put(username, status);}
 }

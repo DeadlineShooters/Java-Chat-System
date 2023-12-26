@@ -10,6 +10,6 @@ public class UserApp implements Runnable {
 		SwingUtilities.invokeLater(() -> {
 			new Home();
 		});
-		new Thread(new Client()).start();
+		new Thread(Client.getInstance()).start();
 	}
 }

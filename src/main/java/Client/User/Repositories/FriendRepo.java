@@ -27,7 +27,7 @@ public class FriendRepo {
             ps.setString(1, user2);
             ps.execute();
 
-            ChatRoomRepo.createPrivateChat(user1, user2);
+//            ChatRoomRepo.createPrivateChat(user1, user2);
 
             System.out.println("Add friend successful");
             return true;
@@ -47,6 +47,7 @@ public class FriendRepo {
                 // Check for null status before using getBoolean
                 boolean isOnline = rs.getBoolean("status");
                 friends.put(rs.getString("user2"), isOnline);
+                System.out.println(rs.getString("user2")+"::: "+isOnline);
             }
 
         } catch (SQLException exc) {
@@ -54,6 +55,35 @@ public class FriendRepo {
         }
         return friends;
     }
+    public static boolean isFriend(String user1, String user2) {
+        String sql = "SELECT * FROM friend WHERE user1 = ? and user2 = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, user1);
+            ps.setString(2, user2);
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next())
+                return true;
+
+        } catch (SQLException exc) {
+            exc.printStackTrace();
+        }
+        return false;
+    }
+    public static void unfriend(String user1, String user2) {
+        String sql = "delete FROM friend WHERE (user1 = ? and user2 = ?) or (user1 = ? and user2 = ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, user1);
+            ps.setString(2, user2);
+            ps.setString(3, user2);
+            ps.setString(4, user1);
+
+            ps.executeUpdate();
+        } catch (SQLException exc) {
+            exc.printStackTrace();
+        }
+    }
+
 
 
 }

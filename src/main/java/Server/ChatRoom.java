@@ -17,6 +17,9 @@ public class ChatRoom {
         users.put(user.getUsername(), user);
         System.out.println("Server"+ user.getUsername() + " joined the chatroom.");
     }
+    public synchronized void remove(String username) {
+        users.remove(username);
+    }
     public synchronized void broadcastMessage(String sender, String msg) {
 //        messageHistory.add(formattedMessage);
 
