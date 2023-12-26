@@ -2,6 +2,7 @@ package Client.User.Views.Components;
 
 import Client.User.CurrentUser;
 import Client.User.Repositories.FriendRepo;
+import Client.User.Repositories.MessageRepo;
 import Client.User.Views.Util;
 
 import javax.swing.*;
@@ -81,19 +82,19 @@ public class SettingsPanel extends JPanel {
 //    final String[] buttonTexts = {"Unfriend", "Block", "Report spam", "Delete history", "Create group with this person"};
     public void performActionPrivate(String buttonText) {
         if (buttonText.equals(buttonTexts[0])) {
-            String confirmMsg = "Are you sure you want to unfriend?";
+            String confirmMsg = "Are you sure you want to unfriend user: " + chatUsername;
             if (!showConfirmation(confirmMsg))
                 return;
             unfriend();
         } else if (buttonText.equals(buttonTexts[1])) {
-            String confirmMsg = "Are you sure you want to block this user";
+            String confirmMsg = "Are you sure you want to block user: "+ chatUsername;
             if (!showConfirmation(confirmMsg))
                 return;
             block();
         } else if (buttonText.equals(buttonTexts[2])) {
 
         } else if (buttonText.equals(buttonTexts[3])) {
-            String confirmMsg = "Are you sure you want to delete history?";
+            String confirmMsg = "Are you sure you want to delete chat history?";
             if (!showConfirmation(confirmMsg))
                 return;
             deleteHistory();
@@ -117,7 +118,9 @@ public class SettingsPanel extends JPanel {
     }
 
     private void deleteHistory() {
-
+        MessageRepo.deleteAllPrivateMessages(currentChatRoomId);
+        JOptionPane.showMessageDialog(ChatPanel.getInstance(), "Chat history deleted.");
+        ChatPanel.getInstance().loadMessages();
     }
 
     void unfriend() {
@@ -126,6 +129,7 @@ public class SettingsPanel extends JPanel {
         SidePanel.getInstance().displayChatrooms();
         SidePanel.getInstance().displayFriends();
         initPrivateChat(currentChatRoomId, chatUsername);
+        JOptionPane.showMessageDialog(ChatPanel.getInstance(), "unfriend user: "+chatUsername+" successfully.");
     }
     void block() {
 

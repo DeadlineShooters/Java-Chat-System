@@ -120,21 +120,23 @@ public class ChatPanel extends JPanel {
     public void startChatting(String chatRoomId, String name) {
         this.chatRoomId = chatRoomId;
         this.name = name;
+//        System.out.println("at ChatPanel, startChatting: "+chatRoomId);
 
         CurrentUser.getInstance().sendMessage("joinRoom"+spliter+myUsername+spliter+""+spliter+""+spliter+chatRoomId);
         initView();
 
-//        if (ChatRoomRepo.isGroupChat(chatRoomId)) {
-//
-//        } else {
+        if (ChatRoomRepo.isGroupChat(chatRoomId)) {
+
+        } else {
 //            System.out.println("afdas");
-//            SettingsPanel.getInstance().initPrivateChat();
-//        }
+            SettingsPanel.getInstance().initPrivateChat(chatRoomId, name);
+        }
 //        System.out.println(chatRoomId);
         loadMessages();
 
     }
     void loadMessages() {
+        overFlowPane.removeAll();
         ArrayList<Message> messages = MessageRepo.getAllMessages(chatRoomId);
         for (Message msg : messages) {
             addMsg(msg);

@@ -19,13 +19,13 @@ import java.util.Map;
 import java.util.Objects;
 
 public class SidePanel extends JPanel {
-    private String itemClicked = "";
+    private String chatRoomClicked = "";
     JPanel chatRoomsPanel;
     JPanel usersPanel;
     JPanel friendsPanel;
     JTabbedPane friendsTabbedPane;
     Color itemBgColor = Color.pink;
-    Color itemClickedColor = Color.lightGray;
+    Color chatRoomClickedColor = Color.lightGray;
     HashMap<String, JPanel> itemsPointer = new HashMap<>(); // <chatRoomId, listItem>
     private static SidePanel sidePanel = null;
 
@@ -187,15 +187,18 @@ public class SidePanel extends JPanel {
                         }
 
 //                         Remove the button from its parent container
-//                         Container parentContainer = addFriendBtn.getParent();
-//                         parentContainer.remove(addFriendBtn);
+                         Container parentContainer = addFriendBtn.getParent();
+                         parentContainer.remove(addFriendBtn);
 
 //                        usersPanel.removeAll();
 //                        usersPanel.revalidate(); // Trigger layout update
-                        displayChatrooms();
+                        if (friendsTabbedPane.getSelectedIndex() != 0)
+                            displayChatrooms();
                         displayFriends();
-                        friendsTabbedPane.setSelectedIndex(0);
-                        SettingsPanel.getInstance().initPrivateChat(chatRoomId, name);
+//                        friendsTabbedPane.setSelectedIndex(0);
+                        if (SettingsPanel.getInstance().getComponent(0) != null)
+                            SettingsPanel.getInstance().initPrivateChat(chatRoomId, name);
+                        JOptionPane.showMessageDialog(ChatPanel.getInstance(), "unfriend user: "+name+" successfully.");
                     }
                 });
 
@@ -218,14 +221,14 @@ public class SidePanel extends JPanel {
         item.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                if (!Objects.equals(chatRoomId, itemClicked) || !Objects.equals(name, itemClicked)) {
+                if (!Objects.equals(chatRoomId, chatRoomClicked) || !Objects.equals(name, chatRoomClicked)) {
                     item.setBackground(Color.lightGray); // Change the background color on hover
                 }
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                if (!Objects.equals(chatRoomId, itemClicked) || !Objects.equals(name, itemClicked)) {
+                if (!Objects.equals(chatRoomId, chatRoomClicked) || !Objects.equals(name, chatRoomClicked)) {
                     item.setBackground(itemBgColor); // Reset the background color when the mouse exits
                 }
             }
@@ -270,19 +273,14 @@ public class SidePanel extends JPanel {
     }
     void handleChatRoomClick(JPanel chatRoom) {
         String chatRoomId = (String)chatRoom.getClientProperty("chatRoomId");
-        if (!itemClicked.isEmpty())
-            itemsPointer.get(itemClicked).setBackground(itemBgColor);
-        itemClicked = chatRoomId;
-        chatRoom.setBackground(itemClickedColor);
+        if (!chatRoomClicked.isEmpty())
+            itemsPointer.get(chatRoomClicked).getComponent(0).setBackground(itemBgColor);
+        chatRoomClicked = chatRoomId;
+        chatRoom.getComponent(0).setBackground(chatRoomClickedColor);
 
         String chatUsername = (String)chatRoom.getClientProperty("name");
         ChatPanel.getInstance().startChatting(chatRoomId, chatUsername);
 //        SettingsPanel.getInstance().chatUsername = chatUsername;
-        if (ChatRoomRepo.isGroupChat(chatRoomId)) {
-
-        } else {
-            SettingsPanel.getInstance().initPrivateChat(chatRoomId, chatUsername);
-        }
     }
     void handleUserClick(JPanel user) {
         String user1 = CurrentUser.getInstance().getUser().username();
@@ -303,7 +301,7 @@ public class SidePanel extends JPanel {
     }
     boolean addFriend(String username) {
         CurrentUser.getInstance().addFriend(username);
-        displayChatrooms();
+//        displayChatrooms();
         return FriendRepo.addFriend(CurrentUser.getInstance().getUser().username(), username);
     }
     JPanel createFriendsTab() {
