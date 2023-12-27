@@ -1,6 +1,8 @@
 package Client.User.Views.Components;
 
+import Client.User.Common;
 import Client.User.CurrentUser;
+import Client.User.Repositories.BlockedUserRepo;
 import Client.User.Repositories.FriendRepo;
 import Client.User.Repositories.MessageRepo;
 import Client.User.Views.Util;
@@ -17,6 +19,7 @@ public class SettingsPanel extends JPanel {
     String chatUsername = null;
     String username = CurrentUser.getInstance().getUser().username();
     String currentChatRoomId = null;
+    String spliter = Common.spliter;
     public static SettingsPanel getInstance() {
         if (settingsPanel == null)
             settingsPanel = new SettingsPanel();
@@ -32,6 +35,10 @@ public class SettingsPanel extends JPanel {
         this.removeAll();
         this.chatUsername = chatUsername;
         this.currentChatRoomId = chatRoomId;
+        displayContent();
+    }
+    void displayContent() {
+        this.removeAll();
         JButton searchButton = new JButton();
         ImageIcon searchIcon = Util.createImageIcon("searchIcon.png", 15, 15);
         searchButton.setIcon(searchIcon);
@@ -54,6 +61,12 @@ public class SettingsPanel extends JPanel {
         for (String buttonText : buttonTexts) {
             if (buttonText.equals("Unfriend") && !FriendRepo.isFriend(username, chatUsername)) {
                 continue;
+            }
+            if (buttonText.equals("Block")) {
+                if (BlockedUserRepo.isBlocked(username, chatUsername))
+                    buttonText = "Unblock";
+                else if (BlockedUserRepo.isBlocked(chatUsername, username))
+                    continue;
             }
             HoverablePanel textPanel = new HoverablePanel(buttonText);
             textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.X_AXIS));
@@ -91,6 +104,11 @@ public class SettingsPanel extends JPanel {
             if (!showConfirmation(confirmMsg))
                 return;
             block();
+        } else if (buttonText.equals("Unblock")) {
+            String confirmMsg = "Do you want to unblock user: "+ chatUsername;
+            if (!showConfirmation(confirmMsg))
+                return;
+            unblock();
         } else if (buttonText.equals(buttonTexts[2])) {
 
         } else if (buttonText.equals(buttonTexts[3])) {
@@ -115,6 +133,15 @@ public class SettingsPanel extends JPanel {
     }
 
     private void createGroupWithPerson() {
+        JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "Forgot Password", true);
+        dialog.setLayout(new BorderLayout());
+        dialog.setResizable(false);
+
+
+
+        dialog.pack();
+        dialog.setLocationRelativeTo(this); // Center the dialog on the parent frame
+        dialog.setVisible(true);
     }
 
     private void deleteHistory() {
@@ -128,11 +155,22 @@ public class SettingsPanel extends JPanel {
         FriendRepo.unfriend(username, chatUsername);
         SidePanel.getInstance().displayChatrooms();
         SidePanel.getInstance().displayFriends();
-        initPrivateChat(currentChatRoomId, chatUsername);
+        displayContent();
         JOptionPane.showMessageDialog(ChatPanel.getInstance(), "unfriend user: "+chatUsername+" successfully.");
     }
     void block() {
-
+        BlockedUserRepo.blockUser(username, chatUsername);
+        ChatPanel.getInstance().initView();
+        displayContent();
+//        System.out.println("at SettingsPanel");
+        CurrentUser.getInstance().sendMessage("block"+spliter+currentChatRoomId);
+    }
+    void unblock() {
+        System.out.println("at SettingsPanel unblock");
+        BlockedUserRepo.unblockUser(username, chatUsername);
+        ChatPanel.getInstance().initView();
+        displayContent();
+        CurrentUser.getInstance().sendMessage("unblock"+spliter+currentChatRoomId);
     }
     void reportSpam() {
 

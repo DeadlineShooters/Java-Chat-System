@@ -187,8 +187,15 @@ public class SidePanel extends JPanel {
                         }
 
 //                         Remove the button from its parent container
-                         Container parentContainer = addFriendBtn.getParent();
-                         parentContainer.remove(addFriendBtn);
+//                        SwingUtilities.invokeLater(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                            }
+//                        });
+                        Container parentContainer = addFriendBtn.getParent();
+                        parentContainer.remove(addFriendBtn);
+                        parentContainer.revalidate();
+
 
 //                        usersPanel.removeAll();
 //                        usersPanel.revalidate(); // Trigger layout update
@@ -196,9 +203,9 @@ public class SidePanel extends JPanel {
                             displayChatrooms();
                         displayFriends();
 //                        friendsTabbedPane.setSelectedIndex(0);
-                        if (SettingsPanel.getInstance().getComponent(0) != null)
+                        if (SettingsPanel.getInstance().getComponentCount() >0)
                             SettingsPanel.getInstance().initPrivateChat(chatRoomId, name);
-                        JOptionPane.showMessageDialog(ChatPanel.getInstance(), "unfriend user: "+name+" successfully.");
+//                        JOptionPane.showMessageDialog(ChatPanel.getInstance(), "unfriend user: "+name+" successfully.");
                     }
                 });
 
@@ -221,15 +228,16 @@ public class SidePanel extends JPanel {
         item.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                if (!Objects.equals(chatRoomId, chatRoomClicked) || !Objects.equals(name, chatRoomClicked)) {
-                    item.setBackground(Color.lightGray); // Change the background color on hover
+//                System.out.println(chatRoomId + "   " +chatRoomClicked);
+                if (!Objects.equals(chatRoomId, chatRoomClicked)) {
+                    contentWrapper.setBackground(Color.lightGray); // Change the background color on hover
                 }
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                if (!Objects.equals(chatRoomId, chatRoomClicked) || !Objects.equals(name, chatRoomClicked)) {
-                    item.setBackground(itemBgColor); // Reset the background color when the mouse exits
+                if (!Objects.equals(chatRoomId, chatRoomClicked)) {
+                    contentWrapper.setBackground(itemBgColor); // Reset the background color when the mouse exits
                 }
             }
             @Override
@@ -272,14 +280,22 @@ public class SidePanel extends JPanel {
         contentWrapper.repaint();
     }
     void handleChatRoomClick(JPanel chatRoom) {
-        String chatRoomId = (String)chatRoom.getClientProperty("chatRoomId");
-        if (!chatRoomClicked.isEmpty())
-            itemsPointer.get(chatRoomClicked).getComponent(0).setBackground(itemBgColor);
-        chatRoomClicked = chatRoomId;
-        chatRoom.getComponent(0).setBackground(chatRoomClickedColor);
+        SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+            String chatRoomId = (String)chatRoom.getClientProperty("chatRoomId");
+            if (!chatRoomClicked.isEmpty()) {
+                if (chatRoomClicked.equals(chatRoomId))
+                    return;
+                itemsPointer.get(chatRoomClicked).getComponent(0).setBackground(itemBgColor);
+            }
+            chatRoomClicked = chatRoomId;
+            chatRoom.getComponent(0).setBackground(chatRoomClickedColor);
 
-        String chatUsername = (String)chatRoom.getClientProperty("name");
-        ChatPanel.getInstance().startChatting(chatRoomId, chatUsername);
+            String chatUsername = (String)chatRoom.getClientProperty("name");
+            ChatPanel.getInstance().startChatting(chatRoomId, chatUsername);
+        }
+    });
 //        SettingsPanel.getInstance().chatUsername = chatUsername;
     }
     void handleUserClick(JPanel user) {
@@ -326,7 +342,8 @@ public class SidePanel extends JPanel {
         Map<String, Boolean> friends = CurrentUser.getInstance().getFriends();
         for (String username : friends.keySet()) {
 //            System.out.println(username);
-            JPanel item = createListItem("", username, friends.get(username));
+            Boolean isOnline = UserRepo.isOnline(username);
+            JPanel item = createListItem("", username, isOnline);
             friendsPanel.add(item);
             itemsPointer.put(username, item);
         }

@@ -2,6 +2,7 @@ package Client.User.Views.Components;
 
 import Client.Models.Message;
 import Client.User.CurrentUser;
+import Client.User.Repositories.BlockedUserRepo;
 import Client.User.Repositories.ChatRoomRepo;
 import Client.User.Repositories.MessageRepo;
 import Client.User.Views.Util;
@@ -40,6 +41,7 @@ public class ChatPanel extends JPanel {
          setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
     }
     void initView() {
+        this.removeAll();
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
 //         topPanel.setSize(this.getPreferredSize().width, 600);
         JLabel topBar = new JLabel();
@@ -66,7 +68,30 @@ public class ChatPanel extends JPanel {
         chatScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         this.add(chatScrollPane, BorderLayout.CENTER);
 
+
+        JLabel blockedNotify = new JLabel();
+        blockedNotify.setFont(new Font("Arial", Font.ITALIC, 13));
+        blockedNotify.setForeground(Color.gray);
+
         JPanel inputPanel = new JPanel(new BorderLayout());
+
+        // Create an empty JPanel with FlowLayout to act as a placeholder for centering
+        JPanel centeringPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        centeringPanel.setBorder(new EmptyBorder(0,0,20,0));
+        centeringPanel.add(blockedNotify);
+
+        inputPanel.add(centeringPanel, BorderLayout.CENTER);
+
+        this.add(inputPanel, BorderLayout.SOUTH);
+        loadMessages();
+        if (BlockedUserRepo.isBlocked(name, myUsername)) {
+            blockedNotify.setText("You have been blocked by this user ");
+            return;
+        } else if (BlockedUserRepo.isBlocked(myUsername, name)) {
+//            System.out.println("at ChatPanel");
+            blockedNotify.setText("You blocked this user ");
+            return;
+        }
         inputArea = new JTextArea();
         sendButton = new JButton("Send");
         inputArea.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
@@ -90,30 +115,30 @@ public class ChatPanel extends JPanel {
             }
         });
 
-        JButton receivebtn = new JButton("Receive");
-        inputPanel.add(receivebtn, BorderLayout.WEST);
-        receivebtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String content = inputArea.getText();
-//                if (content.isEmpty()) {
-//                    return;
-//                }
+//        JButton receivebtn = new JButton("Receive");
+//        inputPanel.add(receivebtn, BorderLayout.WEST);
+//        receivebtn.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                String content = inputArea.getText();
+////                if (content.isEmpty()) {
+////                    return;
+////                }
+////
+////                Timestamp sentAt = Util.getCurrentTimestamp();
+////                Message message = new Message(chatRoomId, "nguyen tuan kiet", content, "", sentAt);
+////                addMsg(message);
+////                inputArea.setText("");
+//                SwingUtilities.invokeLater(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        chatScrollPane.getVerticalScrollBar().setValue((int) content.charAt(0));
+//                        chatScrollPane.revalidate();
+//                    }
+//                });
 //
-//                Timestamp sentAt = Util.getCurrentTimestamp();
-//                Message message = new Message(chatRoomId, "nguyen tuan kiet", content, "", sentAt);
-//                addMsg(message);
-//                inputArea.setText("");
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        chatScrollPane.getVerticalScrollBar().setValue((int) content.charAt(0));
-                        chatScrollPane.revalidate();
-                    }
-                });
-
-            }
-        });
+//            }
+//        });
         this.add(inputPanel, BorderLayout.SOUTH);
         this.revalidate();
     }
@@ -136,15 +161,22 @@ public class ChatPanel extends JPanel {
 
     }
     void loadMessages() {
+        if (chatRoomId == null)
+            return;
         overFlowPane.removeAll();
         ArrayList<Message> messages = MessageRepo.getAllMessages(chatRoomId);
         for (Message msg : messages) {
             addMsg(msg);
         }
-        JScrollBar verticalScrollBar = chatScrollPane.getVerticalScrollBar();
-        verticalScrollBar.setValue(verticalScrollBar.getMaximum());
-
-        chatScrollPane.revalidate();
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                JScrollBar verticalScrollBar = chatScrollPane.getVerticalScrollBar();
+                verticalScrollBar.setValue(verticalScrollBar.getMaximum());
+                chatScrollPane.revalidate();
+//                chatScrollPane.repaint();
+            }
+        });
 //        chatScrollPane.repaint();
     }
     public void receiveMessage(String msgReceived) {
@@ -181,6 +213,15 @@ public class ChatPanel extends JPanel {
             SidePanel.getInstance().updateIsOffline(username);
             return;
         }
+        if (msgSplit[0].equals("block") || msgSplit[0].equals("unblock")) {
+            if (chatRoomId == null)
+                return;
+            System.out.println("at ChatPanel block: " + msgSplit[0]);
+            initView();
+            SettingsPanel.getInstance().displayContent();
+            return;
+        }
+
         Message message = new Message(chatRoomId, msgSplit[1], msgSplit[2], "", 0, Util.stringToTimestamp(msgSplit[3]));
 
         addMsg(message);

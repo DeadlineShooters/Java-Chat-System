@@ -13,8 +13,8 @@ public class ClientHandler implements Runnable {
     private Socket socket;
     private BufferedReader bufferedReader;
     private PrintWriter printWriter;
-    private String clientUsername;
-    private String chatRoomId;
+    private String clientUsername = null;
+    private String chatRoomId = null;
     String spliter = "<21127089>";
 
     public ClientHandler(Socket socket, Map<String, ChatRoom> chatRooms) {
@@ -58,6 +58,7 @@ public class ClientHandler implements Runnable {
                 messageFromClient = bufferedReader.readLine();
                 String[] msgSplit = messageFromClient.split(spliter);
 //                System.out.println(msgSplit.length);
+                System.out.println("at ClientHandler: "+ messageFromClient);
                 if (msgSplit[0] != "message") {
                     handleCommands(msgSplit);
                     continue;
@@ -90,7 +91,8 @@ public class ClientHandler implements Runnable {
             return;
         }
         if (command.equals("joinRoom")) {
-            chatRooms.get(this.chatRoomId).remove(clientUsername);
+            if (this.chatRoomId != null)
+                chatRooms.get(this.chatRoomId).remove(clientUsername);
             this.chatRoomId = msgSplit[4];
 //            System.out.println("ádfa");
             chatRooms.computeIfAbsent(chatRoomId, k -> new ChatRoom(chatRoomId));
@@ -105,6 +107,19 @@ public class ClientHandler implements Runnable {
                 chatRooms.get(chatRoomId).broadcastMessage(clientUsername, msg);
             }
             closeEverything();
+            return;
+        }
+        if (command.equals("block")) {
+            // block - chatroomid
+//            System.out.println("at ClientHandler: " + chatRoomId);
+            String msg = "block" + spliter;
+            chatRooms.get(msgSplit[1]).broadcastMessage(clientUsername,msg);
+            return;
+        }
+        if (command.equals("unblock")) {
+            String msg = "unblock" + spliter;
+            chatRooms.get(msgSplit[1]).broadcastMessage(clientUsername,msg);
+            return;
         }
     }
     public void closeEverything() {
