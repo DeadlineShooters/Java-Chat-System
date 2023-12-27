@@ -5,13 +5,20 @@ import Client.User.CurrentUser;
 import Client.User.Repositories.BlockedUserRepo;
 import Client.User.Repositories.FriendRepo;
 import Client.User.Repositories.MessageRepo;
+import Client.User.Repositories.UserRepo;
 import Client.User.Views.Util;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Objects;
 
 public class SettingsPanel extends JPanel {
     private static SettingsPanel settingsPanel;
@@ -20,6 +27,11 @@ public class SettingsPanel extends JPanel {
     String username = CurrentUser.getInstance().getUser().username();
     String currentChatRoomId = null;
     String spliter = Common.spliter;
+    Color itemBgColor = Color.pink;
+    Color userClickedColor = Color.lightGray;
+    String userClicked = "";
+    HashSet<String> userChosen = new HashSet<>();
+    JPanel usersPanel, chosenUsersPanel;
     public static SettingsPanel getInstance() {
         if (settingsPanel == null)
             settingsPanel = new SettingsPanel();
@@ -117,7 +129,7 @@ public class SettingsPanel extends JPanel {
                 return;
             deleteHistory();
         } else if (buttonText.equals(buttonTexts[4])) {
-
+            createGroupWithPerson();
         }
     }
 
@@ -133,15 +145,207 @@ public class SettingsPanel extends JPanel {
     }
 
     private void createGroupWithPerson() {
-        JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "Forgot Password", true);
+        JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "Create group chat", true);
         dialog.setLayout(new BorderLayout());
         dialog.setResizable(false);
+        dialog.setSize(415, 500);
+
+        JPanel searchPanel = new JPanel();
+//        searchPanel.setBorder(new LineBorder(Color.black, 1));
+        JTextField searchField = new JTextField(13);
+        JButton searchButton = new JButton();
+        ImageIcon searchIcon = Util.createImageIcon("searchIcon.png", 15, 15);
+        searchButton.setIcon(searchIcon);
+        searchButton.setPreferredSize(new Dimension(20, searchButton.getPreferredSize().height));
+
+        JButton refreshButton = new JButton();
+        ImageIcon refreshIcon = Util.createImageIcon("refreshIcon.png", 15, 15);
+        refreshButton.setIcon(refreshIcon);
+        refreshButton.setPreferredSize(new Dimension(20, searchButton.getPreferredSize().height));
+
+        searchPanel.add(searchField);
+        searchPanel.add(searchButton);
+        searchPanel.add(refreshButton);
 
 
+        // list section
+        usersPanel = new JPanel(new GridLayout(0, 1));
+        JPanel subPanel = new JPanel(new BorderLayout());
+        subPanel.add(usersPanel, BorderLayout.NORTH);
 
-        dialog.pack();
-        dialog.setLocationRelativeTo(this); // Center the dialog on the parent frame
+        JScrollPane usersScrollPane = new JScrollPane(subPanel);
+        usersScrollPane.getVerticalScrollBar().setUnitIncrement(10);
+
+        chosenUsersPanel = new JPanel(new GridLayout(0, 1));
+        JPanel chosenSubPanel = new JPanel(new BorderLayout());
+        chosenSubPanel.add(chosenUsersPanel, BorderLayout.NORTH);
+
+        JScrollPane chosenUsersScrollPane = new JScrollPane(chosenSubPanel);
+        chosenUsersScrollPane.getVerticalScrollBar().setUnitIncrement(10);
+
+        JPanel outerleft = new JPanel(new BorderLayout());
+        JPanel outerright = new JPanel(new BorderLayout());
+        outerleft.add(usersScrollPane, BorderLayout.CENTER);
+        outerright.add(chosenUsersScrollPane, BorderLayout.CENTER);
+
+        JLabel pick = new JLabel("Pick at least 1 user");
+        JLabel chosen = new JLabel("You picked");
+        JPanel pickWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel chosenWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        pickWrapper.add(pick);
+        chosenWrapper.add(chosen);
+
+        outerleft.add(pickWrapper, BorderLayout.NORTH);
+        outerright.add(chosenWrapper, BorderLayout.NORTH);
+        searchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                usersPanel.removeAll();
+                usersPanel.revalidate(); // Trigger layout update
+
+                String prompt = searchField.getText();
+                if (prompt.isEmpty())
+                    return;
+                searchField.setText("");
+                String currentUsername = CurrentUser.getInstance().getUser().username();
+                HashMap<String, Boolean> users = UserRepo.findUsers(currentUsername, prompt);
+                for (String username : users.keySet()) {
+                    JPanel item = createListItem(username, users.get(username), false);
+                    usersPanel.add(item);
+                }
+                usersPanel.revalidate(); // Trigger layout update
+            }
+        });
+        String currentUsername = CurrentUser.getInstance().getUser().username();
+        HashMap<String, Boolean> users = UserRepo.findUsers(currentUsername, "");
+        for (String username : users.keySet()) {
+            JPanel item = createListItem(username, users.get(username), false);
+            usersPanel.add(item);
+        }
+        refreshButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                usersPanel.removeAll();
+                usersPanel.revalidate(); // Trigger layout update
+
+//                usersPanel.repaint();
+                String currentUsername = CurrentUser.getInstance().getUser().username();
+                HashMap<String, Boolean> users = UserRepo.findUsers(currentUsername, "");
+                for (String username : users.keySet()) {
+                    JPanel item = createListItem(username, users.get(username), false);
+                    usersPanel.add(item);
+                }
+                usersPanel.revalidate(); // Trigger layout update
+            }
+        });
+
+        dialog.add(searchPanel, BorderLayout.NORTH);
+
+        outerleft.setBounds(0,0, 200, 500);
+        outerright.setBounds(200,0, 200, 500);
+//        outerleft.setBackground(Color.blue);
+//        outerright.setBackground(Color.red);
+
+        JPanel combine = new JPanel();
+        combine.setLayout(null);
+        combine.setBackground(Color.yellow);
+
+        combine.add(outerleft);
+        combine.add(outerright);
+
+        dialog.add(combine, BorderLayout.CENTER);
+
+        JButton create = new JButton("Create a group chat");
+        dialog.add(create, BorderLayout.SOUTH);
+
+        create.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                handleCreateGroupChat();
+            }
+        });
+
+//        dialog.pack();
+        dialog.setLocationRelativeTo(ChatPanel.getInstance()); // Center the dialog on the parent frame
         dialog.setVisible(true);
+    }
+    void handleCreateGroupChat() {
+
+    }
+    private JPanel createListItem(String username, Boolean status, Boolean isChosen) {
+        JPanel item = new JPanel(new BorderLayout());
+        item.setPreferredSize(new Dimension(item.getPreferredSize().width, 80));
+        item.setBackground(itemBgColor);
+        item.setBorder(new LineBorder(Color.black, 1));
+
+        JLabel content = new JLabel();
+        content.setBorder(new EmptyBorder(0, 10, 0, 10));
+        content.setText("   "+username);
+        content.setIcon(Util.createRoundedImageIcon("user-avatar.jpg", 60));
+        content.setFont(new Font("Arial", Font.BOLD, 13));
+
+        JPanel contentWrapper = new JPanel();
+        contentWrapper.setLayout(null);
+        contentWrapper.setBackground(null);
+        contentWrapper.add(content);
+        content.setBounds(0,10, content.getPreferredSize().width, content.getPreferredSize().height);
+
+        item.add(contentWrapper, BorderLayout.CENTER);
+        item.putClientProperty("username", username);
+
+        if (status) {
+            JPanel greenBall = new JPanel();
+            greenBall.setBorder(new Util.RoundedBorder(12));
+            greenBall.setBackground(Color.green);
+
+
+            greenBall.setBounds(55, 55, 15, 15);
+
+            contentWrapper.add(greenBall);
+            contentWrapper.setComponentZOrder(greenBall, 0);
+        }
+//                updateIsOnline(chatRoomId.isEmpty()? name: chatRoomId);
+
+        // Add hover effect and click event
+        item.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+//                System.out.println(chatRoomId + "   " +chatRoomClicked);
+                if (!Objects.equals(username, userClicked)) {
+                    contentWrapper.setBackground(Color.lightGray); // Change the background color on hover
+                }
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                if (!Objects.equals(username, userClicked)) {
+                    contentWrapper.setBackground(itemBgColor); // Reset the background color when the mouse exits
+                }
+            }
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (isChosen) {
+                    handleChosenClick(username, status, item);
+                    return;
+                }
+                handleUserClick(username, status);
+            }
+        });
+
+        return item;
+    }
+    void handleUserClick(String username, Boolean status) {
+        if (userChosen.contains(username))
+            return;
+        userChosen.add(username);
+        chosenUsersPanel.add(createListItem(username, status, true));
+        chosenUsersPanel.revalidate();
+    }
+    void handleChosenClick(String username, Boolean status, JPanel item) {
+        userChosen.remove(username);
+        item.getParent().remove(item);
+        chosenUsersPanel.revalidate();
+
     }
 
     private void deleteHistory() {
@@ -175,8 +379,6 @@ public class SettingsPanel extends JPanel {
     void reportSpam() {
 
     }
-
-
 
     private class HoverablePanel extends JPanel {
         private boolean hovered = false;
