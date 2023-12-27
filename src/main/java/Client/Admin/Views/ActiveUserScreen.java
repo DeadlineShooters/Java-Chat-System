@@ -5,10 +5,11 @@ import java.awt.*;
 import javax.swing.*;
 
 import Client.Admin.Views.Components.ActiveUserList;
+import Client.Admin.Views.Components.ActiveUsersLineChart;
 import Client.Admin.Views.Components.LineChart;
 
 public class ActiveUserScreen extends JPanel {
-    LineChart lineChart = new LineChart("Chart of the number of active people by year", "Month", "People who have opened the app");
+    ActiveUsersLineChart lineChart = new ActiveUsersLineChart("Chart of the number of active people by year", "Month", "People who have opened the app");
     ActiveUserList list = new ActiveUserList();
 
     public ActiveUserScreen() {
