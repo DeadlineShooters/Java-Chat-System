@@ -14,7 +14,7 @@ public class ClientHandler implements Runnable {
     private BufferedReader bufferedReader;
     private PrintWriter printWriter;
     private String clientUsername = null;
-    private String chatRoomId = null;
+    private String chatRoomId = "lobby";
     String spliter = "<21127089>";
 
     public ClientHandler(Socket socket, Map<String, ChatRoom> chatRooms) {
@@ -59,7 +59,7 @@ public class ClientHandler implements Runnable {
                 String[] msgSplit = messageFromClient.split(spliter);
 //                System.out.println(msgSplit.length);
                 System.out.println("at ClientHandler: "+ messageFromClient);
-                if (msgSplit[0] != "message") {
+                if (!msgSplit[0].equals("message")) {
                     handleCommands(msgSplit);
                     continue;
                 }
@@ -78,11 +78,11 @@ public class ClientHandler implements Runnable {
         if (command.equals("login")) {
             this.clientUsername = msgSplit[1];
             System.out.println(clientUsername + " just logged in");
-            String lobby = "lobby";
+//            String lobby = "lobby";
 
-            chatRooms.computeIfAbsent(lobby, k -> new ChatRoom(lobby));
+            chatRooms.computeIfAbsent(chatRoomId, k -> new ChatRoom(chatRoomId));
             User user = new User(clientUsername,printWriter);
-            chatRooms.get(lobby).join(user);
+            chatRooms.get(chatRoomId).join(user);
 
             for (String chatRoomId : chatRooms.keySet()) {
                 String msg = "online"+spliter+clientUsername+spliter+chatRoomId;
@@ -91,10 +91,12 @@ public class ClientHandler implements Runnable {
             return;
         }
         if (command.equals("joinRoom")) {
-            if (this.chatRoomId != null)
+            if (this.chatRoomId != null) {
+                System.out.println("at ClientHandler, previous chatroom: "+chatRoomId);
                 chatRooms.get(this.chatRoomId).remove(clientUsername);
+            }
             this.chatRoomId = msgSplit[4];
-//            System.out.println("ádfa");
+            System.out.println("at clientHandler: " + chatRoomId);
             chatRooms.computeIfAbsent(chatRoomId, k -> new ChatRoom(chatRoomId));
             User user = new User(clientUsername,printWriter);
             chatRooms.get(chatRoomId).join(user);

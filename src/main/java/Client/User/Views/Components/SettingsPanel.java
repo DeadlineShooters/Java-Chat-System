@@ -2,10 +2,7 @@ package Client.User.Views.Components;
 
 import Client.User.Common;
 import Client.User.CurrentUser;
-import Client.User.Repositories.BlockedUserRepo;
-import Client.User.Repositories.FriendRepo;
-import Client.User.Repositories.MessageRepo;
-import Client.User.Repositories.UserRepo;
+import Client.User.Repositories.*;
 import Client.User.Views.Util;
 
 import javax.swing.*;
@@ -18,7 +15,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Objects;
 
 public class SettingsPanel extends JPanel {
     private static SettingsPanel settingsPanel;
@@ -28,9 +24,11 @@ public class SettingsPanel extends JPanel {
     String currentChatRoomId = null;
     String spliter = Common.spliter;
     Color itemBgColor = Color.pink;
-    Color userClickedColor = Color.lightGray;
-    String userClicked = "";
-    HashSet<String> userChosen = new HashSet<>();
+    JTextField groupNameField;
+
+//    Color userClickedColor = Color.lightGray;
+//    String userClicked = "";
+    HashSet<String> usersChosen = new HashSet<>();
     JPanel usersPanel, chosenUsersPanel;
     public static SettingsPanel getInstance() {
         if (settingsPanel == null)
@@ -167,6 +165,22 @@ public class SettingsPanel extends JPanel {
         searchPanel.add(searchButton);
         searchPanel.add(refreshButton);
 
+        // input group chat name
+        JPanel groupNamePanel = new JPanel();
+//        groupNamePanel.setLayout(new BoxLayout(groupNamePanel, BoxLayout.X_AXIS));
+        groupNameField = new JTextField(20);
+//        groupNameField.setPreferredSize(new Dimension(200, 30));
+        JLabel groupNameLabel = new JLabel("Group chat name (optional): ");
+        groupNamePanel.add(groupNameLabel);
+        groupNamePanel.add(groupNameField);
+
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
+        topPanel.add(groupNamePanel);
+        topPanel.add(searchPanel);
+
+        dialog.add(topPanel, BorderLayout.NORTH);
+
 
         // list section
         usersPanel = new JPanel(new GridLayout(0, 1));
@@ -216,12 +230,17 @@ public class SettingsPanel extends JPanel {
                 usersPanel.revalidate(); // Trigger layout update
             }
         });
+        // display all users
         String currentUsername = CurrentUser.getInstance().getUser().username();
         HashMap<String, Boolean> users = UserRepo.findUsers(currentUsername, "");
         for (String username : users.keySet()) {
             JPanel item = createListItem(username, users.get(username), false);
             usersPanel.add(item);
         }
+        // pick current chat partner as group chat member
+        JPanel chatPartner = createListItem(chatUsername, UserRepo.isOnline(chatUsername), true);
+        chosenUsersPanel.add(chatPartner);
+        usersChosen.add(chatUsername);
         refreshButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -239,7 +258,7 @@ public class SettingsPanel extends JPanel {
             }
         });
 
-        dialog.add(searchPanel, BorderLayout.NORTH);
+
 
         outerleft.setBounds(0,0, 200, 500);
         outerright.setBounds(200,0, 200, 500);
@@ -262,6 +281,7 @@ public class SettingsPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 handleCreateGroupChat();
+                dialog.dispose();
             }
         });
 
@@ -270,7 +290,11 @@ public class SettingsPanel extends JPanel {
         dialog.setVisible(true);
     }
     void handleCreateGroupChat() {
-
+        String groupName = groupNameField.getText();
+        String groupChatId = ChatRoomRepo.createGroupChat(groupName, username, usersChosen);
+        SidePanel.getInstance().displayChatrooms();
+        JPanel groupChatRoom = SidePanel.getInstance().itemsPointer.get(groupChatId);
+        SidePanel.getInstance().handleUserClick(groupChatRoom);
     }
     private JPanel createListItem(String username, Boolean status, Boolean isChosen) {
         JPanel item = new JPanel(new BorderLayout());
@@ -311,16 +335,12 @@ public class SettingsPanel extends JPanel {
             @Override
             public void mouseEntered(MouseEvent e) {
 //                System.out.println(chatRoomId + "   " +chatRoomClicked);
-                if (!Objects.equals(username, userClicked)) {
-                    contentWrapper.setBackground(Color.lightGray); // Change the background color on hover
-                }
+                contentWrapper.setBackground(Color.lightGray); // Change the background color on hover
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                if (!Objects.equals(username, userClicked)) {
-                    contentWrapper.setBackground(itemBgColor); // Reset the background color when the mouse exits
-                }
+                contentWrapper.setBackground(itemBgColor); // Reset the background color when the mouse exits
             }
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -335,14 +355,14 @@ public class SettingsPanel extends JPanel {
         return item;
     }
     void handleUserClick(String username, Boolean status) {
-        if (userChosen.contains(username))
+        if (usersChosen.contains(username))
             return;
-        userChosen.add(username);
+        usersChosen.add(username);
         chosenUsersPanel.add(createListItem(username, status, true));
         chosenUsersPanel.revalidate();
     }
     void handleChosenClick(String username, Boolean status, JPanel item) {
-        userChosen.remove(username);
+        usersChosen.remove(username);
         item.getParent().remove(item);
         chosenUsersPanel.revalidate();
 

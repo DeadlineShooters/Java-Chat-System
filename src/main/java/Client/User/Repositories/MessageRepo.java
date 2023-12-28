@@ -17,7 +17,7 @@ public class MessageRepo {
     }
     public static ArrayList<Message> getAllMessages(String chatRoomId) {
         ArrayList<Message> messages = new ArrayList<>();
-        String sql = "select * from message where chatroomid = ?";
+        String sql = "SELECT * FROM message WHERE chatRoomId = ? ORDER BY sentAt ASC";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, chatRoomId);
 

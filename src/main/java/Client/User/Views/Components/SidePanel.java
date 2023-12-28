@@ -280,9 +280,9 @@ public class SidePanel extends JPanel {
         contentWrapper.repaint();
     }
     void handleChatRoomClick(JPanel chatRoom) {
-        SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
+//        SwingUtilities.invokeLater(new Runnable() {
+//        @Override
+//        public void run() {
             String chatRoomId = (String)chatRoom.getClientProperty("chatRoomId");
             if (!chatRoomClicked.isEmpty()) {
                 if (chatRoomClicked.equals(chatRoomId))
@@ -294,8 +294,8 @@ public class SidePanel extends JPanel {
 
             String chatUsername = (String)chatRoom.getClientProperty("name");
             ChatPanel.getInstance().startChatting(chatRoomId, chatUsername);
-        }
-    });
+//        }
+//    });
 //        SettingsPanel.getInstance().chatUsername = chatUsername;
     }
     void handleUserClick(JPanel user) {

@@ -225,6 +225,14 @@ public class ChatPanel extends JPanel {
         Message message = new Message(chatRoomId, msgSplit[1], msgSplit[2], "", 0, Util.stringToTimestamp(msgSplit[3]));
 
         addMsg(message);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                JScrollBar verticalScrollBar = chatScrollPane.getVerticalScrollBar();
+                verticalScrollBar.setValue(verticalScrollBar.getMaximum());
+                chatScrollPane.revalidate();
+            }
+        });
     }
     public void sendMessage() {
         if (chatRoomId.isEmpty()) return;
@@ -364,9 +372,18 @@ public class ChatPanel extends JPanel {
             temp.setWrapStyleWord(true);  // Wrap at word boundaries
         }
         overFlowPane.add(temp, c);
-
-
         overFlowPane.revalidate();
+//        scrollToBottom();
+    }
+    void scrollToBottom() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                JScrollBar verticalScrollBar = chatScrollPane.getVerticalScrollBar();
+                verticalScrollBar.setValue(verticalScrollBar.getMaximum());
+                chatScrollPane.revalidate();
+            }
+        });
     }
 
 

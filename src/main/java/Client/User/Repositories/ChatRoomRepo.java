@@ -8,6 +8,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Random;
 
 public class ChatRoomRepo {
     private static Connection conn;
@@ -33,6 +35,41 @@ public class ChatRoomRepo {
             exc.printStackTrace();
         }
         return null;
+    }
+    public static String createGroupChat(String name, String username, HashSet<String> members) {
+        String chatRoomId = Util.createUUID();
+        if (name == null || name.isEmpty())
+            name = getSaltString(5);
+        String sql = "insert into chatroom (chatRoomId, name, createdAt) values (?, ?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, chatRoomId);
+            ps.setString(2, "Group chat "+name);
+            ps.setTimestamp(3, Util.getCurrentTimestamp());
+            ps.execute();
+
+            ChatMemberRepo.addChatMember(chatRoomId, username);
+            for (String member : members) {
+                ChatMemberRepo.addChatMember(chatRoomId, member);
+            }
+
+            System.out.println("Group chat created successfully");
+            return chatRoomId;
+        } catch (SQLException exc) {
+            exc.printStackTrace();
+        }
+        return null;
+    }
+    static String getSaltString(int length) {
+        String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        StringBuilder salt = new StringBuilder();
+        Random rnd = new Random();
+        while (salt.length() < length) { // length of the random string.
+            int index = (int) (rnd.nextFloat() * SALTCHARS.length());
+            salt.append(SALTCHARS.charAt(index));
+        }
+        String saltStr = salt.toString();
+        return saltStr;
+
     }
     public static HashMap<String, String> getAllChatRooms(String username) {
         // HashMap<chatRoomId, username or group name>

@@ -15,14 +15,14 @@ public class ChatRoom {
         if (users.containsKey(user.getUsername()))
             return;
         users.put(user.getUsername(), user);
-        System.out.println("Server"+ user.getUsername() + " joined the chatroom.");
+        System.out.println("at ChatRoom: "+ user.getUsername() + " joined the chatroom.");
     }
     public synchronized void remove(String username) {
         users.remove(username);
     }
     public synchronized void broadcastMessage(String sender, String msg) {
 //        messageHistory.add(formattedMessage);
-
+        System.out.println("at ChatRoom, "+sender + " broadcast: "+msg);
         for (User user : users.values()) {
             if (user.getUsername().equals(sender))
                 continue;
