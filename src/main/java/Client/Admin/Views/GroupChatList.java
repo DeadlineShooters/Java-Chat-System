@@ -35,6 +35,8 @@ public class GroupChatList extends JPanel {
         searchBar.setBorder(BorderFactory.createLineBorder(Color.gray, 1));
         searchBar.setLayout(new FlowLayout(FlowLayout.LEFT));
 
+        
+
         // Label and text field 1
         JPanel panel1 = new JPanel(new BorderLayout());
         JLabel label1 = new JLabel("Group chat name");

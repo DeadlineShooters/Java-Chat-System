@@ -2,13 +2,12 @@ package Client.Admin.Views;
 
 import Client.Admin.Repository.SpamReportRepository;
 import Client.Admin.Repository.UserRepository;
-import Client.Admin.Views.Components.MultiButtonRenderer;
 import Client.Models.SpamReport;
-import Client.Models.User;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -27,9 +26,8 @@ public class ReportList extends JPanel {
         setLayout(new BorderLayout());
         setBackground(Color.white);
 
-        // Add a search bar to the body part
         JPanel searchBar = new JPanel();
-        searchBar.setBackground(Color.white); // Change to the color you want
+        searchBar.setBackground(Color.white); 
 
         // Set the border
         searchBar.setBorder(BorderFactory.createLineBorder(Color.gray, 1));
@@ -75,6 +73,11 @@ public class ReportList extends JPanel {
         add(searchBar, BorderLayout.NORTH);
 
         JPanel userListPanel = new JPanel(new BorderLayout());
+
+        JPanel removePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JButton removeButton = new JButton("Remove");
+        removePanel.add(removeButton);
+        userListPanel.add(removePanel, BorderLayout.NORTH);
 
         String[] columns = { "Sender", "Reported user", "Created at", "Lock status" };
 
@@ -144,6 +147,22 @@ public class ReportList extends JPanel {
                 }
             }
         });
+
+        removeButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (table.getSelectedRow() != -1) {
+                    int row = table.getSelectedRow();
+                    String sender = (String) table.getValueAt(row, 0);
+                    String reportedUser = (String) table.getValueAt(row, 1);
+                    Timestamp createAt = (Timestamp) table.getValueAt(row, 2);
+                    Boolean lockStatus = (Boolean) table.getValueAt(row, 3);
+                    spamReportRepository.remove(sender, createAt);
+                    userRepository.lock(reportedUser, lockStatus);
+                    updateTable();
+                }
+            }
+        });
+
     }
 
     public void updateTable() {

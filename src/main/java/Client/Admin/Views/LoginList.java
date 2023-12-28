@@ -1,6 +1,8 @@
 package Client.Admin.Views;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.*;
@@ -20,13 +22,24 @@ public class LoginList extends JPanel {
         setLayout(new BorderLayout());
         setBackground(Color.white);
 
-        // Add an order list to the top right of the user list part
         JPanel userListPanel = new JPanel(new BorderLayout());
 
-        // Add a user list to the user list part
-        String[] columns = { "Login time", "Username", "Name" };
+        JPanel reloadPanel = new JPanel();
+        reloadPanel.setBackground(Color.white); 
 
-        // Create a new DefaultTableModel instance
+        reloadPanel.setBorder(BorderFactory.createLineBorder(Color.gray, 1));
+        reloadPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+        ImageIcon icon = new ImageIcon(getClass().getResource("/Image/reload.png"));
+        Image img = icon.getImage().getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH);
+        icon = new ImageIcon(img);
+        JButton reloadButton = new JButton(icon);
+        reloadButton.setMargin(new Insets(2, 2, 2, 2));
+        reloadPanel.add(reloadButton);
+
+        add(reloadPanel, BorderLayout.NORTH);
+
+        String[] columns = { "Login time", "Username", "Name" };
         DefaultTableModel model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -54,6 +67,12 @@ public class LoginList extends JPanel {
 
         // Add the user list part to the body part
         add(userListPanel, BorderLayout.CENTER);
+
+        reloadButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                updateTable();
+            }
+        });
     }
 
     public void updateTable() {
@@ -65,7 +84,7 @@ public class LoginList extends JPanel {
             Object[] row = new Object[3];
             row[0] = session.loginTime();
             row[1] = session.username();
-            row[2] = userRepository.getUser(session.username()).name(); 
+            row[2] = userRepository.getUser(session.username()).name();
             model.addRow(row);
         }
         table.setModel(model);

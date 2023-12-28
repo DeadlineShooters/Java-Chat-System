@@ -48,15 +48,12 @@ public class UserList extends JPanel {
 
     public UserList() {
         setLayout(new BorderLayout());
-        // Add a search bar to the body part
 
-        searchBar.setBackground(Color.white); // Change to the color you want
+        searchBar.setBackground(Color.white); 
 
-        // Set the border
         searchBar.setBorder(BorderFactory.createLineBorder(Color.gray, 1));
         searchBar.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-        // Label and text field 1
         JPanel panel1 = new JPanel(new BorderLayout());
         JLabel label1 = new JLabel("Username");
         label1.setBackground(Color.white);
@@ -64,14 +61,12 @@ public class UserList extends JPanel {
         panel1.add(label1, BorderLayout.NORTH);
         panel1.add(textField1, BorderLayout.CENTER);
 
-        // Label and text field 2
         JLabel label2 = new JLabel("Full name");
         label2.setBackground(Color.white);
         label2.setOpaque(true);
         panel2.add(label2, BorderLayout.NORTH);
         panel2.add(textField2, BorderLayout.CENTER);
 
-        // Label and combo box
         JPanel panel3 = new JPanel(new BorderLayout());
         JLabel label3 = new JLabel("Status");
         label3.setBackground(Color.white);
@@ -239,7 +234,7 @@ public class UserList extends JPanel {
         String[] columns = { "Username", "Full name", "Address", "Day of birth", "Gender", "Email",
                 "<html><center>Number<br>of direct<br>friends", "<html><center>Number<br>of friends<br>of friends",
                 "Status",
-                "Created at", "Lock status"};
+                "Created at", "Lock status" };
 
         initTable(columns);
 
@@ -281,7 +276,7 @@ public class UserList extends JPanel {
                 rowSorter.setRowFilter(rowFilter);
             } else {
                 rowSorter.setRowFilter(null); // Show all lines when the input field is empty
-            } 
+            }
         });
         // Add a list selection listener to the table
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -310,7 +305,8 @@ public class UserList extends JPanel {
                     boolean isLocked = (boolean) table.getValueAt(row, 10);
                     userRepository.lock(username, isLocked);
                     JFrame dialog = new JFrame();
-                    JOptionPane.showMessageDialog(dialog, "Complete account " + (isLocked ? "unlock!" : "lock!"), "Success",
+                    JOptionPane.showMessageDialog(dialog, "Complete account " + (isLocked ? "unlock!" : "lock!"),
+                            "Success",
                             JOptionPane.INFORMATION_MESSAGE);
                     java.util.Date firstUtilDate = pickers[0].getDate();
                     java.util.Date secondUtilDate = pickers[1].getDate();
@@ -389,9 +385,9 @@ public class UserList extends JPanel {
                             String username = updateFrame.textFields[0].getText();
                             String fullName = updateFrame.textFields[1].getText();
                             String address = updateFrame.textFields[2].getText();
-                            String gender = updateFrame.textFields[3].getText();
-                            String email = updateFrame.textFields[4].getText();
-                            String password = updateFrame.textFields[5].getText();
+                            String gender = (String) updateFrame.genderComboBox.getSelectedItem();
+                            String email = updateFrame.textFields[3].getText();
+                            String password = updateFrame.textFields[4].getText();
                             java.util.Date date = updateFrame.datePicker.getDate();
                             Timestamp dob = date != null ? new Timestamp(date.getTime()) : null;
                             userRepository.update(username, fullName, address, dob, gender, email, password);
@@ -406,8 +402,8 @@ public class UserList extends JPanel {
                                 pickers[1].setDate(new java.util.Date());
                             }
                         }
-                    }); 
-                } 
+                    });
+                }
             }
         });
 
@@ -431,6 +427,7 @@ public class UserList extends JPanel {
                 }
             }
         });
+
     }
 
     protected void initTable(String[] columns) {

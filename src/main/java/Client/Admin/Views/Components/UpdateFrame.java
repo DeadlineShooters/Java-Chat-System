@@ -12,12 +12,13 @@ import Client.Admin.Repository.UserRepository;
 
 public class UpdateFrame extends JFrame {
     protected UserRepository userRepository = new UserRepository();
-    public JTextField[] textFields = new JTextField[6];
+    public JTextField[] textFields = new JTextField[5];
+    public JComboBox<String> genderComboBox;
     JXDatePicker datePicker = new JXDatePicker();
     public JButton submitButton = new JButton("Submit");
 
     UpdateFrame(String username, String fullName, String address, Date dob, String gender, String email) {
-        String[] texts = { username, fullName, address, gender, email };
+        String[] texts = { username, fullName, address, email };
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
         JLabel[] labels = new JLabel[7];
@@ -34,14 +35,23 @@ public class UpdateFrame extends JFrame {
             panels[i].setLayout(new FlowLayout(FlowLayout.LEFT));
             labels[i].setPreferredSize(new Dimension(100, 20));
             panels[i].add(labels[i]);
-            if (i < 5) {
+            if (i < 3) {
                 textFields[i] = new JTextField(texts[i]);
                 textFields[i].setPreferredSize(new Dimension(200, 20));
                 panels[i].add(textFields[i]);
+            } else if (i == 3) {
+                String[] genderOptions = { "Male", "Female" };
+                genderComboBox = new JComboBox<>(genderOptions);
+                genderComboBox.setSelectedItem(gender);
+                panels[i].add(genderComboBox);
+            } else if (i == 4) {
+                textFields[3] = new JTextField(texts[3]);
+                textFields[3].setPreferredSize(new Dimension(200, 20));
+                panels[i].add(textFields[3]);
             } else if (i == 6) {
-                textFields[5] = new JTextField();
-                textFields[5].setPreferredSize(new Dimension(200, 20));
-                panels[i].add(textFields[5]);
+                textFields[4] = new JTextField();
+                textFields[4].setPreferredSize(new Dimension(200, 20));
+                panels[i].add(textFields[4]);
             } else {
                 datePicker.setFormats(new SimpleDateFormat("dd.MM.yyyy"));
                 datePicker.setDate(dob);
@@ -59,7 +69,7 @@ public class UpdateFrame extends JFrame {
         add(buttonPanel);
         // getRootPane().setDefaultButton(submitButton);
         pack();
-        setLocationRelativeTo(null); // Center the frame
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 }

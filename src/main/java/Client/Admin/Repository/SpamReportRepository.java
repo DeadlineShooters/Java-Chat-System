@@ -1,9 +1,8 @@
 package Client.Admin.Repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.sql.*;
+import java.time.LocalDateTime;
 
 import Client.ConnectionManager;
 import Client.Models.SpamReport;
@@ -27,5 +26,28 @@ public class SpamReportRepository {
             e.printStackTrace();
         }
         return spamReports;
+    }
+
+    public void insert(String sender, String reportedUser) {
+        String sql = "insert into spamreport (sender, reported_user, report_time) values (?, ?, ?)";
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, sender);
+            stmt.setString(2, reportedUser);
+            stmt.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.execute();
+        } catch (SQLException exc) {
+            exc.printStackTrace();
+        }
+    }
+
+    public void remove(String sender, Timestamp createAt) {
+        String sql = "delete from spamreport where sender = ? and report_time = ?";
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, sender);
+            stmt.setTimestamp(2, createAt);
+            stmt.execute();
+        } catch (SQLException exc) {
+            exc.printStackTrace();
+        }
     }
 }

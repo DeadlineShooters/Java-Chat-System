@@ -1,10 +1,14 @@
 package Client.User.Views.Components;
 
+import Client.Admin.Repository.SpamReportRepository;
+import Client.Models.SpamReport;
+import Client.Models.User;
 import Client.User.Common;
 import Client.User.CurrentUser;
 import Client.User.Repositories.BlockedUserRepo;
 import Client.User.Repositories.FriendRepo;
 import Client.User.Repositories.MessageRepo;
+import Client.User.Repositories.UserRepo;
 import Client.User.Views.Util;
 
 import javax.swing.*;
@@ -12,31 +16,37 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 public class SettingsPanel extends JPanel {
     private static SettingsPanel settingsPanel;
-    final String[] buttonTexts = {"Unfriend", "Block", "Report spam", "Delete history", "Create group with this person"};
+    protected SpamReportRepository spamReportRepository = new SpamReportRepository();
+    final String[] buttonTexts = { "Unfriend", "Block", "Report spam", "Delete history",
+            "Create group with this person" };
     String chatUsername = null;
     String username = CurrentUser.getInstance().getUser().username();
     String currentChatRoomId = null;
     String spliter = Common.spliter;
+
     public static SettingsPanel getInstance() {
         if (settingsPanel == null)
             settingsPanel = new SettingsPanel();
         return settingsPanel;
     }
+
     private SettingsPanel() {
         super(new BorderLayout(0, 15));
         setPreferredSize(new Dimension(300, this.getPreferredSize().height));
 
-
     }
+
     void initPrivateChat(String chatRoomId, String chatUsername) {
         this.removeAll();
         this.chatUsername = chatUsername;
         this.currentChatRoomId = chatRoomId;
         displayContent();
     }
+
     void displayContent() {
         this.removeAll();
         JButton searchButton = new JButton();
@@ -55,8 +65,6 @@ public class SettingsPanel extends JPanel {
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.Y_AXIS));
-
-
 
         for (String buttonText : buttonTexts) {
             if (buttonText.equals("Unfriend") && !FriendRepo.isFriend(username, chatUsername)) {
@@ -82,7 +90,8 @@ public class SettingsPanel extends JPanel {
             bottomPanel.add(Box.createVerticalStrut(5)); // set vertical gap between buttons
 
             // Set the preferred height of the button based on the text height
-            int preferredHeight = getFontMetrics(label.getFont()).getHeight() + 18; // gets text's height + 10 is for padding
+            int preferredHeight = getFontMetrics(label.getFont()).getHeight() + 18; // gets text's height + 10 is for
+                                                                                    // padding
             textPanel.setPreferredSize(new Dimension(Integer.MAX_VALUE, preferredHeight));
             textPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, preferredHeight));
         }
@@ -92,7 +101,9 @@ public class SettingsPanel extends JPanel {
         this.add(bottomPanel, BorderLayout.CENTER);
         this.revalidate();
     }
-//    final String[] buttonTexts = {"Unfriend", "Block", "Report spam", "Delete history", "Create group with this person"};
+
+    // final String[] buttonTexts = {"Unfriend", "Block", "Report spam", "Delete
+    // history", "Create group with this person"};
     public void performActionPrivate(String buttonText) {
         if (buttonText.equals(buttonTexts[0])) {
             String confirmMsg = "Are you sure you want to unfriend user: " + chatUsername;
@@ -100,17 +111,36 @@ public class SettingsPanel extends JPanel {
                 return;
             unfriend();
         } else if (buttonText.equals(buttonTexts[1])) {
-            String confirmMsg = "Are you sure you want to block user: "+ chatUsername;
+            String confirmMsg = "Are you sure you want to block user: " + chatUsername;
             if (!showConfirmation(confirmMsg))
                 return;
             block();
         } else if (buttonText.equals("Unblock")) {
-            String confirmMsg = "Do you want to unblock user: "+ chatUsername;
+            String confirmMsg = "Do you want to unblock user: " + chatUsername;
             if (!showConfirmation(confirmMsg))
                 return;
             unblock();
         } else if (buttonText.equals(buttonTexts[2])) {
-
+            ArrayList<SpamReport> spamReports = spamReportRepository.getSpamReports();
+            for (SpamReport spamReport : spamReports) {
+                String senderStr = spamReport.sender();
+                String reportedUserStr = spamReport.reportedUser();
+                if (senderStr.equals(CurrentUser.getInstance().getUser().username())
+                        && reportedUserStr.equals(chatUsername)) {
+                    User reportedUser = UserRepo.getOne(reportedUserStr);
+                    if (!reportedUser.isLocked()) {
+                        JOptionPane.showMessageDialog(
+                                ChatPanel.getInstance(),
+                                "The request is being processed!");
+                    } else {
+                        JOptionPane.showMessageDialog(
+                                ChatPanel.getInstance(),
+                                "The user account has been locked!");
+                    }
+                    return;
+                }
+            }
+            reportSpam();
         } else if (buttonText.equals(buttonTexts[3])) {
             String confirmMsg = "Are you sure you want to delete chat history?";
             if (!showConfirmation(confirmMsg))
@@ -126,8 +156,7 @@ public class SettingsPanel extends JPanel {
                 ChatPanel.getInstance(),
                 confirmMsg,
                 "Confirmation",
-                JOptionPane.YES_NO_OPTION
-        );
+                JOptionPane.YES_NO_OPTION);
 
         return result == JOptionPane.YES_OPTION;
     }
@@ -136,8 +165,6 @@ public class SettingsPanel extends JPanel {
         JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "Forgot Password", true);
         dialog.setLayout(new BorderLayout());
         dialog.setResizable(false);
-
-
 
         dialog.pack();
         dialog.setLocationRelativeTo(this); // Center the dialog on the parent frame
@@ -156,27 +183,29 @@ public class SettingsPanel extends JPanel {
         SidePanel.getInstance().displayChatrooms();
         SidePanel.getInstance().displayFriends();
         displayContent();
-        JOptionPane.showMessageDialog(ChatPanel.getInstance(), "unfriend user: "+chatUsername+" successfully.");
+        JOptionPane.showMessageDialog(ChatPanel.getInstance(), "unfriend user: " + chatUsername + " successfully.");
     }
+
     void block() {
         BlockedUserRepo.blockUser(username, chatUsername);
         ChatPanel.getInstance().initView();
         displayContent();
-//        System.out.println("at SettingsPanel");
-        CurrentUser.getInstance().sendMessage("block"+spliter+currentChatRoomId);
+        // System.out.println("at SettingsPanel");
+        CurrentUser.getInstance().sendMessage("block" + spliter + currentChatRoomId);
     }
+
     void unblock() {
         System.out.println("at SettingsPanel unblock");
         BlockedUserRepo.unblockUser(username, chatUsername);
         ChatPanel.getInstance().initView();
         displayContent();
-        CurrentUser.getInstance().sendMessage("unblock"+spliter+currentChatRoomId);
+        CurrentUser.getInstance().sendMessage("unblock" + spliter + currentChatRoomId);
     }
+
     void reportSpam() {
-
+        spamReportRepository.insert(CurrentUser.getInstance().getUser().username(), chatUsername);
+        JOptionPane.showMessageDialog(ChatPanel.getInstance(), "Your request has been sent!");
     }
-
-
 
     private class HoverablePanel extends JPanel {
         private boolean hovered = false;
@@ -194,6 +223,7 @@ public class SettingsPanel extends JPanel {
                     hovered = false;
                     repaint();
                 }
+
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     performActionPrivate(buttonText);
@@ -209,7 +239,6 @@ public class SettingsPanel extends JPanel {
                 g.fillRect(0, 0, getWidth(), getHeight());
             }
         }
-
 
     }
 

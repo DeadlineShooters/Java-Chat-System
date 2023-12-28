@@ -1,6 +1,7 @@
 package Client;
 
 import Client.Admin.AdminApp;
+import Client.Admin.Repository.SessionRepository;
 import Client.Models.User;
 import Client.User.CurrentUser;
 import Client.User.Repositories.UserRepo;
@@ -21,6 +22,7 @@ import javax.mail.internet.*;
 
 public class Login extends JFrame {
     private JPanel contentPane;
+    protected SessionRepository sessionRepository = new SessionRepository();
     // private ImageIcon iconTitle = new
     // ImageIcon(HomeScreen.class.getResource("/Image/iconmini.jpg"));
     JTextField userNameField;
@@ -230,7 +232,7 @@ public class Login extends JFrame {
                     message.setSubject("Reset password request");
                     String htmlContent = "<html>" +
                             "<body>" +
-                            "<p>Dear " + user.name() + ",</p>" +
+                            "<p>Dear " + user.username() + ",</p>" +
                             "<p>We have reset your password as per your request. Your new password is: <b>"
                             + newPassword + "</b></p>"
                             +
@@ -281,6 +283,7 @@ public class Login extends JFrame {
             User user = UserRepo.getOne(username);
             CurrentUser.getInstance().setUser(user);
             dispose();
+            sessionRepository.startSession(username);
             new Thread(new UserApp()).start();
         }
     }

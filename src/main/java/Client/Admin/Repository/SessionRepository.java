@@ -6,6 +6,7 @@ import Client.Models.User;
 import Client.Models.UserActivity;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -152,6 +153,16 @@ public class SessionRepository {
         return sessions;
     }
 
+    public void startSession(String username) {
+        String sql = "insert into session (username, login_time) values (?, ?)";
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            stmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.execute();
+        } catch (SQLException exc) {
+            exc.printStackTrace();
+        }
+    }
 
 }
 

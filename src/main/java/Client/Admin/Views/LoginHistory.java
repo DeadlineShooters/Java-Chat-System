@@ -20,10 +20,6 @@ public class LoginHistory extends JPanel {
         setLayout(new BorderLayout());
         setBackground(Color.white);
 
-        returnButton.addActionListener(e -> {
-            // Add your return logic here
-        });
-
         // Add the return button to the top left corner
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(returnButton, BorderLayout.WEST);

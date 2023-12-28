@@ -2,11 +2,14 @@ package Client.Admin.Views;
 
 import javax.swing.*;
 
+import Client.Admin.Repository.UserRepository;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Home extends JFrame {
+    protected UserRepository userRepository = new UserRepository();
     CardLayout cardLayout = new CardLayout();
     JPanel bodyPanel = new JPanel(cardLayout);
 
@@ -39,16 +42,49 @@ public class Home extends JFrame {
 
         // switch body panel
         cardLayout.show(bodyPanel, "Client.Admin.Views.UserList");
-        String[] menuItems = { "Client.Admin.Views.UserList", "Client.Admin.Views.LoginList", "Client.Admin.Views.GroupChatList", "Client.Admin.Views.ReportList", "Client.Admin.Views.ActiveUserScreen" };
-        for (int i = 0; i < menuItems.length; i++) {
-            final int index = i;
-            sidebar.getButton(i).addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    cardLayout.show(bodyPanel, menuItems[index]);
-                }
-            });
-        }
+        String[] menuItems = { "Client.Admin.Views.UserList", "Client.Admin.Views.LoginList",
+                "Client.Admin.Views.GroupChatList", "Client.Admin.Views.ReportList",
+                "Client.Admin.Views.ActiveUserScreen" };
+
+        sidebar.getButton(0).addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                userManagement.getUserList().updateTable(userRepository.getUsers());
+                cardLayout.show(bodyPanel, menuItems[0]);
+            }
+        });
+
+        sidebar.getButton(1).addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loginList.updateTable();
+                cardLayout.show(bodyPanel, menuItems[1]);
+            }
+        });
+
+        sidebar.getButton(2).addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                groupChatList.updateTable();
+                cardLayout.show(bodyPanel, menuItems[2]);
+            }
+        });
+
+        sidebar.getButton(3).addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                reportList.updateTable();
+                cardLayout.show(bodyPanel, menuItems[3]);
+            }
+        });
+
+        sidebar.getButton(4).addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(bodyPanel, menuItems[4]);
+            }
+        });
+
         userManagement.getUserList().searchButtons[1].addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 loginHistory.username = userManagement.getUserList().selectedUser;
@@ -100,6 +136,5 @@ public class Home extends JFrame {
         });
         setVisible(true);
     }
-
 
 }
