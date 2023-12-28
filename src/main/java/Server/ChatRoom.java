@@ -12,8 +12,13 @@ public class ChatRoom {
     }
 
     public synchronized void join(User user) {
-        users.computeIfAbsent(user.getUsername(), k -> user);
-        broadcastMessage("Server", user.getUsername() + " joined the chatroom.");
+        if (users.containsKey(user.getUsername()))
+            return;
+        users.put(user.getUsername(), user);
+        System.out.println("Server"+ user.getUsername() + " joined the chatroom.");
+    }
+    public synchronized void remove(String username) {
+        users.remove(username);
     }
     public synchronized void broadcastMessage(String sender, String msg) {
 //        messageHistory.add(formattedMessage);

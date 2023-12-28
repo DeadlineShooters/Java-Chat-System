@@ -7,6 +7,8 @@ import Client.Models.UserActivity;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class SessionRepository {
     private Connection con;
@@ -126,6 +128,30 @@ public class SessionRepository {
         }
         return sessions;
     }
+
+    public List<Map<String, Object>> getSessionsForYear(int year) {
+        List<Map<String, Object>> sessions = new ArrayList<>();
+        String query = "SELECT * FROM session WHERE YEAR(login_time) <= ? AND (YEAR(logout_time) >= ? OR logout_time IS NULL)";
+        try (PreparedStatement preparedStatement = con.prepareStatement(query)) {
+            preparedStatement.setInt(1, year);
+            preparedStatement.setInt(2, year);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                Map<String, Object> session = Map.of(
+                        "login_time", resultSet.getTimestamp("login_time"),
+                        "logout_time", resultSet.getTimestamp("logout_time"),
+                        "username", resultSet.getString("username")
+                );
+                sessions.add(session);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return sessions;
+    }
+
 
 }
 

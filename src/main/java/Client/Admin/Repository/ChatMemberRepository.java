@@ -17,7 +17,7 @@ public class ChatMemberRepository {
 
     public ArrayList<User> getChatMembers(String chatRoomId) {
         ArrayList<User> chatMembers = new ArrayList<User>();
-        String sql = "select * from chatMember as crm join user as us on crm.username = us.username where crm.chat_room_id = '" + chatRoomId + "'";
+        String sql = "select * from chatMember as crm join user as us on crm.username = us.username where crm.chatroomid = '" + chatRoomId + "'";
         try (Statement stmt = con.createStatement()) {
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
