@@ -75,7 +75,7 @@ public class SidePanel extends JPanel {
         subPanel.add(usersPanel, BorderLayout.NORTH);
 
         JScrollPane usersScrollPane = new JScrollPane(subPanel);
-        usersScrollPane.getVerticalScrollBar().setUnitIncrement(10);
+        usersScrollPane.getVerticalScrollBar().setUnitIncrement(12);
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -125,10 +125,11 @@ public class SidePanel extends JPanel {
 
         return panel;
     }
-    void displayChatrooms() {
+    public void displayChatrooms() {
         chatRoomsPanel.removeAll();
         chatRoomsPanel.revalidate();
-        Map<String, String> chatRooms = CurrentUser.getInstance().getChatRooms();
+//        Map<String, String> chatRooms = CurrentUser.getInstance().getChatRooms();
+        Map<String, String> chatRooms = ChatRoomRepo.getAllChatRooms(CurrentUser.getInstance().getUser().username());
         for (String chatRoomId : chatRooms.keySet()) {
 //            System.out.println("adding");
 

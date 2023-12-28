@@ -1,7 +1,6 @@
 package Client.User;
 
 import Client.Models.User;
-import Client.User.Repositories.ChatRoomRepo;
 import Client.User.Repositories.FriendRepo;
 import Client.User.Repositories.UserRepo;
 
@@ -14,7 +13,7 @@ public class CurrentUser {
     private User user;
     static CurrentUser currentUser;
     private Map<String, Boolean> friends = new HashMap<>(); // HashMap<username, isOnline>
-    private Map<String, String> chatRooms = new HashMap<>(); // HashMap<chatRoomId, username or group name>
+//    private Map<String, String> chatRooms = new HashMap<>(); // HashMap<chatRoomId, username or group name>
     private CurrentUser() {
 
     }
@@ -26,11 +25,11 @@ public class CurrentUser {
     public void setUser(User user) {
 
         this.user = user;
-        chatRooms = ChatRoomRepo.getAllChatRooms(user.username());
+//        chatRooms = ChatRoomRepo.getAllChatRooms(user.username());
         friends = FriendRepo.getAllFriends(user.username());
     }
     public User getUser() { return user; }
-    public Map<String, String> getChatRooms() { return chatRooms; }
+//    public Map<String, String> getChatRooms() { return chatRooms; }
     public Map<String, Boolean> getFriends() { return friends; }
     public void addFriend(String username) {
         friends.put(username, UserRepo.isOnline(username));
@@ -48,5 +47,5 @@ public class CurrentUser {
     public boolean isFriend(String username) {
         return friends.containsKey(username);
     }
-    public void updateFriendStatus(String username, boolean status) {friends.put(username, status);}
+//    public void updateFriendStatus(String username, boolean status) {friends.put(username, status);}
 }

@@ -23,7 +23,7 @@ public class ChatPanel extends JPanel {
     private JButton sendButton;
     private static ChatPanel chatPanel;
     JScrollPane chatScrollPane;
-    JPanel overFlowPane;
+    JPanel overFlowPane, topPanel;
     static int row = 0;
     String chatRoomId = null;
     String name = null;
@@ -40,18 +40,28 @@ public class ChatPanel extends JPanel {
          super(new BorderLayout());
          setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
     }
-    void initView() {
-        this.removeAll();
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
+    void displayTopPanel(String name) {
+        topPanel.removeAll();
+        topPanel.revalidate();
 //         topPanel.setSize(this.getPreferredSize().width, 600);
         JLabel topBar = new JLabel();
-         topBar.setText("   " + name);
+        topBar.setText("   " + name);
         topBar.setFont(new Font("Arial", Font.BOLD, 14));
 
         ImageIcon profileImage = Util.createRoundedImageIcon("user-avatar.jpg", 50);
         topBar.setIcon(profileImage);
         topPanel.add(topBar);
         topPanel.setBackground(Color.lightGray);
+
+    }
+    void initView() {
+        this.removeAll();
+
+//        topPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
+        topPanel = new JPanel();
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
+        topPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        displayTopPanel(name);
         this.add(topPanel, BorderLayout.NORTH);
 
         overFlowPane = new JPanel();
@@ -66,6 +76,7 @@ public class ChatPanel extends JPanel {
         chatScrollPane = new JScrollPane(subPanel);
         chatScrollPane.setBorder(new EmptyBorder(0,0,0,0));
         chatScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        chatScrollPane.getVerticalScrollBar().setUnitIncrement(15);
         this.add(chatScrollPane, BorderLayout.CENTER);
 
 
@@ -114,31 +125,6 @@ public class ChatPanel extends JPanel {
                 }
             }
         });
-
-//        JButton receivebtn = new JButton("Receive");
-//        inputPanel.add(receivebtn, BorderLayout.WEST);
-//        receivebtn.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                String content = inputArea.getText();
-////                if (content.isEmpty()) {
-////                    return;
-////                }
-////
-////                Timestamp sentAt = Util.getCurrentTimestamp();
-////                Message message = new Message(chatRoomId, "nguyen tuan kiet", content, "", sentAt);
-////                addMsg(message);
-////                inputArea.setText("");
-//                SwingUtilities.invokeLater(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        chatScrollPane.getVerticalScrollBar().setValue((int) content.charAt(0));
-//                        chatScrollPane.revalidate();
-//                    }
-//                });
-//
-//            }
-//        });
         this.add(inputPanel, BorderLayout.SOUTH);
         this.revalidate();
     }
@@ -151,6 +137,7 @@ public class ChatPanel extends JPanel {
         initView();
 
         if (ChatRoomRepo.isGroupChat(chatRoomId)) {
+            SettingsPanel.getInstance().initGroupChat(chatRoomId);
 
         } else {
 //            System.out.println("afdas");
@@ -218,7 +205,7 @@ public class ChatPanel extends JPanel {
                 return;
             System.out.println("at ChatPanel block: " + msgSplit[0]);
             initView();
-            SettingsPanel.getInstance().displayContent();
+            SettingsPanel.getInstance().displayPrivateContent();
             return;
         }
 

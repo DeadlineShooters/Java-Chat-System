@@ -4,7 +4,9 @@ import Client.ConnectionManager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
 
 public class ChatMemberRepo {
     private static Connection conn;
@@ -21,6 +23,50 @@ public class ChatMemberRepo {
 
             System.out.println("Chat member created successfully");
             return true;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static Boolean isChatMember(String chatRoomId, String username) {
+        String sql = "select * from chatmember where chatroomid = ? and username = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, chatRoomId);
+            ps.setString(2, username);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();  // If there is a result, the user is member; otherwise, not member
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static HashSet<String> getChatMembers(String chatRoomId) {
+        HashSet<String> members = new HashSet<>();
+        String sql = "select username from chatmember where chatroomid = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, chatRoomId);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                members.add(rs.getString("username"));
+            }
+            return members;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static HashSet<String> getAdmins(String chatRoomId) {
+        HashSet<String> admins = new HashSet<>();
+        String sql = "select username from chatmember where chatroomid = ? and isAdmin = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, chatRoomId);
+            ps.setBoolean(2, true);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                admins.add(rs.getString("username"));
+            }
+            return admins;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

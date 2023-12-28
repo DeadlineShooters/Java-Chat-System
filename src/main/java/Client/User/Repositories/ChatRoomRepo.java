@@ -17,6 +17,16 @@ public class ChatRoomRepo {
         // Static block to initialize the connection when the class is loaded
         conn = ConnectionManager.getConnection();
     }
+    public static void updateGroupChatName(String chatRoomId, String name) {
+        String sql = "update chatroom set name = ? where chatroomid = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, name);
+            ps.setString(2, chatRoomId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public static String createPrivateChat(String user1, String user2) {
         String chatRoomId = Util.createUUID();
         String sql = "insert into chatroom (chatRoomId, name, createdAt) values (?, ?, ?)";
@@ -39,11 +49,11 @@ public class ChatRoomRepo {
     public static String createGroupChat(String name, String username, HashSet<String> members) {
         String chatRoomId = Util.createUUID();
         if (name == null || name.isEmpty())
-            name = getSaltString(5);
+            name = "Group chat "+getSaltString(5);
         String sql = "insert into chatroom (chatRoomId, name, createdAt) values (?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, chatRoomId);
-            ps.setString(2, "Group chat "+name);
+            ps.setString(2, name);
             ps.setTimestamp(3, Util.getCurrentTimestamp());
             ps.execute();
 
@@ -74,12 +84,12 @@ public class ChatRoomRepo {
     public static HashMap<String, String> getAllChatRooms(String username) {
         // HashMap<chatRoomId, username or group name>
         HashMap<String, String> res = new HashMap<>();
-        String sql = "SELECT cr.chatRoomId, " +
+        String sql = "SELECT cr.chatRoomId, cr.createdAt, " +
                 "CASE WHEN cr.name = \"\" THEN " +
                 "(SELECT cm2.username FROM chatmember cm2 WHERE cm2.chatRoomId = cr.chatRoomId AND cm2.username != ? LIMIT 1) " +
                 "ELSE cr.name END AS chatPartner " +
                 "FROM chatroom cr JOIN chatmember cm ON cr.chatRoomId = cm.chatRoomId " +
-                "WHERE cm.username = ?";
+                "WHERE cm.username = ? ORDER BY cr.createdAt ASC";
 
         try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
             preparedStatement.setString(1, username);
