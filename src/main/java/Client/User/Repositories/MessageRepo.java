@@ -17,7 +17,7 @@ public class MessageRepo {
     }
     public static ArrayList<Message> getAllMessages(String chatRoomId) {
         ArrayList<Message> messages = new ArrayList<>();
-        String sql = "select * from message where chatroomid = ?";
+        String sql = "SELECT * FROM message WHERE chatRoomId = ? ORDER BY sentAt ASC";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, chatRoomId);
 
@@ -53,6 +53,39 @@ public class MessageRepo {
             ps.setString(1, chatRoomId);
 
             ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static ArrayList<Message> findMessagesInChat(String chatRoomId, String prompt) {
+        ArrayList<Message> messages = new ArrayList<>();
+        String sql = "select * from message where chatroomid = ? and content like ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, chatRoomId);
+            ps.setString(2, "%"+prompt+"%");
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                messages.add(Message.fromResultSet(rs));
+            }
+            return messages;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static ArrayList<Message> findMessagesFromAll(String prompt) {
+        ArrayList<Message> messages = new ArrayList<>();
+        String sql = "select * from message where content like ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, "%"+prompt+"%");
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                messages.add(Message.fromResultSet(rs));
+            }
+            return messages;
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
