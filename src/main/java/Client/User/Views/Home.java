@@ -46,7 +46,7 @@ public class Home extends JFrame {
 //                }
 //                UserRepo.setStatus(CurrentUser.getInstance().getUser().username(), false);
                 CurrentUser.getInstance().userSession.logoutTime = Util.getCurrentTimestamp();
-                SessionRepo.addSession(CurrentUser.getInstance().userSession);
+                SessionRepo.updateSession(CurrentUser.getInstance().userSession);
                 System.out.println("at Home");
                 Client.getInstance().closeEverything();
             }

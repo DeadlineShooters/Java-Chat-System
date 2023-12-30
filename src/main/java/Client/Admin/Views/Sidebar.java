@@ -35,6 +35,15 @@ public class Sidebar extends Box {
             icon = new ImageIcon(img);
             button.setIcon(icon);
             button.setIconTextGap(16);
+            button.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseEntered(java.awt.event.MouseEvent evt) {
+                    button.setBackground(Color.RED); // Change color to red when mouse enters
+                }
+
+                public void mouseExited(java.awt.event.MouseEvent evt) {
+                    button.setBackground(Color.WHITE); // Change color back to white when mouse exits
+                }
+            });
             add(button);
 
             setMaximumSize(new Dimension(Integer.MAX_VALUE, button.getPreferredSize().height)); // Set panel's maximum
