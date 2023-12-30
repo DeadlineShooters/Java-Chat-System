@@ -102,6 +102,7 @@ public class SessionRepository {
         return activities;
     }
 
+
     public ArrayList<Session> getSession(String username) {
         ArrayList<Session> sessions = new ArrayList<Session>();
         String sql = "select * from session where username = '" + username + "'";
@@ -133,6 +134,7 @@ public class SessionRepository {
     public List<Map<String, Object>> getSessionsForYear(int year) {
         List<Map<String, Object>> sessions = new ArrayList<>();
         String query = "SELECT * FROM session WHERE YEAR(logintime) <= ? AND (YEAR(logouttime) >= ? OR logouttime IS NULL)";
+
         try (PreparedStatement preparedStatement = con.prepareStatement(query)) {
             preparedStatement.setInt(1, year);
             preparedStatement.setInt(2, year);
@@ -141,8 +143,10 @@ public class SessionRepository {
 
             while (resultSet.next()) {
                 Map<String, Object> session = Map.of(
+
                         "logintime", resultSet.getTimestamp("logintime"),
                         "logouttime", resultSet.getTimestamp("logouttime"),
+
                         "username", resultSet.getString("username")
                 );
                 sessions.add(session);
@@ -152,6 +156,7 @@ public class SessionRepository {
         }
         return sessions;
     }
+
 
     public void startSession(String username) {
         String sql = "insert into session (username, logintime) values (?, ?)";
