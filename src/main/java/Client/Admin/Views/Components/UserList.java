@@ -23,7 +23,6 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 public class UserList extends JPanel {
     protected JPanel searchBar = new JPanel();
@@ -36,6 +35,8 @@ public class UserList extends JPanel {
     protected SessionRepository sessionRepository = new SessionRepository();
     protected JPanel panel2 = new JPanel(new BorderLayout());
     protected JTextField textField1 = new JTextField(16);
+    protected JTextField textField2 = new JTextField(16);
+    protected JComboBox<String> comboBox = new JComboBox<>(new String[] { "All", "Online", "Offline" });
     private java.sql.Date firstDate;
     private java.sql.Date secondDate;
     protected JPanel orderListRightPanel = new JPanel();
@@ -43,18 +44,16 @@ public class UserList extends JPanel {
     protected JTable table;
     // search button
     public JButton[] searchButtons = new JButton[4];
+    public String selectedUser;
 
     public UserList() {
         setLayout(new BorderLayout());
-        // Add a search bar to the body part
 
-        searchBar.setBackground(Color.white); // Change to the color you want
+        searchBar.setBackground(Color.white); 
 
-        // Set the border
         searchBar.setBorder(BorderFactory.createLineBorder(Color.gray, 1));
         searchBar.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-        // Label and text field 1
         JPanel panel1 = new JPanel(new BorderLayout());
         JLabel label1 = new JLabel("Username");
         label1.setBackground(Color.white);
@@ -62,20 +61,16 @@ public class UserList extends JPanel {
         panel1.add(label1, BorderLayout.NORTH);
         panel1.add(textField1, BorderLayout.CENTER);
 
-        // Label and text field 2
         JLabel label2 = new JLabel("Full name");
         label2.setBackground(Color.white);
         label2.setOpaque(true);
-        JTextField textField2 = new JTextField(16);
         panel2.add(label2, BorderLayout.NORTH);
         panel2.add(textField2, BorderLayout.CENTER);
 
-        // Label and combo box
         JPanel panel3 = new JPanel(new BorderLayout());
         JLabel label3 = new JLabel("Status");
         label3.setBackground(Color.white);
         label3.setOpaque(true);
-        JComboBox<String> comboBox = new JComboBox<>(new String[] { "Online", "Offline" });
         panel3.add(label3, BorderLayout.NORTH);
         panel3.add(comboBox, BorderLayout.CENTER);
 
@@ -122,7 +117,6 @@ public class UserList extends JPanel {
         // Add an order list to the top right of the user list part
         orderListRightPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-
         // orderListPanel.add(Box.createHorizontalGlue()); // This will push the
         // JComboBox to the right
 
@@ -137,7 +131,8 @@ public class UserList extends JPanel {
             JPanel datePanel = new JPanel();
 
             JXDatePicker picker = new JXDatePicker();
-            picker.setDate(Calendar.getInstance().getTime());
+
+            picker.setDate(new java.util.Date());
             picker.setFormats(new SimpleDateFormat("dd.MM.yyyy"));
 
             datePanel.add(picker);
@@ -154,9 +149,8 @@ public class UserList extends JPanel {
             previousDates[i] = new java.sql.Date(picker.getDate().getTime());
         }
 
-
-// Add a property change listener to each date picker
-//        previousDates[0] = userRepository.getOldestDate();
+        // Add a property change listener to each date picker
+        // previousDates[0] = userRepository.getOldestDate();
         previousDates[0] = null;
         previousDates[1] = null;
         pickers[0].setDate(null);
@@ -181,7 +175,7 @@ public class UserList extends JPanel {
                 if (secondDate.before(firstDate)) {
                     JOptionPane.showMessageDialog(null, "End date cannot be before start date.");
 
-                    if (previousDates[index] == null){
+                    if (previousDates[index] == null) {
                         pickers[index].setDate(null);
                     } else {
                         pickers[index].setDate(previousDates[index]);
@@ -240,7 +234,7 @@ public class UserList extends JPanel {
         String[] columns = { "Username", "Full name", "Address", "Day of birth", "Gender", "Email",
                 "<html><center>Number<br>of direct<br>friends", "<html><center>Number<br>of friends<br>of friends",
                 "Status",
-                "Created at" };
+                "Created at", "Lock status" };
 
         initTable(columns);
 
@@ -261,9 +255,8 @@ public class UserList extends JPanel {
             }
         });
 
-        
-
-        // Inside the constructor after initializing the filter JComboBox and appOpenInput JTextField
+        // Inside the constructor after initializing the filter JComboBox and
+        // appOpenInput JTextField
         appOpenInput.addActionListener(e -> {
             String selectedItem = (String) filter.getSelectedItem();
             if (!appOpenInput.getText().isEmpty()) {
@@ -289,6 +282,7 @@ public class UserList extends JPanel {
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent event) {
                 if (!event.getValueIsAdjusting() && table.getSelectedRow() != -1) {
+                    selectedUser = (String) table.getValueAt(table.getSelectedRow(), 0);
                     for (int i = 1; i < 4; i++) {
                         searchButtons[i].setVisible(true);
                     }
@@ -303,25 +297,140 @@ public class UserList extends JPanel {
             search(username, fullName, status);
         });
 
+        searchButtons[3].addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (table.getSelectedRow() != -1) {
+                    int row = table.getSelectedRow();
+                    String username = (String) table.getValueAt(row, 0);
+                    boolean isLocked = (boolean) table.getValueAt(row, 10);
+                    userRepository.lock(username, isLocked);
+                    JFrame dialog = new JFrame();
+                    JOptionPane.showMessageDialog(dialog, "Complete account " + (isLocked ? "unlock!" : "lock!"),
+                            "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    java.util.Date firstUtilDate = pickers[0].getDate();
+                    java.util.Date secondUtilDate = pickers[1].getDate();
+                    if (firstUtilDate == null || secondUtilDate == null) {
+                        updateTable(userRepository.getUsers());
+                    } else {
+                        updateTable(userRepository.getUsersByDateRange(firstDate,
+                                new java.sql.Date((new java.util.Date()).getTime())));
+                        pickers[1].setDate(new java.util.Date());
+                    }
+                }
+            }
+        });
+
+        appOpenInput.addActionListener(e -> {
+            String selectedItem = (String) filter.getSelectedItem();
+            if (!appOpenInput.getText().isEmpty()) {
+                int friendsFilterValue = Integer.parseInt(appOpenInput.getText());
+                RowFilter<Object, Object> rowFilter = null;
+                switch (selectedItem) {
+                    case "=":
+                        rowFilter = RowFilter.numberFilter(RowFilter.ComparisonType.EQUAL, friendsFilterValue, 6);
+                        break;
+                    case "<":
+                        rowFilter = RowFilter.numberFilter(RowFilter.ComparisonType.BEFORE, friendsFilterValue, 6);
+                        break;
+                    case ">":
+                        rowFilter = RowFilter.numberFilter(RowFilter.ComparisonType.AFTER, friendsFilterValue, 6);
+                        break;
+                }
+                rowSorter.setRowFilter(rowFilter);
+            } else {
+                rowSorter.setRowFilter(null); // Show all lines when the input field is empty
+            }
+        });
+
         addButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                InputFrame inputFrame = new InputFrame();
-                inputFrame.submitButton.addActionListener(new ActionListener() {
+                AddFrame addFrame = new AddFrame();
+                addFrame.submitButton.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        String username = inputFrame.textFields[0].getText();
-                        String fullName = inputFrame.textFields[1].getText();
-                        String email = inputFrame.textFields[2].getText();
+                        String username = addFrame.textFields[0].getText();
+                        String password = addFrame.textFields[1].getText();
+                        String email = addFrame.textFields[2].getText();
                         Timestamp createdAt = new Timestamp(System.currentTimeMillis());
-                        userRepository.insert(username, fullName, email, createdAt);
-                        inputFrame.dispose();
-                        updateTable(userRepository.getUsersByDateRange(firstDate, secondDate));
+                        userRepository.insert(username, password, email, createdAt);
+                        addFrame.dispose();
+                        java.util.Date firstUtilDate = pickers[0].getDate();
+                        java.util.Date secondUtilDate = pickers[1].getDate();
+                        if (firstUtilDate == null || secondUtilDate == null) {
+                            updateTable(userRepository.getUsers());
+                        } else {
+                            updateTable(userRepository.getUsersByDateRange(firstDate,
+                                    new java.sql.Date((new java.util.Date()).getTime())));
+                            pickers[1].setDate(new java.util.Date());
+                        }
                     }
                 });
             }
         });
+
+        // update list
+        updateButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (table.getSelectedRow() != -1) {
+                    int row = table.getSelectedRow();
+                    String username = (String) table.getValueAt(row, 0);
+                    String fullName = (String) table.getValueAt(row, 1);
+                    String address = (String) table.getValueAt(row, 2);
+                    Date dob = (Date) table.getValueAt(row, 3);
+                    String gender = (String) table.getValueAt(row, 4);
+                    String email = (String) table.getValueAt(row, 5);
+                    UpdateFrame updateFrame = new UpdateFrame(username, fullName, address, dob, gender, email);
+                    updateFrame.submitButton.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent e) {
+                            String username = updateFrame.textFields[0].getText();
+                            String fullName = updateFrame.textFields[1].getText();
+                            String address = updateFrame.textFields[2].getText();
+                            String gender = (String) updateFrame.genderComboBox.getSelectedItem();
+                            String email = updateFrame.textFields[3].getText();
+                            String password = updateFrame.textFields[4].getText();
+                            java.util.Date date = updateFrame.datePicker.getDate();
+                            Timestamp dob = date != null ? new Timestamp(date.getTime()) : null;
+                            userRepository.update(username, fullName, address, dob, gender, email, password);
+                            updateFrame.dispose();
+                            java.util.Date firstUtilDate = pickers[0].getDate();
+                            java.util.Date secondUtilDate = pickers[1].getDate();
+                            if (firstUtilDate == null || secondUtilDate == null) {
+                                updateTable(userRepository.getUsers());
+                            } else {
+                                updateTable(userRepository.getUsersByDateRange(firstDate,
+                                        new java.sql.Date((new java.util.Date()).getTime())));
+                                pickers[1].setDate(new java.util.Date());
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
+        // remove user account
+        deleteButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (table.getSelectedRow() != -1) {
+                    int row = table.getSelectedRow();
+                    String username = (String) table.getValueAt(row, 0);
+
+                    userRepository.remove(username);
+                    java.util.Date firstUtilDate = pickers[0].getDate();
+                    java.util.Date secondUtilDate = pickers[1].getDate();
+                    if (firstUtilDate == null || secondUtilDate == null) {
+                        updateTable(userRepository.getUsers());
+                    } else {
+                        updateTable(userRepository.getUsersByDateRange(firstDate,
+                                new java.sql.Date((new java.util.Date()).getTime())));
+                        pickers[1].setDate(new java.util.Date());
+                    }
+                }
+            }
+        });
+
     }
 
-    protected void initTable(String[] columns){
+    protected void initTable(String[] columns) {
         DefaultTableModel model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -365,6 +474,8 @@ public class UserList extends JPanel {
         table.getColumnModel().getColumn(7).setPreferredWidth(65); // "Number of friends of friend"
         table.getColumnModel().getColumn(8).setPreferredWidth(55); // "Status"
         table.getColumnModel().getColumn(9).setPreferredWidth(130); // "Created at"
+        table.getColumnModel().getColumn(10).setMinWidth(0); // "Lock status"
+        table.getColumnModel().getColumn(10).setMaxWidth(0); // "Lock status"
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
         table.setBackground(Color.white);
@@ -388,13 +499,33 @@ public class UserList extends JPanel {
         userListPanel.add(tableScrollPane, BorderLayout.CENTER);
         add(userListPanel, BorderLayout.CENTER);
 
+        // Add a list selection listener to the table
+        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent event) {
+                if (!event.getValueIsAdjusting() && table.getSelectedRow() != -1) {
+                    for (int i = 1; i < 4; i++) {
+                        searchButtons[i].setVisible(true);
+                    }
+                    if ((boolean) table.getValueAt(table.getSelectedRow(), 10)) {
+                        searchButtons[3].setText("Unlock account");
+                    } else {
+                        searchButtons[3].setText("Lock account");
+                    }
+                }
+            }
+        });
     }
+
+    public JPanel getOrderListPanel() {
+        return orderListPanel;
+    }
+
     public void updateTable(ArrayList<User> users) {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
 
         for (User user : users) {
-            Object[] row = new Object[10];
+            Object[] row = new Object[12];
             row[0] = user.username();
             row[1] = user.name();
             row[2] = user.address();
@@ -408,8 +539,9 @@ public class UserList extends JPanel {
             // Fetch the number of friends of friends for the user
             int numberOfFriendsOfFriends = userRepository.fetchNumberOfFriendsOfFriends(user.username());
             row[7] = numberOfFriendsOfFriends + numberOfFriends;
-            row[8] = user.status();
+            row[8] = user.status() ? "Online" : "Offline";
             row[9] = user.createdAt();
+            row[10] = user.isLocked();
 
             model.addRow(row);
         }
