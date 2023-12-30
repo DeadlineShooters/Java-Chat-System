@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class ChatRoom {
     private String roomId;
-    private Map<String, User> users = new HashMap();
+    public Map<String, User> users = new HashMap();
 
     ChatRoom(String roomId) {
         this.roomId = roomId;
@@ -15,7 +15,7 @@ public class ChatRoom {
         if (users.containsKey(user.getUsername()))
             return;
         users.put(user.getUsername(), user);
-        System.out.println("at ChatRoom: "+ user.getUsername() + " joined the chatroom.");
+        System.out.println("at ChatRoom: "+roomId + ", "+ user.getUsername() + " joined the chatroom.");
     }
     public synchronized void remove(String username) {
         users.remove(username);
@@ -28,6 +28,14 @@ public class ChatRoom {
                 continue;
             user.sendMessage(msg);
         }
+    }
+    public synchronized void sendPrivateMessage(String sender, String receiver, String msg) {
+        if (!users.containsKey(receiver)) {
+            System.out.println("Private receiver doesn't exist");
+            return;
+        }
+        System.out.println("at ChatRoom, "+sender + " privately sent to " + receiver+": "+msg);
+        users.get(receiver).sendMessage(msg);
     }
     public synchronized  User getUser(String username) {
         return users.get(username);

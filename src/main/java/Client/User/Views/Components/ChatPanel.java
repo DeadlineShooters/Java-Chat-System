@@ -23,7 +23,7 @@ public class ChatPanel extends JPanel {
     private JButton sendButton;
     private static ChatPanel chatPanel;
     JScrollPane chatScrollPane;
-    JPanel overFlowPane, topPanel;
+    JPanel overFlowPane = null, topPanel = null;
     static int row = 0;
     String chatRoomId = null;
     String name = null;
@@ -137,7 +137,7 @@ public class ChatPanel extends JPanel {
         initView();
 
         if (ChatRoomRepo.isGroupChat(chatRoomId)) {
-            SettingsPanel.getInstance().initGroupChat(chatRoomId);
+            SettingsPanel.getInstance().initGroupChat(chatRoomId, name);
 
         } else {
 //            System.out.println("afdas");
@@ -184,7 +184,7 @@ public class ChatPanel extends JPanel {
             if (privateChatId != null)
                 SidePanel.getInstance().updateIsOnline(privateChatId);
 //            SidePanel.getInstance().displayFriends();
-            SidePanel.getInstance().updateIsOnline(username);
+//            SidePanel.getInstance().updateIsOnline(username);
             return;
         }
         if (msgSplit[0].equals("offline")) {
@@ -197,7 +197,7 @@ public class ChatPanel extends JPanel {
             if (privateChatId != null)
                 SidePanel.getInstance().updateIsOffline(privateChatId);
 //            SidePanel.getInstance().displayFriends();
-            SidePanel.getInstance().updateIsOffline(username);
+//            SidePanel.getInstance().updateIsOffline(username);
             return;
         }
         if (msgSplit[0].equals("block") || msgSplit[0].equals("unblock")) {
@@ -207,6 +207,31 @@ public class ChatPanel extends JPanel {
             initView();
             SettingsPanel.getInstance().displayPrivateContent();
             return;
+        }
+        if (msgSplit[0].equals("addFriend")) {
+            System.out.println("at ChatPanel add friend: " + msgSplit[1]);
+            CurrentUser.getInstance().addFriend(msgSplit[1]);
+            SidePanel.getInstance().displayChatrooms();
+            SidePanel.getInstance().displayFriends();
+            return;
+        }
+        if (msgSplit[0].equals("unfriend")) {
+            System.out.println("at ChatPanel unfriend: " + msgSplit[1]);
+            CurrentUser.getInstance().removeFriend(msgSplit[1]);
+            SidePanel.getInstance().displayChatrooms();
+            SidePanel.getInstance().displayFriends();
+            return;
+        }
+        if (msgSplit[0].equals("editGroupName")) {
+            // editGroupName - chatRoomId - newGroupName
+            SidePanel.getInstance().displayChatrooms();
+            if (chatRoomId != null && chatRoomId.equals(msgSplit[1])) {
+                System.out.println("at ChatPanel, editgroupname");
+                displayTopPanel(msgSplit[2]);
+                SettingsPanel.getInstance().initGroupChat(chatRoomId, msgSplit[2]);
+            }
+            return;
+
         }
 
         Message message = new Message(chatRoomId, msgSplit[1], msgSplit[2], "", 0, Util.stringToTimestamp(msgSplit[3]));
@@ -268,7 +293,7 @@ public class ChatPanel extends JPanel {
 
         JPanel hold = new JPanel();
 
-        hold.setBorder(new EmptyBorder(isMyMessage?10:0, 10, 0,20));
+        hold.setBorder(new EmptyBorder(isMyMessage?10:0, 10, 0,10));
         hold.setLayout(new BorderLayout());
 //        hold.setBackground(Color.gray);
 

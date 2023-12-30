@@ -1,5 +1,6 @@
 package Client.User.Views.Components;
 
+import Client.Models.Message;
 import Client.User.Common;
 import Client.User.CurrentUser;
 import Client.User.Repositories.*;
@@ -13,6 +14,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -20,11 +23,11 @@ public class SettingsPanel extends JPanel {
     private static SettingsPanel settingsPanel;
     final String[] buttonTexts = {"Unfriend", "Block", "Report spam", "Delete history", "Create group with this person"};
     final String[] groupButtonTexts = {"Edit group name", "Add new members"};
-    String chatUsername = null;
-    String username = CurrentUser.getInstance().getUser().username();
+    String chatUsername = null, groupName = null;
+    String myUsername = CurrentUser.getInstance().getUser().username();
     String currentChatRoomId = null;
     String spliter = Common.spliter;
-    Color itemBgColor = Color.pink;
+    Color itemBgColor = Color.white;
     JTextField groupNameField;
 
 //    Color userClickedColor = Color.lightGray;
@@ -46,20 +49,38 @@ public class SettingsPanel extends JPanel {
 
 
     }
-    void initGroupChat(String chatRoomId) {
+    void initGroupChat(String chatRoomId, String groupName) {
         this.removeAll();
         this.currentChatRoomId = chatRoomId;
-        displayGroupContent();
+        this.groupName = groupName;
+        displayGroupOptions();
     }
-    void displayGroupContent() {
+    void displayGroupOptions() {
         this.removeAll();
-        JButton searchButton = new JButton();
-        ImageIcon searchIcon = Util.createImageIcon("searchIcon.png", 15, 15);
-        searchButton.setIcon(searchIcon);
+//        JButton searchButton = new JButton();
+//        ImageIcon searchIcon = Util.createImageIcon("searchIcon.png", 15, 15);
+//        searchButton.setIcon(searchIcon);
 
-        // Create a panel to hold the buttons
-        JPanel topPanel = new JPanel();
-        topPanel.add(searchButton);
+        JLabel ava = new JLabel();
+        ava.setBorder(new EmptyBorder(0, 10, 0, 10));
+        ava.setIcon(Util.createRoundedImageIcon("user-avatar.jpg", 60));
+        JPanel avaWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        avaWrapper.add(ava);
+
+        JLabel username = new JLabel(groupName);
+        JPanel usernameWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        usernameWrapper.add(username);
+
+        JPanel verticalWrapper = new JPanel();
+        verticalWrapper.setLayout(new BoxLayout(verticalWrapper, BoxLayout.Y_AXIS));
+        verticalWrapper.add(avaWrapper);
+        verticalWrapper.add(usernameWrapper);
+
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        topPanel.add(verticalWrapper);
+        topPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+
+//        topPanel.add(searchButton);
         // topPanel.add(addUserButton);
 
         JPanel bottomPanel = new JPanel();
@@ -122,7 +143,7 @@ public class SettingsPanel extends JPanel {
         adminsPanel.revalidate();
         HashSet<String> members = ChatMemberRepo.getAdmins(currentChatRoomId);
         for (String member: members) {
-            JPanel item = createListItem(member,false, "member");
+            JPanel item = createListItem(member,false, "admin");
             adminsPanel.add(item);
         }
     }
@@ -160,14 +181,24 @@ public class SettingsPanel extends JPanel {
     void displayPrivateContent() {
         this.removeAll();
 
-        JButton searchButton = new JButton();
-        ImageIcon searchIcon = Util.createImageIcon("searchIcon.png", 15, 15);
-        searchButton.setIcon(searchIcon);
+        JLabel ava = new JLabel();
+        ava.setBorder(new EmptyBorder(0, 10, 0, 10));
+        ava.setIcon(Util.createRoundedImageIcon("user-avatar.jpg", 60));
+        JPanel avaWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        avaWrapper.add(ava);
 
-        // Create a panel to hold the buttons
-        JPanel topPanel = new JPanel();
-        topPanel.add(searchButton);
-        // topPanel.add(addUserButton);
+        JLabel username = new JLabel(chatUsername);
+        JPanel usernameWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        usernameWrapper.add(username);
+
+        JPanel verticalWrapper = new JPanel();
+        verticalWrapper.setLayout(new BoxLayout(verticalWrapper, BoxLayout.Y_AXIS));
+        verticalWrapper.add(avaWrapper);
+        verticalWrapper.add(usernameWrapper);
+
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        topPanel.add(verticalWrapper);
+        topPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.Y_AXIS));
@@ -175,13 +206,13 @@ public class SettingsPanel extends JPanel {
 
 
         for (String buttonText : buttonTexts) {
-            if (buttonText.equals("Unfriend") && !FriendRepo.isFriend(username, chatUsername)) {
+            if (buttonText.equals("Unfriend") && !FriendRepo.isFriend(myUsername, chatUsername)) {
                 continue;
             }
             if (buttonText.equals("Block")) {
-                if (BlockedUserRepo.isBlocked(username, chatUsername))
+                if (BlockedUserRepo.isBlocked(myUsername, chatUsername))
                     buttonText = "Unblock";
-                else if (BlockedUserRepo.isBlocked(chatUsername, username))
+                else if (BlockedUserRepo.isBlocked(chatUsername, myUsername))
                     continue;
             }
             HoverablePanel textPanel = new HoverablePanel(buttonText);
@@ -209,12 +240,119 @@ public class SettingsPanel extends JPanel {
 
         JTabbedPane optionsTab = new JTabbedPane();
         optionsTab.addTab("Options", optionsPanel);
+        optionsTab.addTab("Search for messages", messageSeachTab());
 
         // Add the button panel to the settings panel
 //        this.add(topPanel, BorderLayout.NORTH);
 //        this.add(bottomPanel, BorderLayout.CENTER);
         this.add(optionsTab, BorderLayout.CENTER);
         this.revalidate();
+    }
+    JPanel messageSeachTab() {
+        JPanel messagesPanel = new JPanel(new GridLayout(0, 1));
+        JPanel subPanel = new JPanel(new BorderLayout());
+        subPanel.add(messagesPanel, BorderLayout.NORTH);
+
+        JPanel searchPanel = new JPanel();
+//        searchPanel.setBorder(new LineBorder(Color.black, 1));
+        JTextField searchField = new JTextField(13);
+        JButton searchButton = new JButton();
+        ImageIcon searchIcon = Util.createImageIcon("searchIcon.png", 15, 15);
+        searchButton.setIcon(searchIcon);
+        searchButton.setPreferredSize(new Dimension(20, searchButton.getPreferredSize().height));
+
+        JButton refreshButton = new JButton();
+        ImageIcon refreshIcon = Util.createImageIcon("refreshIcon.png", 15, 15);
+        refreshButton.setIcon(refreshIcon);
+        refreshButton.setPreferredSize(new Dimension(20, searchButton.getPreferredSize().height));
+
+        searchPanel.add(searchField);
+        searchPanel.add(searchButton);
+        searchPanel.add(refreshButton);
+
+        searchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                messagesPanel.removeAll();
+                messagesPanel.revalidate(); // Trigger layout update
+
+                String prompt = searchField.getText();
+                searchField.setText("");
+                ArrayList<Message> messages = MessageRepo.findMessagesInChat(currentChatRoomId, prompt);
+                for (Message message : messages) {
+//                    System.out.println(username);
+                    messagesPanel.add(createMessageItem(message));
+
+                }
+                messagesPanel.revalidate(); // Trigger layout update
+            }
+        });
+        refreshButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                usersPanel.removeAll();
+                usersPanel.revalidate(); // Trigger layout update
+            }
+        });
+
+        // list
+        JScrollPane messagesScrollPane = new JScrollPane(subPanel);
+        messagesScrollPane.getVerticalScrollBar().setUnitIncrement(12);
+
+//        for (int i = 0; i<50; i++) {
+//            JPanel item = createMessageItem("", "ayy", " a;dlkjfa;dkljadfa;dskjfa;sdlkjdsgsgsgfdgfdsgdfgsfgsdgf;askj");
+//            messagesPanel.add(item);
+//        }
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(messagesScrollPane, BorderLayout.CENTER);
+        panel.add(searchPanel, BorderLayout.NORTH);
+        return panel;
+    }
+    JPanel createMessageItem(Message message) {
+        JPanel item = new JPanel(new BorderLayout());
+        item.setPreferredSize(new Dimension(item.getPreferredSize().width, 50));
+        item.setBackground(Color.white);
+        item.setBorder(new LineBorder(Color.black, 1));
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        String sentAt = sdf.format(message.sentAt());
+        JLabel title = new JLabel(message.username() + " sent at " + sentAt);
+        title.setFont(new Font("Arial", Font.ITALIC, 12));
+        title.setForeground(Color.gray);
+        JLabel content = new JLabel(message.content());
+
+        JPanel contentWrapper = new JPanel();
+        contentWrapper.setBorder(new EmptyBorder(10, 10, 10, 10));
+        contentWrapper.setLayout(new BoxLayout(contentWrapper, BoxLayout.Y_AXIS));
+        contentWrapper.setBackground(null);
+
+        contentWrapper.add(title);
+        contentWrapper.add(content);
+//        content.setBounds(0,10, content.getPreferredSize().width, content.getPreferredSize().height);
+
+        item.add(contentWrapper, BorderLayout.CENTER);
+//        item.putClientProperty("chatRoomId", chatRoomId);
+//        item.putClientProperty("username", username);
+
+        // Add hover effect and click event
+        item.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+//                System.out.println(chatRoomId + "   " +chatRoomClicked);
+                contentWrapper.setBackground(Color.lightGray); // Change the background color on hover
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                contentWrapper.setBackground(Color.white); // Reset the background color when the mouse exits
+            }
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                ChatPanel.getInstance().chatScrollPane.getVerticalScrollBar().setValue(message.scrollPosition());
+            }
+        });
+        return item;
     }
 //    final String[] buttonTexts = {"Unfriend", "Block", "Report spam", "Delete history", "Create group with this person"};
     public void performAction(String buttonText) {
@@ -258,6 +396,9 @@ public class SettingsPanel extends JPanel {
         ChatRoomRepo.updateGroupChatName(currentChatRoomId, name);
         ChatPanel.getInstance().displayTopPanel(name);
         SidePanel.getInstance().displayChatrooms();
+        initGroupChat(currentChatRoomId, name);
+
+        CurrentUser.getInstance().sendMessage("editGroupName"+spliter+currentChatRoomId+spliter+name);
     }
     private boolean showConfirmation(String confirmMsg) {
         int result = JOptionPane.showConfirmDialog(
@@ -427,10 +568,14 @@ public class SettingsPanel extends JPanel {
             return false;
         }
         String groupName = groupNameField.getText();
-        String groupChatId = ChatRoomRepo.createGroupChat(groupName, username, usersChosen);
+        String groupChatId = ChatRoomRepo.createGroupChat(groupName, myUsername, usersChosen);
         SidePanel.getInstance().displayChatrooms();
         JPanel groupChatRoom = SidePanel.getInstance().itemsPointer.get(groupChatId);
         SidePanel.getInstance().handleChatRoomClick(groupChatRoom);
+
+        CurrentUser.getInstance().sendMessage("createGroup"+spliter+groupChatId);
+
+
         return true;
     }
     private JPanel createListItem(String username, Boolean status, String mode) {
@@ -482,17 +627,47 @@ public class SettingsPanel extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (mode.equals("member")) {
+                    handleMemberClick(item);
                     return;
                 }
                 if (mode.equals("chosen")) {
                     handleChosenClick(username, status, item);
                     return;
                 }
-                handleUserClick(username, status);
+                if (mode.isEmpty()) {
+                    handleUserClick(username, status);
+                    return;
+                }
             }
         });
 
         return item;
+    }
+    void handleMemberClick(JPanel item) {
+        String username = (String)item.getClientProperty("username");
+        if (username.equals(myUsername))
+            return;
+
+        Object[] options = {"Assign admin", "Delete from group chat"};
+        int n = JOptionPane.showOptionDialog((JFrame) SwingUtilities.getWindowAncestor(this),
+                "Choose what to do with this user",
+                "Options", JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.INFORMATION_MESSAGE, null, options, null);
+//        System.out.println("ádfas "+n);
+        if (n == -1) return;
+        if (n == 0) {
+            ChatMemberRepo.setIsAdmin(currentChatRoomId, username, true);
+            displayAdmins();
+            return;
+        }
+        if (n == 1) {
+            if (!ChatMemberRepo.isAdmin(currentChatRoomId, myUsername)) {
+                JOptionPane.showMessageDialog(ChatPanel.getInstance(), "Operation denied! You're not an admin.");
+                return;
+            }
+            ChatMemberRepo.removeFromGroup(currentChatRoomId, username);
+            displayMembers();
+        }
     }
     void handleUserClick(String username, Boolean status) {
         if (usersChosen.contains(username))
@@ -513,15 +688,17 @@ public class SettingsPanel extends JPanel {
         ChatPanel.getInstance().loadMessages();
     }
     void unfriend() {
+        CurrentUser.getInstance().sendMessage("unfriend"+spliter+chatUsername);
+
         CurrentUser.getInstance().removeFriend(chatUsername);
-        FriendRepo.unfriend(username, chatUsername);
+        FriendRepo.unfriend(myUsername, chatUsername);
         SidePanel.getInstance().displayChatrooms();
         SidePanel.getInstance().displayFriends();
         displayPrivateContent();
-        JOptionPane.showMessageDialog(ChatPanel.getInstance(), "unfriend user: "+chatUsername+" successfully.");
+//        JOptionPane.showMessageDialog(ChatPanel.getInstance(), "unfriend user: "+chatUsername+" successfully.");
     }
     void block() {
-        BlockedUserRepo.blockUser(username, chatUsername);
+        BlockedUserRepo.blockUser(myUsername, chatUsername);
         ChatPanel.getInstance().initView();
         displayPrivateContent();
 //        System.out.println("at SettingsPanel");
@@ -529,7 +706,7 @@ public class SettingsPanel extends JPanel {
     }
     void unblock() {
         System.out.println("at SettingsPanel unblock");
-        BlockedUserRepo.unblockUser(username, chatUsername);
+        BlockedUserRepo.unblockUser(myUsername, chatUsername);
         ChatPanel.getInstance().initView();
         displayPrivateContent();
         CurrentUser.getInstance().sendMessage("unblock"+spliter+currentChatRoomId);

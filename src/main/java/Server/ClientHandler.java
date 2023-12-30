@@ -1,10 +1,13 @@
 package Server;
 
+import Client.User.Repositories.ChatMemberRepo;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.HashSet;
 import java.util.Map;
 
 public class ClientHandler implements Runnable {
@@ -84,16 +87,18 @@ public class ClientHandler implements Runnable {
             User user = new User(clientUsername,printWriter);
             chatRooms.get(chatRoomId).join(user);
 
-            for (String chatRoomId : chatRooms.keySet()) {
+//            for (String chatRoomId : chatRooms.keySet()) {
                 String msg = "online"+spliter+clientUsername+spliter+chatRoomId;
-                chatRooms.get(chatRoomId).broadcastMessage(clientUsername, msg);
-            }
+//                chatRooms.get(chatRoomId).broadcastMessage(clientUsername, msg);
+//            }
+            chatRooms.get("lobby").broadcastMessage(clientUsername, msg);
             return;
         }
         if (command.equals("joinRoom")) {
             if (this.chatRoomId != null) {
                 System.out.println("at ClientHandler, previous chatroom: "+chatRoomId);
-                chatRooms.get(this.chatRoomId).remove(clientUsername);
+                if (!chatRoomId.equals("lobby"))
+                    chatRooms.get(this.chatRoomId).remove(clientUsername);
             }
             this.chatRoomId = msgSplit[4];
             System.out.println("at clientHandler: " + chatRoomId);
@@ -104,10 +109,10 @@ public class ClientHandler implements Runnable {
         }
         if (command.equals("logout")) {
             System.out.println(clientUsername+ " just logged out");
-            for (String chatRoomId : chatRooms.keySet()) {
+//            for (String chatRoomId : chatRooms.keySet()) {
                 String msg = "offline"+spliter+clientUsername+spliter+chatRoomId;
-                chatRooms.get(chatRoomId).broadcastMessage(clientUsername, msg);
-            }
+                chatRooms.get("lobby").broadcastMessage(clientUsername, msg);
+//            }
             closeEverything();
             return;
         }
@@ -123,6 +128,39 @@ public class ClientHandler implements Runnable {
             chatRooms.get(msgSplit[1]).broadcastMessage(clientUsername,msg);
             return;
         }
+        if (command.equals("addFriend")) {
+            // addFriend - username
+            String msg = "addFriend"+spliter+clientUsername;
+            chatRooms.get("lobby").sendPrivateMessage(clientUsername, msgSplit[1], msg);
+            return;
+        }
+        if (command.equals("unfriend")) {
+            // addFriend - username
+            String msg = "unfriend"+spliter+clientUsername;
+            chatRooms.get("lobby").sendPrivateMessage(clientUsername, msgSplit[1], msg);
+            return;
+        }
+        if (command.equals("editGroupName")) {
+            // editGroupName - chatRoomId - newGroupName
+            String msg = "editGroupName"+spliter+msgSplit[1]+spliter+msgSplit[2];
+            HashSet<String> members = ChatMemberRepo.getChatMembers(msgSplit[1]);
+//            System.out.println("chatroomid: "+msgSplit[1]);
+            for (String member : members) {
+//                System.out.println("member: "+member);
+                if (member.equals(clientUsername))
+                    continue;
+                chatRooms.get("lobby").sendPrivateMessage(clientUsername, member, msg);
+            }
+            chatRooms.get(msgSplit[1]).broadcastMessage(clientUsername, msg);
+            return;
+        }
+        if (command.equals("createGroup")) {
+            // createGroup - groupChatId
+            String msg = "createGroup"+spliter+msgSplit[1];
+            chatRooms.get(msgSplit[1]).broadcastMessage(clientUsername, msg);
+            return;
+        }
+
     }
     public void closeEverything() {
 //        removeClientHandler();
