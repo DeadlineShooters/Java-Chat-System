@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class SidePanel extends JPanel {
-    private String chatRoomClicked = "";
+    public String chatRoomClicked = "";
     JPanel chatRoomsPanel;
     JPanel usersPanel;
     JPanel friendsPanel;
@@ -287,6 +287,10 @@ public class SidePanel extends JPanel {
         if (isChatRoom)
             item.putClientProperty("chatRoomId", chatRoomId);
         item.putClientProperty("name", name);
+
+        if (chatRoomId.equals(chatRoomClicked)) {
+            contentWrapper.setBackground(chatRoomClickedColor);
+        }
 
         if (!isChatRoom || !ChatRoomRepo.isGroupChat(chatRoomId)) {
             if (!CurrentUser.getInstance().isFriend(name)) {

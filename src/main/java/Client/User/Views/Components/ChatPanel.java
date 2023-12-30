@@ -233,6 +233,35 @@ public class ChatPanel extends JPanel {
             return;
 
         }
+        if (msgSplit[0].equals("createGroup") || msgSplit[0].equals("addMember")) {
+            SidePanel.getInstance().displayChatrooms();
+            return;
+        }
+        if (msgSplit[0].equals("updateMemberList")) {
+            SettingsPanel.getInstance().displayMembers();
+            return;
+        }
+        if (msgSplit[0].equals("removedFromGroup")) {
+            // removedFromGroup - chatRoomId
+            SidePanel.getInstance().displayChatrooms();
+            System.out.println("ayyyy " + chatRoomId + "    "+msgSplit[1]);
+            if (msgSplit[1].equals(chatRoomId)) {
+                System.out.println("at ChatPanel, removedfromgroup");
+                this.removeAll();
+                this.revalidate();
+                this.repaint();
+                SettingsPanel.getInstance().removeAll();
+                SettingsPanel.getInstance().revalidate();
+                SettingsPanel.getInstance().repaint();
+                chatRoomId = null;
+                SidePanel.getInstance().chatRoomClicked = "";
+            }
+            return;
+        }
+        if (msgSplit[0].equals("assignAdmin")) {
+            SettingsPanel.getInstance().displayAdmins();
+            return;
+        }
 
         Message message = new Message(chatRoomId, msgSplit[1], msgSplit[2], "", 0, Util.stringToTimestamp(msgSplit[3]));
 

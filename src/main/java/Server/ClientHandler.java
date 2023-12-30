@@ -157,6 +157,38 @@ public class ClientHandler implements Runnable {
         if (command.equals("createGroup")) {
             // createGroup - groupChatId
             String msg = "createGroup"+spliter+msgSplit[1];
+            HashSet<String> members = ChatMemberRepo.getChatMembers(msgSplit[1]);
+            for (String member : members) {
+//                System.out.println("member: "+member);
+                if (member.equals(clientUsername))
+                    continue;
+                chatRooms.get("lobby").sendPrivateMessage(clientUsername, member, msg);
+            }
+            return;
+        }
+        if (command.equals("addMember")) {
+            // addMember - usename
+            String msg = "addMember"+spliter;
+            chatRooms.get("lobby").sendPrivateMessage(clientUsername, msgSplit[1], msg);
+            return;
+
+        }
+        if (command.equals("updateMemberList")) {
+            // updateMemberList - chatRoomId
+            String msg = command+spliter;
+            chatRooms.get(msgSplit[1]).broadcastMessage(clientUsername, msg);
+            return;
+        }
+        if (command.equals("removedFromGroup")) {
+            // removedFromGroup - chatRoomId - username
+
+            String msg = "removedFromGroup"+spliter+msgSplit[1];
+            chatRooms.get("lobby").sendPrivateMessage(clientUsername, msgSplit[2], msg);
+            return;
+        }
+        if (command.equals("assignAdmin")) {
+            // assignAdmin - chatRoomId
+            String msg = command+spliter;
             chatRooms.get(msgSplit[1]).broadcastMessage(clientUsername, msg);
             return;
         }

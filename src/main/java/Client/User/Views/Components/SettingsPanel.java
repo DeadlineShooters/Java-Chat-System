@@ -146,6 +146,7 @@ public class SettingsPanel extends JPanel {
             JPanel item = createListItem(member,false, "admin");
             adminsPanel.add(item);
         }
+        adminsPanel.revalidate();
     }
     JPanel chatMembersTab() {
 
@@ -658,6 +659,7 @@ public class SettingsPanel extends JPanel {
         if (n == 0) {
             ChatMemberRepo.setIsAdmin(currentChatRoomId, username, true);
             displayAdmins();
+            CurrentUser.getInstance().sendMessage("assignAdmin"+spliter+currentChatRoomId);
             return;
         }
         if (n == 1) {
@@ -667,6 +669,8 @@ public class SettingsPanel extends JPanel {
             }
             ChatMemberRepo.removeFromGroup(currentChatRoomId, username);
             displayMembers();
+            CurrentUser.getInstance().sendMessage("removedFromGroup"+spliter+currentChatRoomId+spliter+username);
+            CurrentUser.getInstance().sendMessage("updateMemberList"+spliter+currentChatRoomId);
         }
     }
     void handleUserClick(String username, Boolean status) {
@@ -854,8 +858,11 @@ public class SettingsPanel extends JPanel {
         }
         for (String username : usersChosen) {
             ChatMemberRepo.addChatMember(currentChatRoomId, username);
+            CurrentUser.getInstance().sendMessage("addMember"+spliter+username);
         }
+        CurrentUser.getInstance().sendMessage("updateMemberList"+spliter+currentChatRoomId);
         displayMembers();
+        usersChosen.clear();
         return true;
     }
     private class HoverablePanel extends JPanel {
