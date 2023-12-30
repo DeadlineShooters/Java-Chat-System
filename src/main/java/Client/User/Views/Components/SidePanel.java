@@ -1,8 +1,11 @@
 package Client.User.Views.Components;
 
+import Client.Models.Message;
+import Client.User.Common;
 import Client.User.CurrentUser;
 import Client.User.Repositories.ChatRoomRepo;
 import Client.User.Repositories.FriendRepo;
+import Client.User.Repositories.MessageRepo;
 import Client.User.Repositories.UserRepo;
 import Client.User.Views.Util;
 
@@ -14,17 +17,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 public class SidePanel extends JPanel {
-    private String chatRoomClicked = "";
+    public String chatRoomClicked = "";
     JPanel chatRoomsPanel;
     JPanel usersPanel;
     JPanel friendsPanel;
     JTabbedPane friendsTabbedPane;
-    Color itemBgColor = Color.pink;
+    Color itemBgColor = Color.white;
     Color chatRoomClickedColor = Color.lightGray;
     HashMap<String, JPanel> itemsPointer = new HashMap<>(); // <chatRoomId, listItem>
     private static SidePanel sidePanel = null;
@@ -44,10 +49,123 @@ public class SidePanel extends JPanel {
         friendsTabbedPane.addTab("Chat", chatRoomsTab());
         friendsTabbedPane.addTab("Explore", createExploreTab());
         friendsTabbedPane.addTab("Friends", createFriendsTab());
+        friendsTabbedPane.addTab("Search for messages", messageSeachTab());
+
 
 //        handleChatRoomClick();
 
         add(friendsTabbedPane, BorderLayout.CENTER);
+    }
+    JPanel messageSeachTab() {
+        JPanel messagesPanel = new JPanel(new GridLayout(0, 1));
+        JPanel subPanel = new JPanel(new BorderLayout());
+        subPanel.add(messagesPanel, BorderLayout.NORTH);
+
+        JPanel searchPanel = new JPanel();
+//        searchPanel.setBorder(new LineBorder(Color.black, 1));
+        JTextField searchField = new JTextField(13);
+        JButton searchButton = new JButton();
+        ImageIcon searchIcon = Util.createImageIcon("searchIcon.png", 15, 15);
+        searchButton.setIcon(searchIcon);
+        searchButton.setPreferredSize(new Dimension(20, searchButton.getPreferredSize().height));
+
+        JButton refreshButton = new JButton();
+        ImageIcon refreshIcon = Util.createImageIcon("refreshIcon.png", 15, 15);
+        refreshButton.setIcon(refreshIcon);
+        refreshButton.setPreferredSize(new Dimension(20, searchButton.getPreferredSize().height));
+
+        searchPanel.add(searchField);
+        searchPanel.add(searchButton);
+        searchPanel.add(refreshButton);
+
+        searchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                messagesPanel.removeAll();
+                messagesPanel.revalidate(); // Trigger layout update
+
+                String prompt = searchField.getText();
+//                searchField.setText("");
+                ArrayList<Message> messages = MessageRepo.findMessagesFromAll(prompt);
+                for (Message message : messages) {
+//                    System.out.println(username);
+                    messagesPanel.add(createMessageItem(message));
+
+                }
+                messagesPanel.revalidate(); // Trigger layout update
+            }
+        });
+        refreshButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                usersPanel.removeAll();
+                usersPanel.revalidate(); // Trigger layout update
+            }
+        });
+
+        // list
+        JScrollPane messagesScrollPane = new JScrollPane(subPanel);
+        messagesScrollPane.getVerticalScrollBar().setUnitIncrement(12);
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(messagesScrollPane, BorderLayout.CENTER);
+        panel.add(searchPanel, BorderLayout.NORTH);
+        return panel;
+    }
+    JPanel createMessageItem(Message message) {
+        JPanel item = new JPanel(new BorderLayout());
+        item.setPreferredSize(new Dimension(item.getPreferredSize().width, 50));
+        item.setBackground(Color.white);
+        item.setBorder(new LineBorder(Color.black, 1));
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        String sentAt = sdf.format(message.sentAt());
+        JLabel title = new JLabel(message.username() + " sent at " + sentAt);
+        title.setFont(new Font("Arial", Font.ITALIC, 12));
+        title.setForeground(Color.gray);
+        JLabel content = new JLabel(message.content());
+
+        JPanel contentWrapper = new JPanel();
+        contentWrapper.setBorder(new EmptyBorder(10, 10, 10, 10));
+        contentWrapper.setLayout(new BoxLayout(contentWrapper, BoxLayout.Y_AXIS));
+        contentWrapper.setBackground(null);
+
+        contentWrapper.add(title);
+        contentWrapper.add(content);
+//        content.setBounds(0,10, content.getPreferredSize().width, content.getPreferredSize().height);
+
+        item.add(contentWrapper, BorderLayout.CENTER);
+//        item.putClientProperty("chatRoomId", chatRoomId);
+//        item.putClientProperty("username", username);
+
+        // Add hover effect and click event
+        item.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+//                System.out.println(chatRoomId + "   " +chatRoomClicked);
+                contentWrapper.setBackground(Color.lightGray); // Change the background color on hover
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                contentWrapper.setBackground(Color.white); // Reset the background color when the mouse exits
+            }
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                friendsTabbedPane.setSelectedIndex(0);
+
+                handleChatRoomClick(itemsPointer.get(message.chatRoomId()));
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        ChatPanel.getInstance().chatScrollPane.getVerticalScrollBar().setValue(message.scrollPosition());
+                        ChatPanel.getInstance().chatScrollPane.revalidate();
+                    }
+                });
+            }
+        });
+        return item;
     }
     private JPanel createExploreTab() {
         // search panel
@@ -75,7 +193,7 @@ public class SidePanel extends JPanel {
         subPanel.add(usersPanel, BorderLayout.NORTH);
 
         JScrollPane usersScrollPane = new JScrollPane(subPanel);
-        usersScrollPane.getVerticalScrollBar().setUnitIncrement(10);
+        usersScrollPane.getVerticalScrollBar().setUnitIncrement(12);
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -125,10 +243,11 @@ public class SidePanel extends JPanel {
 
         return panel;
     }
-    void displayChatrooms() {
+    public void displayChatrooms() {
         chatRoomsPanel.removeAll();
         chatRoomsPanel.revalidate();
-        Map<String, String> chatRooms = CurrentUser.getInstance().getChatRooms();
+//        Map<String, String> chatRooms = CurrentUser.getInstance().getChatRooms();
+        Map<String, String> chatRooms = ChatRoomRepo.getAllChatRooms(CurrentUser.getInstance().getUser().username());
         for (String chatRoomId : chatRooms.keySet()) {
 //            System.out.println("adding");
 
@@ -142,6 +261,7 @@ public class SidePanel extends JPanel {
             chatRoomsPanel.add(chatRoom);
             itemsPointer.put(chatRoomId, chatRoom);
         }
+        chatRoomsPanel.revalidate();
     }
     private JPanel createListItem(String chatRoomId, String name, Boolean status) {
         boolean isChatRoom = !chatRoomId.isEmpty();
@@ -167,6 +287,10 @@ public class SidePanel extends JPanel {
         if (isChatRoom)
             item.putClientProperty("chatRoomId", chatRoomId);
         item.putClientProperty("name", name);
+
+        if (chatRoomId.equals(chatRoomClicked)) {
+            contentWrapper.setBackground(chatRoomClickedColor);
+        }
 
         if (!isChatRoom || !ChatRoomRepo.isGroupChat(chatRoomId)) {
             if (!CurrentUser.getInstance().isFriend(name)) {
@@ -195,6 +319,7 @@ public class SidePanel extends JPanel {
                         Container parentContainer = addFriendBtn.getParent();
                         parentContainer.remove(addFriendBtn);
                         parentContainer.revalidate();
+                        parentContainer.repaint();
 
 
 //                        usersPanel.removeAll();
@@ -205,6 +330,8 @@ public class SidePanel extends JPanel {
 //                        friendsTabbedPane.setSelectedIndex(0);
                         if (SettingsPanel.getInstance().getComponentCount() >0)
                             SettingsPanel.getInstance().initPrivateChat(chatRoomId, name);
+                        String spliter = Common.spliter;
+                        CurrentUser.getInstance().sendMessage("addFriend"+spliter+name);
 //                        JOptionPane.showMessageDialog(ChatPanel.getInstance(), "unfriend user: "+name+" successfully.");
                     }
                 });
@@ -280,9 +407,9 @@ public class SidePanel extends JPanel {
         contentWrapper.repaint();
     }
     void handleChatRoomClick(JPanel chatRoom) {
-        SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
+//        SwingUtilities.invokeLater(new Runnable() {
+//        @Override
+//        public void run() {
             String chatRoomId = (String)chatRoom.getClientProperty("chatRoomId");
             if (!chatRoomClicked.isEmpty()) {
                 if (chatRoomClicked.equals(chatRoomId))
@@ -294,8 +421,8 @@ public class SidePanel extends JPanel {
 
             String chatUsername = (String)chatRoom.getClientProperty("name");
             ChatPanel.getInstance().startChatting(chatRoomId, chatUsername);
-        }
-    });
+//        }
+//    });
 //        SettingsPanel.getInstance().chatUsername = chatUsername;
     }
     void handleUserClick(JPanel user) {

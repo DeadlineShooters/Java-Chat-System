@@ -20,15 +20,15 @@ public record User(
         try {
             return new User(
                     resultSet.getString("username"),
-                    resultSet.getString("full_name"),
+                    resultSet.getString("fullname"),
                     resultSet.getString("address"),
-                    resultSet.getDate("birth_date"),
+                    resultSet.getDate("birthdate"),
                     resultSet.getString("gender"),
                     resultSet.getString("email"),
                     resultSet.getBoolean("status"),
                     resultSet.getString("password"),
-                    resultSet.getTimestamp("created_at"),
-                    resultSet.getBoolean("is_locked")
+                    resultSet.getTimestamp("createdat"),
+                    resultSet.getBoolean("islocked")
             );
         } catch (SQLException ex) {
             System.out.println("Failed to create user.");

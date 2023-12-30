@@ -283,7 +283,6 @@ public class Login extends JFrame {
             User user = UserRepo.getOne(username);
             CurrentUser.getInstance().setUser(user);
             dispose();
-            sessionRepository.startSession(username);
             new Thread(new UserApp()).start();
         }
     }

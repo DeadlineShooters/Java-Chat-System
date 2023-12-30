@@ -33,7 +33,7 @@ public class SessionRepository {
     }
 
     public int getPeopleChatted(String username) {
-        String sql = "SELECT SUM(users_chat_count) FROM session WHERE username = ?";
+        String sql = "SELECT SUM(userschatcount) FROM session WHERE username = ?";
         try (PreparedStatement stmt = con.prepareStatement(sql);) {
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
@@ -47,7 +47,7 @@ public class SessionRepository {
     }
 
     public int getGroupsChatted(String username) {
-        String sql = "SELECT SUM(groups_chat_count) FROM session WHERE username = ?;";
+        String sql = "SELECT SUM(groupschatcount) FROM session WHERE username = ?;";
         try (PreparedStatement stmt = con.prepareStatement(sql);) {
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
@@ -62,12 +62,12 @@ public class SessionRepository {
     public ArrayList<UserActivity> getUsersActivity(Timestamp startDatetime, Timestamp endDatetime) {
         ArrayList<UserActivity>activities = new ArrayList<>();
         String query = "SELECT u.username, " +
-                "COUNT(s.login_time) AS app_opens, " +
-                "COALESCE(SUM(s.users_chat_count), 0) AS number_of_people_chatted, " +
-                "COALESCE(SUM(s.groups_chat_count), 0) AS number_of_groups_chatted " +
+                "COUNT(s.logintime) AS appopens, " +
+                "COALESCE(SUM(s.userschatcount), 0) AS numberofpeoplechatted, " +
+                "COALESCE(SUM(s.groupschatcount), 0) AS numberofgroupschatted " +
                 "FROM user u " +
                 "LEFT JOIN session s ON u.username = s.username " +
-                "WHERE s.login_time BETWEEN ? AND ?" +
+                "WHERE s.logintime BETWEEN ? AND ?" +
                 "GROUP BY u.username " +
                 "ORDER BY u.username";
 
@@ -80,9 +80,9 @@ public class SessionRepository {
 
             while (resultSet.next()) {
                 String username = resultSet.getString("username");
-                int appOpens = resultSet.getInt("app_opens");
-                int peopleChatted = resultSet.getInt("number_of_people_chatted");
-                int groupsChatted = resultSet.getInt("number_of_groups_chatted");
+                int appOpens = resultSet.getInt("appopens");
+                int peopleChatted = resultSet.getInt("numberofpeoplechatted");
+                int groupsChatted = resultSet.getInt("numberofgroupschatted");
 
                 activities.add(new UserActivity(username, appOpens, peopleChatted, groupsChatted));
             }
@@ -132,7 +132,7 @@ public class SessionRepository {
 
     public List<Map<String, Object>> getSessionsForYear(int year) {
         List<Map<String, Object>> sessions = new ArrayList<>();
-        String query = "SELECT * FROM session WHERE YEAR(login_time) <= ? AND (YEAR(logout_time) >= ? OR logout_time IS NULL)";
+        String query = "SELECT * FROM session WHERE YEAR(logintime) <= ? AND (YEAR(logouttime) >= ? OR logouttime IS NULL)";
         try (PreparedStatement preparedStatement = con.prepareStatement(query)) {
             preparedStatement.setInt(1, year);
             preparedStatement.setInt(2, year);
@@ -141,8 +141,8 @@ public class SessionRepository {
 
             while (resultSet.next()) {
                 Map<String, Object> session = Map.of(
-                        "login_time", resultSet.getTimestamp("login_time"),
-                        "logout_time", resultSet.getTimestamp("logout_time"),
+                        "logintime", resultSet.getTimestamp("logintime"),
+                        "logouttime", resultSet.getTimestamp("logouttime"),
                         "username", resultSet.getString("username")
                 );
                 sessions.add(session);
@@ -154,7 +154,7 @@ public class SessionRepository {
     }
 
     public void startSession(String username) {
-        String sql = "insert into session (username, login_time) values (?, ?)";
+        String sql = "insert into session (username, logintime) values (?, ?)";
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setString(1, username);
             stmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));

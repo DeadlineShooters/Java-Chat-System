@@ -29,7 +29,7 @@ public class SpamReportRepository {
     }
 
     public void insert(String sender, String reportedUser) {
-        String sql = "insert into spamreport (sender, reported_user, report_time) values (?, ?, ?)";
+        String sql = "insert into spamreport (sender, reporteduser, reporttime) values (?, ?, ?)";
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setString(1, sender);
             stmt.setString(2, reportedUser);
@@ -41,7 +41,7 @@ public class SpamReportRepository {
     }
 
     public void remove(String sender, Timestamp createAt) {
-        String sql = "delete from spamreport where sender = ? and report_time = ?";
+        String sql = "delete from spamreport where sender = ? and reporttime = ?";
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setString(1, sender);
             stmt.setTimestamp(2, createAt);

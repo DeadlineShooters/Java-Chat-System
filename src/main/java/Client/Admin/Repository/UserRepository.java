@@ -44,10 +44,10 @@ public class UserRepository {
         Date oldestDate = null;
         try {
             Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT MIN(created_at) AS oldest_date FROM user");
+            ResultSet rs = stmt.executeQuery("SELECT MIN(createdat) AS oldestdate FROM user");
             // move to the next row to convert to DATE because DatePicker needs DATE
             if (rs.next()) {
-                Timestamp timestamp = rs.getTimestamp("oldest_date");
+                Timestamp timestamp = rs.getTimestamp("oldestdate");
                 if (timestamp != null) {
                     oldestDate = new Date(timestamp.getTime());
                 }
@@ -61,7 +61,7 @@ public class UserRepository {
     public ArrayList<User> getUsersByDateRange(Date startDate, Date endDate) {
         ArrayList<User> userList = new ArrayList<>();
 
-        String sql = "SELECT * FROM user WHERE created_at BETWEEN ? AND ? ORDER BY username";
+        String sql = "SELECT * FROM user WHERE createdat BETWEEN ? AND ? ORDER BY username";
 
         try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
 
@@ -90,14 +90,14 @@ public class UserRepository {
     }
 
     public int fetchNumberOfFriends(String username) {
-        String sql = "SELECT COUNT(*) AS friend_count FROM Friend WHERE user1 = ? OR user2 = ?";
+        String sql = "SELECT COUNT(*) AS friendcount FROM Friend WHERE user1 = ? OR user2 = ?";
         int numberOfFriends = 0;
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setString(1, username);
             stmt.setString(2, username);
             ResultSet resultSet = stmt.executeQuery();
             if (resultSet.next()) {
-                numberOfFriends = resultSet.getInt("friend_count");
+                numberOfFriends = resultSet.getInt("friendcount");
             }
         } catch (SQLException exc) {
             exc.printStackTrace();
@@ -106,7 +106,7 @@ public class UserRepository {
     }
 
     public int fetchNumberOfFriendsOfFriends(String username) {
-        String sql = "SELECT count(*) as total_friends_of_friends " +
+        String sql = "SELECT count(*) as totalfriendsoffriends " +
                 "FROM friend f1, friend f2 " +
                 "where f1.user1 = ? and f1.user2 = f2.user1 and f2.user2 <> ?";
         int numberOfFriendsOfFriends = 0;
@@ -116,7 +116,7 @@ public class UserRepository {
             stmt.setString(2, username);
             ResultSet resultSet = stmt.executeQuery();
             if (resultSet.next()) {
-                numberOfFriendsOfFriends = resultSet.getInt("total_friends_of_friends");
+                numberOfFriendsOfFriends = resultSet.getInt("totalfriendsoffriends");
             }
         } catch (SQLException exc) {
             exc.printStackTrace();
@@ -135,7 +135,7 @@ public class UserRepository {
     }
 
     public void insert(String username, String password, String email, Timestamp createdAt) {
-        String sql = "insert into user (username, password, email, created_at) values (?, ?, ?, ?)";
+        String sql = "insert into user (username, password, email, createdat) values (?, ?, ?, ?)";
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setString(1, username);
             stmt.setString(2, User.encryptPassword(password));
@@ -148,8 +148,8 @@ public class UserRepository {
     }
 
     public void update(String username, String fullName, String address, Timestamp dob, String gender, String email, String password) {
-        String sql = !password.equals("") ? "update user set full_name = ?, address = ?, birth_date = ?, gender = ?, email = ?, password = ? where username = ?"
-        : "update user set full_name = ?, address = ?, birth_date = ?, gender = ?, email = ? where username = ?";
+        String sql = !password.equals("") ? "update user set fullname = ?, address = ?, birthdate = ?, gender = ?, email = ?, password = ? where username = ?"
+        : "update user set fullname = ?, address = ?, birthdate = ?, gender = ?, email = ? where username = ?";
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setString(1, fullName);
             stmt.setString(2, address);
@@ -179,7 +179,7 @@ public class UserRepository {
     }
 
     public void lock(String username, boolean isLocked) {
-        String sql = "update user set is_locked = '" + (isLocked ? 0 : 1) + "' where username = '" + username + "'";
+        String sql = "update user set islocked = '" + (isLocked ? 0 : 1) + "' where username = '" + username + "'";
         try (Statement stmt = con.createStatement()) {
             stmt.executeUpdate(sql);
         } catch (SQLException exc) {
@@ -190,7 +190,7 @@ public class UserRepository {
     public Date getCreatedDate(String username) {
         Date createdDate = null;
 
-        String sql = "SELECT created_at FROM user WHERE username = ?";
+        String sql = "SELECT createdat FROM user WHERE username = ?";
 
         try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
             preparedStatement.setString(1, username);
@@ -198,7 +198,7 @@ public class UserRepository {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                Timestamp timestamp = resultSet.getTimestamp("created_at");
+                Timestamp timestamp = resultSet.getTimestamp("createdat");
                 if (timestamp != null) {
                     createdDate = new Date(timestamp.getTime());
                 }

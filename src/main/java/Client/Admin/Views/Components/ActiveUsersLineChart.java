@@ -21,13 +21,13 @@ public class ActiveUsersLineChart extends BaseLineChart {
 
         // Iterate over each session
         for (Map<String, Object> session : sessions) {
-            Date loginTime = (Date) session.get("login_time");
-            Date logoutTime = (Date) session.get("logout_time");
+            Date loginTime = (Date) session.get("logintime");
+            Date logoutTime = (Date) session.get("logouttime");
 
             Calendar cal = Calendar.getInstance();
             cal.setTime(loginTime);
 
-            // Iterate for each month between login_time and logout_time (inclusive)
+            // Iterate for each month between logintime and logouttime (inclusive)
             while (cal.getTime().before(logoutTime) || cal.getTime().equals(logoutTime)) {
                 int month = cal.get(Calendar.MONTH) + 1; // Calendar months are 0-based
 

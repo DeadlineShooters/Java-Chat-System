@@ -8,8 +8,8 @@ public record SpamReport(Timestamp reportTime, String reportedUser, String sende
     public static SpamReport fromResultSet(ResultSet resultSet) {
         try {
             return new SpamReport(
-                    resultSet.getTimestamp("report_time"),
-                    resultSet.getString("reported_user"),
+                    resultSet.getTimestamp("reporttime"),
+                    resultSet.getString("reporteduser"),
                     resultSet.getString("sender"));
         } catch (SQLException ex) {
             System.out.println("Failed to create spam report.");
