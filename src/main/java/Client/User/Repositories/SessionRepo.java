@@ -1,7 +1,7 @@
 package Client.User.Repositories;
 
 import Client.ConnectionManager;
-import Client.Models.Session;
+import Client.Models.UserSession;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,15 +13,15 @@ public class SessionRepo {
         // Static block to initialize the connection when the class is loaded
         conn = ConnectionManager.getConnection();
     }
-    public static void addSession(Session session) {
+    public static void addSession(UserSession userSession) {
         String sql = "INSERT INTO session (username, loginTime, logoutTime, usersChattedCount, groupsChattedCount) " +
                 "VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, session.username);
-            ps.setTimestamp(2, session.loginTime);
-            ps.setTimestamp(3, session.logoutTime);
-            ps.setInt(4, session.usersChattedCount);
-            ps.setInt(5, session.groupsChattedCount);
+            ps.setString(1, userSession.username);
+            ps.setTimestamp(2, userSession.loginTime);
+            ps.setTimestamp(3, userSession.logoutTime);
+            ps.setInt(4, userSession.usersChattedCount);
+            ps.setInt(5, userSession.groupsChattedCount);
 
             ps.executeUpdate();
         } catch (SQLException e) {

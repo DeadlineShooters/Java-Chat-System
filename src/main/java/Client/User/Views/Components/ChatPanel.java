@@ -297,9 +297,9 @@ public class ChatPanel extends JPanel {
         });
         MessageRepo.saveMessage(message);
         if (ChatRoomRepo.isGroupChat(chatRoomId))
-            CurrentUser.getInstance().session.groupsChattedCount++;
+            CurrentUser.getInstance().userSession.groupsChattedCount++;
         else
-            CurrentUser.getInstance().session.usersChattedCount++;
+            CurrentUser.getInstance().userSession.usersChattedCount++;
 
 //        System.out.println(chatScrollPane.getVerticalScrollBar().getValue());
 
