@@ -1,6 +1,8 @@
 package Client.User.Views;
 
 import Client.User.Client;
+import Client.User.CurrentUser;
+import Client.User.Repositories.SessionRepo;
 import Client.User.Views.Components.ChatPanel;
 import Client.User.Views.Components.MenuBar;
 import Client.User.Views.Components.SettingsPanel;
@@ -43,6 +45,8 @@ public class Home extends JFrame {
 //                    dispose();
 //                }
 //                UserRepo.setStatus(CurrentUser.getInstance().getUser().username(), false);
+                CurrentUser.getInstance().session.logoutTime = Util.getCurrentTimestamp();
+                SessionRepo.addSession(CurrentUser.getInstance().session);
                 System.out.println("at Home");
                 Client.getInstance().closeEverything();
             }

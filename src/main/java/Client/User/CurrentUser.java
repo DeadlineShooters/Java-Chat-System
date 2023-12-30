@@ -1,8 +1,10 @@
 package Client.User;
 
+import Client.Models.Session;
 import Client.Models.User;
 import Client.User.Repositories.FriendRepo;
 import Client.User.Repositories.UserRepo;
+import Client.User.Views.Util;
 
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -14,6 +16,7 @@ public class CurrentUser {
     static CurrentUser currentUser;
     private Map<String, Boolean> friends = new HashMap<>(); // HashMap<username, isOnline>
 //    private Map<String, String> chatRooms = new HashMap<>(); // HashMap<chatRoomId, username or group name>
+    public Session session;
     private CurrentUser() {
 
     }
@@ -27,6 +30,7 @@ public class CurrentUser {
         this.user = user;
 //        chatRooms = ChatRoomRepo.getAllChatRooms(user.username());
         friends = FriendRepo.getAllFriends(user.username());
+        session = new Session(user.username(), Util.getCurrentTimestamp(), null, 0, 0);
     }
     public User getUser() { return user; }
 //    public Map<String, String> getChatRooms() { return chatRooms; }

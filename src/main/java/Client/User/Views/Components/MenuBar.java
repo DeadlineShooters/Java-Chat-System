@@ -1,13 +1,14 @@
 package Client.User.Views.Components;
 
 import javax.swing.*;
+import java.awt.event.WindowEvent;
 
 public class MenuBar extends JMenuBar {
     public MenuBar() {
         // File menu
         JMenu fileMenu = new JMenu("File");
         JMenuItem exitMenuItem = new JMenuItem("Exit");
-        exitMenuItem.addActionListener(e -> System.exit(0));
+        exitMenuItem.addActionListener(e -> closeWindow((JFrame) SwingUtilities.getWindowAncestor(this)));
         fileMenu.add(exitMenuItem);
 
         // Help menu
@@ -19,5 +20,9 @@ public class MenuBar extends JMenuBar {
         add(fileMenu);
         add(helpMenu);
 
+    }
+    private static void closeWindow(JFrame frame) {
+        WindowEvent windowClosing = new WindowEvent(frame, WindowEvent.WINDOW_CLOSING);
+        frame.dispatchEvent(windowClosing);
     }
 }

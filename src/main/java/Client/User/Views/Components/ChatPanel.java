@@ -296,7 +296,12 @@ public class ChatPanel extends JPanel {
             }
         });
         MessageRepo.saveMessage(message);
-        System.out.println(chatScrollPane.getVerticalScrollBar().getValue());
+        if (ChatRoomRepo.isGroupChat(chatRoomId))
+            CurrentUser.getInstance().session.groupsChattedCount++;
+        else
+            CurrentUser.getInstance().session.usersChattedCount++;
+
+//        System.out.println(chatScrollPane.getVerticalScrollBar().getValue());
 
         CurrentUser.getInstance().sendMessage("message"+spliter+myUsername+spliter+content+spliter+sentAt+spliter+chatRoomId);
     }
