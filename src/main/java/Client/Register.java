@@ -5,6 +5,7 @@ import Client.User.Repositories.UserRepo;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,7 +13,9 @@ import java.awt.event.ActionListener;
 public class Register extends JFrame {
     private JPanel contentPane;
     String[] labels = {"Username", "Email", "Password", "Confirm Password"};
-    JTextField[] textFields = new JTextField[labels.length];
+    JTextComponent[] inputFields = new JTextComponent[labels.length];
+    JPasswordField pwdField = new JPasswordField();
+    JPasswordField confirmPwdField = new JPasswordField();
 //    private ImageIcon iconTitle = new ImageIcon(HomeScreen.class.getResource("/Image/iconmini.jpg"));
 
 
@@ -24,7 +27,7 @@ public class Register extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         contentPane = new JPanel(new BorderLayout());
-        setSize(450, 340);
+        setSize(450, 380);
         setContentPane(contentPane);
 
         topPanel();
@@ -69,7 +72,8 @@ public class Register extends JFrame {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5); // Add some padding
 
-        for (int i = 0; i < labels.length; i++) {
+        int i = 0;
+        for (; i < labels.length; i++) {
             gbc.gridx = 0;
             gbc.gridy = i;
             gbc.anchor = GridBagConstraints.WEST;
@@ -77,10 +81,30 @@ public class Register extends JFrame {
 
             gbc.gridx = 1;
             gbc.anchor = GridBagConstraints.WEST;
-            textFields[i] = new JTextField();
-            textFields[i].setPreferredSize(new Dimension(200, 30));
-            panel.add(textFields[i], gbc);
+            if (i == 2) {
+                inputFields[i] = pwdField;
+            } else if (i == 3) {
+                inputFields[i] = confirmPwdField;
+            } else {
+                inputFields[i] = new JTextField();
+            }
+            inputFields[i].setPreferredSize(new Dimension(200, 30));
+            panel.add(inputFields[i], gbc);
         }
+        // Show password
+        JCheckBox showCheckBox = new JCheckBox("Show Password");
+        showCheckBox.setFont(new Font("Arial", Font.BOLD | Font.ITALIC, 12));
+        showCheckBox.setBounds(155, 140, 130, 21);
+//        contentPane.add(showCheckBox);
+        showCheckBox.addActionListener(ae -> {
+            JCheckBox c = (JCheckBox) ae.getSource();
+            pwdField.setEchoChar(c.isSelected() ? '\u0000' : (Character) UIManager.get("PasswordField.echoChar"));
+            confirmPwdField.setEchoChar(c.isSelected() ? '\u0000' : (Character) UIManager.get("PasswordField.echoChar"));
+        });
+
+        gbc.gridx = 1;
+        gbc.gridy = i;
+        panel.add(showCheckBox, gbc);
 
         contentPane.add(panel, BorderLayout.CENTER);
     }
@@ -93,7 +117,7 @@ public class Register extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String[] values = new String[labels.length];
                 for (int i = 0; i < labels.length; i++) {
-                    values[i] = textFields[i].getText();
+                    values[i] = inputFields[i].getText();
                     if (values[i].isEmpty()) {
                         JOptionPane.showMessageDialog(contentPane, "Please fill in all fields!");
                         return;
