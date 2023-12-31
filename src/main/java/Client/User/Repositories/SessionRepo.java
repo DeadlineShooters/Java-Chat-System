@@ -14,7 +14,7 @@ public class SessionRepo {
         conn = ConnectionManager.getConnection();
     }
     public static void addSession(UserSession userSession) {
-        String sql = "INSERT INTO session (username, loginTime, logoutTime, usersChattedCount, groupsChattedCount) " +
+        String sql = "INSERT INTO session (username, logintime, logouttime, userschatcount, groupschatcount) " +
                 "VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, userSession.username);
@@ -22,6 +22,21 @@ public class SessionRepo {
             ps.setTimestamp(3, userSession.logoutTime);
             ps.setInt(4, userSession.usersChattedCount);
             ps.setInt(5, userSession.groupsChattedCount);
+
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void updateSession(UserSession userSession) {
+        String sql = "UPDATE session SET logouttime = ?, userschatcount = ?, groupschatcount = ? where logintime = ? and username = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setTimestamp(1, userSession.logoutTime);
+            ps.setInt(2, userSession.usersChattedCount);
+            ps.setInt(3, userSession.groupsChattedCount);
+            ps.setTimestamp(4, userSession.loginTime);
+            ps.setString(5, userSession.username);
 
             ps.executeUpdate();
         } catch (SQLException e) {
