@@ -6,6 +6,9 @@ import Client.Models.UserSession;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 public class SessionRepo {
     private static Connection conn;
@@ -13,6 +16,7 @@ public class SessionRepo {
         // Static block to initialize the connection when the class is loaded
         conn = ConnectionManager.getConnection();
     }
+
     public static void addSession(UserSession userSession) {
         String sql = "INSERT INTO session (username, logintime, logouttime, userschatcount, groupschatcount) " +
                 "VALUES (?, ?, ?, ?, ?)";
@@ -35,7 +39,10 @@ public class SessionRepo {
             ps.setTimestamp(1, userSession.logoutTime);
             ps.setInt(2, userSession.usersChattedCount);
             ps.setInt(3, userSession.groupsChattedCount);
-            ps.setTimestamp(4, userSession.loginTime);
+            Instant loginInstant = userSession.loginTime.toInstant();
+            Instant roundedLoginInstant = loginInstant.plusMillis(500).truncatedTo(ChronoUnit.SECONDS);
+            Timestamp roundedLoginTime = Timestamp.from(roundedLoginInstant);
+            ps.setTimestamp(4, roundedLoginTime);
             ps.setString(5, userSession.username);
 
             ps.executeUpdate();

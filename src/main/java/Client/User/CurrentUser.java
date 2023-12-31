@@ -3,6 +3,7 @@ package Client.User;
 import Client.Models.UserSession;
 import Client.Models.User;
 import Client.User.Repositories.FriendRepo;
+import Client.User.Repositories.SessionRepo;
 import Client.User.Repositories.UserRepo;
 import Client.User.Views.Util;
 
@@ -31,6 +32,7 @@ public class CurrentUser {
 //        chatRooms = ChatRoomRepo.getAllChatRooms(user.username());
         friends = FriendRepo.getAllFriends(user.username());
         userSession = new UserSession(user.username(), Util.getCurrentTimestamp(), null, 0, 0);
+        SessionRepo.addSession(userSession);
     }
     public User getUser() { return user; }
 //    public Map<String, String> getChatRooms() { return chatRooms; }
