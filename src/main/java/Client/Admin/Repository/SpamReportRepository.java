@@ -1,11 +1,13 @@
 package Client.Admin.Repository;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.sql.*;
 import java.time.LocalDateTime;
 
 import Client.ConnectionManager;
 import Client.Models.SpamReport;
+import Client.Models.User;
 
 public class SpamReportRepository {
     private Connection con;
@@ -21,6 +23,34 @@ public class SpamReportRepository {
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 spamReports.add(SpamReport.fromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return spamReports;
+    }
+
+    public ArrayList<SpamReport> getSpamReportsByDateRange(Date startDate, Date endDate) {
+        ArrayList<SpamReport> spamReports = new ArrayList<SpamReport>();
+
+        String sql = "SELECT * FROM spamReport WHERE reporttime BETWEEN ? AND ? ORDER BY sender";
+
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+
+            // Set the start and end dates in the prepared statement
+            preparedStatement.setDate(1, new java.sql.Date(startDate.getTime()));
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(endDate);
+            calendar.add(Calendar.DATE, 1);
+            java.util.Date utilDate = calendar.getTime();
+            java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+
+            preparedStatement.setDate(2, sqlDate);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                spamReports.add(SpamReport.fromResultSet(resultSet));
             }
         } catch (SQLException e) {
             e.printStackTrace();

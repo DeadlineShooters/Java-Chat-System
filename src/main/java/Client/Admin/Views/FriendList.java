@@ -40,7 +40,7 @@ public class FriendList extends JPanel {
 
         // Label and text field 1
         JPanel panel1 = new JPanel(new BorderLayout());
-        JLabel label1 = new JLabel("Name");
+        JLabel label1 = new JLabel("Username");
         label1.setBackground(Color.white);
         label1.setOpaque(true);
         JTextField textField1 = new JTextField(16);
@@ -49,7 +49,7 @@ public class FriendList extends JPanel {
 
         // Label and text field 2
         JPanel panel2 = new JPanel(new BorderLayout());
-        JLabel label2 = new JLabel("Username");
+        JLabel label2 = new JLabel("Full name");
         label2.setBackground(Color.white);
         label2.setOpaque(true);
         JTextField textField2 = new JTextField(16);

@@ -3,11 +3,14 @@ package Client.Admin.Views;
 import Client.Admin.Repository.SpamReportRepository;
 import Client.Admin.Repository.UserRepository;
 import Client.Models.SpamReport;
+import Client.Models.User;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -16,18 +19,22 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.*;
 
+import org.jdesktop.swingx.JXDatePicker;
+
 public class ReportList extends JPanel {
     protected JTable table;
     protected TableRowSorter<DefaultTableModel> rowSorter;
     protected UserRepository userRepository = new UserRepository();
     protected SpamReportRepository spamReportRepository = new SpamReportRepository();
+    private java.sql.Date firstDate;
+    private java.sql.Date secondDate;
 
     public ReportList() {
         setLayout(new BorderLayout());
         setBackground(Color.white);
 
         JPanel searchBar = new JPanel();
-        searchBar.setBackground(Color.white); 
+        searchBar.setBackground(Color.white);
 
         // Set the border
         searchBar.setBorder(BorderFactory.createLineBorder(Color.gray, 1));
@@ -51,6 +58,71 @@ public class ReportList extends JPanel {
         panel2.add(label2, BorderLayout.NORTH);
         panel2.add(textField2, BorderLayout.CENTER);
 
+        JXDatePicker[] pickers = new JXDatePicker[2];
+        Date[] previousDates = new Date[2];
+        JPanel datePickerContainer = new JPanel();
+
+        datePickerContainer.add(new JLabel("Created date "));
+
+        for (int i = 0; i < 2; ++i) {
+            JPanel datePanel = new JPanel();
+
+            JXDatePicker picker = new JXDatePicker();
+
+            picker.setDate(new java.util.Date());
+            picker.setFormats(new SimpleDateFormat("dd.MM.yyyy"));
+
+            datePanel.add(picker);
+            datePickerContainer.add(datePanel);
+
+            if (i == 0) {
+                JLabel toText = new JLabel("to");
+                datePickerContainer.add(toText);
+            }
+            datePanel.setBackground(Color.white);
+            datePanel.setOpaque(true);
+
+            pickers[i] = picker;
+            previousDates[i] = new java.sql.Date(picker.getDate().getTime());
+        }
+
+        previousDates[0] = null;
+        previousDates[1] = null;
+        pickers[0].setDate(null);
+        pickers[1].setDate(null);
+
+        for (int i = 0; i < 2; ++i) {
+            final int index = i;
+
+            pickers[i].addActionListener(e -> {
+
+                java.util.Date firstUtilDate = pickers[0].getDate();
+                java.util.Date secondUtilDate = pickers[1].getDate();
+                if (firstUtilDate == null || secondUtilDate == null) {
+                    updateTable();
+                    return;
+                }
+                firstDate = new java.sql.Date(firstUtilDate.getTime());
+                secondDate = new java.sql.Date(secondUtilDate.getTime());
+
+                if (secondDate.before(firstDate)) {
+                    JOptionPane.showMessageDialog(null, "End date cannot be before start date.");
+
+                    if (previousDates[index] == null) {
+                        pickers[index].setDate(null);
+                    } else {
+                        pickers[index].setDate(previousDates[index]);
+                    }
+                } else {
+                    previousDates[index] = new java.sql.Date(pickers[index].getDate().getTime());
+                    updateTable();
+                }
+
+            });
+        }
+
+        datePickerContainer.setBackground(Color.white);
+
         // search button
         JButton[] searchButtons = new JButton[2];
         searchButtons[0] = new JButton("Search");
@@ -63,6 +135,7 @@ public class ReportList extends JPanel {
         searchBar.add(Box.createRigidArea(new Dimension(5, 0)));
         searchBar.add(panel2);
         searchBar.add(Box.createRigidArea(new Dimension(5, 0)));
+        searchBar.add(datePickerContainer);
         searchBar.add(Box.createRigidArea(new Dimension(10, 0)));
         searchBar.add(searchButtons[0]);
 
@@ -166,7 +239,12 @@ public class ReportList extends JPanel {
     }
 
     public void updateTable() {
-        ArrayList<SpamReport> spamReports = spamReportRepository.getSpamReports();
+         ArrayList<SpamReport> spamReports = new ArrayList<SpamReport>();
+        if (firstDate != null && secondDate != null) {
+            spamReports = spamReportRepository.getSpamReportsByDateRange(firstDate, secondDate);
+        } else {
+            spamReports = spamReportRepository.getSpamReports();
+        }
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
 
