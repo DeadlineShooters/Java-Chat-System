@@ -52,6 +52,8 @@ public class ChatPanel extends JPanel {
         topBar.setIcon(profileImage);
         topPanel.add(topBar);
         topPanel.setBackground(Color.lightGray);
+        topPanel.revalidate();
+        topPanel.repaint();
 
     }
     void initView() {

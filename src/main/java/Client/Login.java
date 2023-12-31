@@ -6,19 +6,17 @@ import Client.Models.User;
 import Client.User.CurrentUser;
 import Client.User.Repositories.UserRepo;
 import Client.User.UserApp;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-
 import org.apache.commons.lang3.RandomStringUtils;
 
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Properties;
-
-import javax.mail.*;
-import javax.mail.internet.*;
 
 public class Login extends JFrame {
     private JPanel contentPane;
@@ -274,6 +272,13 @@ public class Login extends JFrame {
             dispose();
             SwingUtilities.invokeLater(() -> new AdminApp());
         } else {
+            // check is locked
+            if (UserRepo.isLocked(username)) {
+                JOptionPane.showMessageDialog(contentPane, "This account has been locked!", "Alert",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             // Authentication
             if (!UserRepo.authen(username, password)) {
                 JOptionPane.showMessageDialog(contentPane, "Wrong username or password!", "Alert",
