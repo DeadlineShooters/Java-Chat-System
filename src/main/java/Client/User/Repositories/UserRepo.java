@@ -138,4 +138,16 @@ public class UserRepo {
             throw new RuntimeException(e);
         }
     }
+    public static Boolean isLocked(String username) {
+        String sql = "select isLocked from user where username = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            return rs.getBoolean("islocked");
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
