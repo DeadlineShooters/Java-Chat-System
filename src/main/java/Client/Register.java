@@ -1,5 +1,6 @@
 package Client;
 
+import Client.Models.User;
 import Client.User.Repositories.UserRepo;
 
 import javax.swing.*;
@@ -139,15 +140,15 @@ public class Register extends JFrame {
                     JOptionPane.showMessageDialog(contentPane, "The username has been used");
                     return;
                 }
-//                if (!values[2].equals(values[3])) {
-//                    JOptionPane.showMessageDialog(contentPane, "Passwords don't match!");
-//                    return;
-//                }
-//                if (UserRepo.add(values[0], values[1], User.encryptPassword(values[2]))) {
-//                    JOptionPane.showMessageDialog(contentPane, "Account created!");
-//                    dispose();
-//                    SwingUtilities.invokeLater(() -> new Login());
-//                }
+                if (!values[2].equals(values[3])) {
+                    JOptionPane.showMessageDialog(contentPane, "Passwords don't match!");
+                    return;
+                }
+                if (UserRepo.add(values[0], values[1], User.encryptPassword(values[2]))) {
+                    JOptionPane.showMessageDialog(contentPane, "Account created!");
+                    dispose();
+                    SwingUtilities.invokeLater(() -> new Login());
+                }
             }
         });
 

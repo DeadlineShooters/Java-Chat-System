@@ -44,7 +44,7 @@ public class UserRepo {
 //                return false;
 //            }
             Timestamp createdAt = new Timestamp(System.currentTimeMillis());
-            String sql = "insert into \"user\" (username, password, email, created_at) values (?, ?, ?, ?)";
+            String sql = "insert into user (username, password, email, createdat) values (?, ?, ?, ?)";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, username);
                 ps.setString(2, password);
