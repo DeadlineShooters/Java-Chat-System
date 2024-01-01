@@ -9,6 +9,8 @@ import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Register extends JFrame {
     private JPanel contentPane;
@@ -124,15 +126,20 @@ public class Register extends JFrame {
                     }
                 }
 
+                if (!isValidEmail(values[1])) {
+                    JOptionPane.showMessageDialog(contentPane, "Invalid email.");
+                    return;
+                }
 
-//                if (values[0] == "email") {
-//                    JOptionPane.showMessageDialog(contentPane, "Email has been used");
-//                    return;
-//                }
-//                if (values[1] == "username") {
-//                    JOptionPane.showMessageDialog(contentPane, "The username has been used");
-//                    return;
-//                }
+
+                if (UserRepo.emailExisted(values[1])) {
+                    JOptionPane.showMessageDialog(contentPane, "Email has been used");
+                    return;
+                }
+                if (UserRepo.usernameExisted(values[0])) {
+                    JOptionPane.showMessageDialog(contentPane, "The username has been used");
+                    return;
+                }
                 if (!values[2].equals(values[3])) {
                     JOptionPane.showMessageDialog(contentPane, "Passwords don't match!");
                     return;
@@ -141,9 +148,6 @@ public class Register extends JFrame {
                     JOptionPane.showMessageDialog(contentPane, "Account created!");
                     dispose();
                     SwingUtilities.invokeLater(() -> new Login());
-                } else {
-                    JOptionPane.showMessageDialog(contentPane, "Account existed!");
-                    return;
                 }
             }
         });
@@ -151,6 +155,16 @@ public class Register extends JFrame {
         registerBtn.setFont(new Font("Arial", Font.BOLD, 13));
         panel.add(registerBtn);
         contentPane.add(panel, BorderLayout.SOUTH);
+    }
+
+    private static final String EMAIL_REGEX =
+            "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+
+    private static final Pattern pattern = Pattern.compile(EMAIL_REGEX);
+
+    public static boolean isValidEmail(String email) {
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
     }
 
     public static void main(String[] args) {

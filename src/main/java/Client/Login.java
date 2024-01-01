@@ -1,6 +1,5 @@
 package Client;
 
-import Client.Admin.AdminApp;
 import Client.Admin.Repository.SessionRepository;
 import Client.Models.User;
 import Client.User.CurrentUser;
@@ -268,10 +267,10 @@ public class Login extends JFrame {
             return;
         }
 
-        if (username.equals("admin") && password.equals("admin")) {
-            dispose();
-            SwingUtilities.invokeLater(() -> new AdminApp());
-        } else {
+//        if (username.equals("admin") && password.equals("admin")) {
+//            dispose();
+//            SwingUtilities.invokeLater(() -> new AdminApp());
+//        } else {
             // check is locked
             if (UserRepo.isLocked(username)) {
                 JOptionPane.showMessageDialog(contentPane, "This account has been locked!", "Alert",
@@ -289,7 +288,7 @@ public class Login extends JFrame {
             CurrentUser.getInstance().setUser(user);
             dispose();
             new Thread(new UserApp()).start();
-        }
+//        }
     }
 
     public static void main(String[] args) {

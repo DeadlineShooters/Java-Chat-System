@@ -13,16 +13,38 @@ public class UserRepo {
         // Static block to initialize the connection when the class is loaded
         conn = ConnectionManager.getConnection();
     }
+    public static Boolean usernameExisted(String username) {
+        String sql = "select * from user where username = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static Boolean emailExisted(String email) {
+        String sql = "select * from user where email = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static boolean add(String username, String email, String password) {
         try {
             Statement stmt = conn.createStatement();
-            ResultSet resultSet = stmt.executeQuery("select * from user where username=\"" + username + "\"");
-            if (resultSet.next()) {
-                return false;
-            }
+//            ResultSet resultSet = stmt.executeQuery("select * from user where username=\"" + username + "\"");
+//            if (resultSet.next()) {
+//                return false;
+//            }
             Timestamp createdAt = new Timestamp(System.currentTimeMillis());
-            String sql = "insert into \"user\" (username, password, email, created_at) values (?, ?, ?, ?)";
+            String sql = "insert into user (username, password, email, createdat) values (?, ?, ?, ?)";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, username);
                 ps.setString(2, password);
