@@ -74,11 +74,15 @@ public class MessageRepo {
             throw new RuntimeException(e);
         }
     }
-    public static ArrayList<Message> findMessagesFromAll(String prompt) {
+    public static ArrayList<Message> findMessagesFromAll(String username, String prompt) {
         ArrayList<Message> messages = new ArrayList<>();
-        String sql = "select * from message where content like ?";
+        String sql = "SELECT * FROM message WHERE content LIKE ? AND " +
+                "chatRoomId IN (" +
+                "   SELECT chatroomid FROM chatmember WHERE username = ?" +
+                ")";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "%"+prompt+"%");
+            ps.setString(2, username);
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
