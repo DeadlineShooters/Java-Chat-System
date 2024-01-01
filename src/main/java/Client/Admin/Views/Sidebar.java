@@ -1,6 +1,8 @@
 package Client.Admin.Views;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -73,6 +75,7 @@ public class Sidebar extends Box {
                                                                                                 // size to fit button
 
             buttons.add(button);
+
 
             // Add space between buttons
             if (i < 4) {

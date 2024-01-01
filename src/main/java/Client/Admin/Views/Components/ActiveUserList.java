@@ -285,4 +285,30 @@ public class ActiveUserList extends UserList {
         });
     }
 
+    public void refresh() {
+        // Clear filter fields
+        usernameTextField.setText("");
+        ((PlainDocument) usernameTextField.getDocument()).setDocumentFilter(new DocumentFilter() {
+            @Override
+            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr)
+                    throws BadLocationException {
+                // Allow any input
+                super.insertString(fb, offset, string, attr);
+            }
+
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
+                    throws BadLocationException {
+                // Allow any input
+                super.replace(fb, offset, length, text, attrs);
+            }
+        });
+
+        startPicker.clear();
+        endPicker.clear();
+
+        // Update the table with all users' activities
+        ArrayList<UserActivity> allActivities = sessionRepository.getUsersActivity(userRepository.getUsers());
+        updateTableActivity(allActivities);
+    }
 }

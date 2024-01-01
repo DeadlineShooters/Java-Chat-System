@@ -1,15 +1,15 @@
 package Client.Admin.Views;
 
+import Client.Admin.Repository.UserRepository;
+
 import javax.swing.*;
 
-import Client.Admin.Repository.UserRepository;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Home extends JFrame {
-    protected UserRepository userRepository = new UserRepository();
     CardLayout cardLayout = new CardLayout();
     JPanel bodyPanel = new JPanel(cardLayout);
 
@@ -49,7 +49,8 @@ public class Home extends JFrame {
         sidebar.getButton(0).addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                userManagement.getUserList().updateTable(userRepository.getUsers());
+
+                userManagement.refresh();
                 cardLayout.show(bodyPanel, menuItems[0]);
             }
         });
@@ -81,6 +82,8 @@ public class Home extends JFrame {
         sidebar.getButton(4).addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                activeUserScreen.getLineChart().updateDataPoints();
+                activeUserScreen.getList().refresh();
                 cardLayout.show(bodyPanel, menuItems[4]);
             }
         });

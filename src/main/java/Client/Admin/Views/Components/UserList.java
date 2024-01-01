@@ -45,6 +45,8 @@ public class UserList extends JPanel {
     // search button
     public JButton[] searchButtons = new JButton[4];
     public String selectedUser;
+    private JXDatePicker[] pickers = new JXDatePicker[2];
+
 
     public UserList() {
         setLayout(new BorderLayout());
@@ -121,7 +123,6 @@ public class UserList extends JPanel {
         // JComboBox to the right
 
         // date picker for new registration find
-        JXDatePicker[] pickers = new JXDatePicker[2];
         Date[] previousDates = new Date[2];
         JPanel datePickerContainer = new JPanel();
 
@@ -585,4 +586,12 @@ public class UserList extends JPanel {
         rowSorter.setRowFilter(compoundRowFilter);
     }
 
+
+
+    // Add the clearDatePickers method
+    public void clearDatePickers() {
+        for (JXDatePicker picker : pickers) {
+            picker.setDate(null);
+        }
+    }
 }

@@ -30,7 +30,7 @@ public class LineChart extends BaseLineChart {
 
     }
     @Override
-    protected void updateDataPoints() {
+    public void updateDataPoints() {
         // Fetch user registrations data for the selected year from the database
         Date startDate = Date.valueOf(year + "-01-01");
         Date endDate = Date.valueOf(year + "-12-31");

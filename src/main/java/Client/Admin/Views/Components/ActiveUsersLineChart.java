@@ -10,7 +10,7 @@ public class ActiveUsersLineChart extends BaseLineChart {
         super(title, xLabel, yLabel);
     }
     @Override
-    protected void updateDataPoints() {
+    public void updateDataPoints() {
         dataPoints = new ArrayList<>();
 
         // Get the sessions for the selected year
