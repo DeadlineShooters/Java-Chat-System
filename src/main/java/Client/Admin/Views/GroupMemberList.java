@@ -1,6 +1,8 @@
 package Client.Admin.Views;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -38,7 +40,7 @@ public class GroupMemberList extends JPanel {
 
         // Label and text field 1
         JPanel panel1 = new JPanel(new BorderLayout());
-        JLabel label1 = new JLabel("Name");
+        JLabel label1 = new JLabel("Username");
         label1.setBackground(Color.white);
         label1.setOpaque(true);
         JTextField textField1 = new JTextField(16);
@@ -47,7 +49,7 @@ public class GroupMemberList extends JPanel {
 
         // Label and text field 2
         JPanel panel2 = new JPanel(new BorderLayout());
-        JLabel label2 = new JLabel("Username");
+        JLabel label2 = new JLabel("Full name");
         label2.setBackground(Color.white);
         label2.setOpaque(true);
         JTextField textField2 = new JTextField(16);
@@ -126,14 +128,32 @@ public class GroupMemberList extends JPanel {
 
         // Add the user list part to the body part
         add(userListPanel, BorderLayout.CENTER);
+
+        searchButtons[0].addActionListener(e -> {
+            String username = textField1.getText().trim();
+            String fullName = textField2.getText().trim();
+            String status = comboBox.getSelectedItem().toString();
+            search(username, fullName, status);
+        });
+
+        searchButtons[1].addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                updateTable(searchButtons[1].getText());
+            }
+        });
+
+        searchButtons[2].addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                updateTable(searchButtons[2].getText());
+            }
+        });
     }
 
     public void updateTable(String type) {
         ArrayList<User> chatMembers = new ArrayList<User>();
         if (type.equals(searchButtons[1].getText())) {
             chatMembers = chatMemberRepository.getChatMembers(chatRoomId);
-        }
-        else {
+        } else {
             chatMembers = groupAdminRepository.getGroupAdmins(chatRoomId);
         }
         DefaultTableModel model = (DefaultTableModel) table.getModel();

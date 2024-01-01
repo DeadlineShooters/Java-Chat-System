@@ -25,7 +25,7 @@ public class LoginList extends JPanel {
         JPanel userListPanel = new JPanel(new BorderLayout());
 
         JPanel reloadPanel = new JPanel();
-        reloadPanel.setBackground(Color.white); 
+        reloadPanel.setBackground(Color.white);
 
         reloadPanel.setBorder(BorderFactory.createLineBorder(Color.gray, 1));
         reloadPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -60,6 +60,10 @@ public class LoginList extends JPanel {
 
         rowSorter = new TableRowSorter<>(model);
         table.setRowSorter(rowSorter);
+        ArrayList<RowSorter.SortKey> sortKeys = new ArrayList<>();
+        sortKeys.add(new RowSorter.SortKey(0, SortOrder.DESCENDING)); // 0 is the index of "Login time"
+        rowSorter.setSortKeys(sortKeys);
+        rowSorter.sort();
 
         updateTable();
 
