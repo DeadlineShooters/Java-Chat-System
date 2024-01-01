@@ -555,8 +555,8 @@ public class SettingsPanel extends JPanel {
 
 
 
-        outerleft.setBounds(0,0, 200, 500);
-        outerright.setBounds(200,0, 200, 500);
+        outerleft.setBounds(0,0, 200, 380);
+        outerright.setBounds(200,0, 200, 380);
 //        outerleft.setBackground(Color.blue);
 //        outerright.setBackground(Color.red);
 
@@ -848,8 +848,8 @@ public class SettingsPanel extends JPanel {
             }
         });
 
-        outerleft.setBounds(0,0, 200, 500);
-        outerright.setBounds(200,0, 200, 500);
+        outerleft.setBounds(0,0, 200, 380);
+        outerright.setBounds(200,0, 200, 380);
 //        outerleft.setBackground(Color.blue);
 //        outerright.setBackground(Color.red);
 
