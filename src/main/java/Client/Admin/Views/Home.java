@@ -3,7 +3,9 @@ package Client.Admin.Views;
 import Client.Admin.Repository.UserRepository;
 
 import javax.swing.*;
-
+import Client.Admin.Views.Sidebar; // must not remove those even if greyed out
+import Client.Admin.Views.GroupMemberList;
+import Client.Admin.Views.FriendList;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
