@@ -33,7 +33,7 @@ public abstract class BaseLineChart extends JPanel {
     private String xLabel;
     private String yLabel;
 
-    protected abstract void updateDataPoints();
+    public abstract void updateDataPoints();
 
     public BaseLineChart(String title, String xLabel, String yLabel) {
         this.title = title;

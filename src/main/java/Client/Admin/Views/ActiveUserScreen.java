@@ -31,4 +31,11 @@ public class ActiveUserScreen extends JPanel {
         add(list, gbc);
     }
 
+    public ActiveUsersLineChart getLineChart() {
+        return lineChart;
+    }
+
+    public ActiveUserList getList() {
+        return list;
+    }
 }

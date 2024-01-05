@@ -90,11 +90,10 @@ public class UserRepository {
     }
 
     public int fetchNumberOfFriends(String username) {
-        String sql = "SELECT COUNT(*) AS friendcount FROM Friend WHERE user1 = ? OR user2 = ?";
+        String sql = "SELECT COUNT(*) AS friendcount FROM Friend WHERE user1 = ?";
         int numberOfFriends = 0;
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setString(1, username);
-            stmt.setString(2, username);
             ResultSet resultSet = stmt.executeQuery();
             if (resultSet.next()) {
                 numberOfFriends = resultSet.getInt("friendcount");

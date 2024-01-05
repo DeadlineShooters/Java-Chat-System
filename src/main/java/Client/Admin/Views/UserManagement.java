@@ -1,15 +1,19 @@
 package Client.Admin.Views;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 import javax.swing.*;
 
 import Client.Admin.Views.Components.LineChart;
 import Client.Admin.Views.Components.UserList;
+import Client.Models.User;
+import Client.Admin.Repository.UserRepository;
 
 
+public class UserManagement extends JPanel  {
+    protected UserRepository userRepository = new UserRepository();
 
-public class UserManagement extends JPanel {
     protected LineChart lineChart = new LineChart("Newly registered users per year",
             "Month",
             "The number of new registrations");
@@ -36,5 +40,16 @@ public class UserManagement extends JPanel {
 
     public UserList getUserList() {
         return userList;
+    }
+
+    public LineChart getLineChart() {
+        return lineChart;
+    }
+
+    public void refresh(){
+        userList.clearDatePickers();
+
+        userList.updateTable(userRepository.getUsers());
+        lineChart.updateDataPoints();
     }
 }

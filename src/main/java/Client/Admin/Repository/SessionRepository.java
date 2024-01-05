@@ -142,10 +142,16 @@ public class SessionRepository {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
+                Timestamp logoutTime = resultSet.getTimestamp("logouttime");
+                if (logoutTime == null) {
+                    // Set logouttime to the current datetime if it's null
+                    logoutTime = Timestamp.valueOf(LocalDateTime.now());
+                    System.out.println("@@ logoutTime: " + logoutTime);
+                }
                 Map<String, Object> session = Map.of(
 
                         "logintime", resultSet.getTimestamp("logintime"),
-                        "logouttime", resultSet.getTimestamp("logouttime"),
+                        "logouttime", logoutTime,
 
                         "username", resultSet.getString("username")
                 );

@@ -93,7 +93,7 @@
                             <goal>java</goal>
                         </goals>
                         <configuration>
-                            <mainClass>Server.ServerApp</mainClass>
+                            <mainClass>Server.Server</mainClass>
                         </configuration>
                     </execution>
                     <!-- run this with: mvn exec:java@client-admin -->
@@ -115,7 +115,7 @@
                             <goal>java</goal>
                         </goals>
                         <configuration>
-                            <mainClass>Client.User.UserApp</mainClass>
+                            <mainClass>Client.Login</mainClass>
                         </configuration>
                     </execution>
                     <execution>
