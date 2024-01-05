@@ -178,6 +178,8 @@ public class SettingsPanel extends JPanel {
             JPanel item = createListItem(member,false, "member");
             membersPanel.add(item);
         }
+        membersPanel.revalidate();
+        membersPanel.repaint();
     }
 
     void initPrivateChat(String chatRoomId, String chatUsername) {
@@ -555,8 +557,8 @@ public class SettingsPanel extends JPanel {
 
 
 
-        outerleft.setBounds(0,0, 200, 500);
-        outerright.setBounds(200,0, 200, 500);
+        outerleft.setBounds(0,0, 200, 405);
+        outerright.setBounds(200,0, 200, 405);
 //        outerleft.setBackground(Color.blue);
 //        outerright.setBackground(Color.red);
 
@@ -848,8 +850,8 @@ public class SettingsPanel extends JPanel {
             }
         });
 
-        outerleft.setBounds(0,0, 200, 500);
-        outerright.setBounds(200,0, 200, 500);
+        outerleft.setBounds(0,0, 200, 405);
+        outerright.setBounds(200,0, 200, 405);
 //        outerleft.setBackground(Color.blue);
 //        outerright.setBackground(Color.red);
 

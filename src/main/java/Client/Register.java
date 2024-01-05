@@ -133,11 +133,11 @@ public class Register extends JFrame {
 
 
                 if (UserRepo.emailExisted(values[1])) {
-                    JOptionPane.showMessageDialog(contentPane, "Email has been used");
+                    JOptionPane.showMessageDialog(contentPane, "Email "+values[1]+" has been used");
                     return;
                 }
                 if (UserRepo.usernameExisted(values[0])) {
-                    JOptionPane.showMessageDialog(contentPane, "The username has been used");
+                    JOptionPane.showMessageDialog(contentPane, "Username " + values[0]+ " has been used");
                     return;
                 }
                 if (!values[2].equals(values[3])) {

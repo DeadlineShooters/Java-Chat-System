@@ -86,7 +86,8 @@ public class SidePanel extends JPanel {
 
                 String prompt = searchField.getText();
 //                searchField.setText("");
-                ArrayList<Message> messages = MessageRepo.findMessagesFromAll(prompt);
+                String username = CurrentUser.getInstance().getUser().username();
+                ArrayList<Message> messages = MessageRepo.findMessagesFromAll(username,prompt);
                 for (Message message : messages) {
 //                    System.out.println(username);
                     messagesPanel.add(createMessageItem(message));

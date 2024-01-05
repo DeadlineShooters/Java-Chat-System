@@ -185,7 +185,7 @@ public class ChatPanel extends JPanel {
             String privateChatId = ChatRoomRepo.findPrivateChatId(CurrentUser.getInstance().getUser().username(), username);
             if (privateChatId != null)
                 SidePanel.getInstance().updateIsOnline(privateChatId);
-//            SidePanel.getInstance().displayFriends();
+            SidePanel.getInstance().displayFriends();
 //            SidePanel.getInstance().updateIsOnline(username);
             return;
         }
@@ -198,7 +198,7 @@ public class ChatPanel extends JPanel {
             String privateChatId = ChatRoomRepo.findPrivateChatId(CurrentUser.getInstance().getUser().username(), username);
             if (privateChatId != null)
                 SidePanel.getInstance().updateIsOffline(privateChatId);
-//            SidePanel.getInstance().displayFriends();
+            SidePanel.getInstance().displayFriends();
 //            SidePanel.getInstance().updateIsOffline(username);
             return;
         }
