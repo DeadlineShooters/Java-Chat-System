@@ -8,8 +8,8 @@ public class MenuBar extends JMenuBar {
         // File menu
         JMenu fileMenu = new JMenu("File");
         JMenuItem exitMenuItem = new JMenuItem("Exit");
-        exitMenuItem.addActionListener(e -> closeWindow((JFrame) SwingUtilities.getWindowAncestor(this)));
         fileMenu.add(exitMenuItem);
+        exitMenuItem.addActionListener(e -> closeWindow((JFrame) SwingUtilities.getWindowAncestor(this)));
 
         // Help menu
         JMenu helpMenu = new JMenu("Help");
