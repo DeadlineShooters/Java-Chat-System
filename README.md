@@ -1,7 +1,4 @@
-- In this project, we use the MVC pattern:
-  - The Model component manages the system data and associated operations on that data.
-  - The View component defines and manages how the data is presented to the user.
-  - The Controller component manages user interaction (e.g., key presses, mouse clicks, etc.) and passes these interactions to the View and the Model.
+- In this project, we use the Client-Server pattern. For database design, system design and more detailed info about the project, refer to the folder: **21127119_21127089_21127717 **
 
 ## Note on pom.xml
 
