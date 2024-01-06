@@ -146,7 +146,6 @@ public class SessionRepository {
                 if (logoutTime == null) {
                     // Set logouttime to the current datetime if it's null
                     logoutTime = Timestamp.valueOf(LocalDateTime.now());
-                    System.out.println("@@ logoutTime: " + logoutTime);
                 }
                 Map<String, Object> session = Map.of(
 

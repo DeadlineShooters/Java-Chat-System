@@ -115,16 +115,6 @@
                             <goal>java</goal>
                         </goals>
                         <configuration>
-                            <mainClass>Client.Login</mainClass>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>client</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <configuration>
                             <mainClass>Client.Main</mainClass>
                         </configuration>
                     </execution>
