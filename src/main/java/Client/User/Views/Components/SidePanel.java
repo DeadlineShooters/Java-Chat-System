@@ -475,6 +475,8 @@ public class SidePanel extends JPanel {
             friendsPanel.add(item);
             itemsPointer.put(username, item);
         }
+        friendsPanel.revalidate();
+        friendsPanel.repaint();
     }
 
 }
