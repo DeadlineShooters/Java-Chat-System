@@ -7,7 +7,7 @@
 ### Adding dependencies
 
 1. Search for dependency: https://central.sonatype.com/ and we get this `Maven POM File` snippet.
-  ![img.png](img.png)
+   ![img.png](img.png)
 2. Copy `<dependency>` block and paste into the <dependencies> section of pom.xml.
 
 ### Adding resources (i.g: .png, .jpg, etc)
@@ -20,21 +20,6 @@ E.g: Let's say there is _sample.png_ in `Image` inside of `Resources`, path to _
 
 - On changing `pom.xml`, to apply changes run: `.\mvnw clean`.
 
-## Running the project
+## Instructions for use
 
-For more detail on how this works, check `pom.xml`.
-In **powershell**:
-
-- Run Server:
-  `.\mvnw exec:java`
-- Run Admin:
-  `.\mvnw exec:java@client-admin`
-- Run User:
-  `.\mvnw exec:java@client-user`
-- Run All: `.\mvnw package`
-
-### Output
-
-For simple console output:
-Check for lines starting with default-cli (server app) and client-execution (client app)
-![Alt text](image.png)
+Please refer to the [Instructions for Use section](https://github.com/DeadlineShooters/Java-Chat-System/blob/main/21127119_21127089_21127717/Report.pdf) in our project report for more details.
