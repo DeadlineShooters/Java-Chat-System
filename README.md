@@ -1,4 +1,6 @@
-- In this project, we use the Client-Server pattern. For database design, system design and more detailed info about the project, refer to the folder: **21127119_21127089_21127717**
+# Java Chat System
+- A chat system with separate modules for administrators and users.
+- For database design, system design and more detailed info about the project, refer to the folder: **21127119_21127089_21127717**
 
 ## Note on pom.xml
 
